@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/view_loading_fl"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:background="@android:color/transparent"
+    android:gravity="center">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        app:contentPadding="3dp"
+        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardCornerRadius="3dp"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="5dp">
+
+        <ProgressBar
+            android:layout_width="21dp"
+            android:layout_height="21dp"
+            android:indeterminateDrawable="@drawable/gradient_progress"
+            android:progress="50" />
+    </androidx.cardview.widget.CardView>
+</FrameLayout>

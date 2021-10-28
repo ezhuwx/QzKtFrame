@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">KOTLIN-FRAME</string>
+    <string name="cancel_request">接口请求取消</string>
+    <string name="request_time_out">请求超时</string>
+    <string name="login_time_out">登陆超时</string>
+    <string name="service_can_not_connect">无法连接服务器,请检查网络设置</string>
+    <string name="none_data">暂无数据</string>
+    <string name="click_to_retry">重新加载</string>
+    <string name="network_error_content">您的网络不给力，请检查网络</string>
+    <string name="unknown_error">似乎发生了一些错误…</string>
+</resources>
