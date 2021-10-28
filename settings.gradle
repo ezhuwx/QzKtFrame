@@ -6,4 +6,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "KOTLIN-FRAME"
-include ':app'
+include ':frame'
