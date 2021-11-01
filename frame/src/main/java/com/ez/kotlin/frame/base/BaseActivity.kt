@@ -18,6 +18,12 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * */
     private val mNetDialog by lazy { NetDialog(this) }
 
+    /**
+     *  viewModel实例
+     *
+     */
+    abstract fun providerVMClass(): Class<VM>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ImmersionBar.with(this).init()
@@ -46,7 +52,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         }
     }
 
-
     /**
      * 初始化数据
      */
@@ -58,11 +63,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     abstract fun initView()
 
-    /**
-     *  viewModel实例
-     *
-     */
-    abstract fun providerVMClass(): Class<VM>
 
     /**
      *  DialogLoading 显示

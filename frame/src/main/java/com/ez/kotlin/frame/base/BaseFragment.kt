@@ -18,6 +18,10 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      * */
     private val mNetDialog by lazy { NetDialog(activity as AppCompatActivity) }
 
+    /**
+     *  viewModel实例
+     *  */
+    abstract fun providerVMClass(): Class<VM>?
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,11 +55,6 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      * 初始化 View
      */
     abstract fun initView(view: View)
-
-    /**
-     *  viewModel实例
-     *  */
-    abstract fun providerVMClass(): Class<VM>?
 
     /**
      *  DialogLoading 显示
