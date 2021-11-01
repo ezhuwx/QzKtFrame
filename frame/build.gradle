@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'kotlin-android'
 }
 
@@ -7,11 +7,10 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.ez.kotlin.frame"
         minSdk 23
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 10001
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -28,6 +27,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
 }
 
 dependencies {
@@ -75,7 +75,7 @@ dependencies {
     api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
     api 'jp.wasabeef:glide-transformations:4.0.0'
     //SmartRefreshLayout
-    implementation  'com.scwang.smart:refresh-layout-kernel:2.0.3'
+    implementation 'com.scwang.smart:refresh-layout-kernel:2.0.3'
     //屏幕适配
     implementation 'me.jessyan:autosize:1.2.1'
     //日志
@@ -85,3 +85,9 @@ dependencies {
     //dataBinding严格模式
     api 'com.kunminx.arch:strict-databinding:4.0.0-beta1'
 }
+ext {
+    PUBLISH_GROUP_ID = "io.github.ezhuwx"
+    PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
+    PUBLISH_VERSION = '1.0.0'
+}
+apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"
