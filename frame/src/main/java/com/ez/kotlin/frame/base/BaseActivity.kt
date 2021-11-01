@@ -18,11 +18,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * */
     private val mNetDialog by lazy { NetDialog(this) }
 
-    /**
-     *  viewModel实例
-     *
-     */
-    abstract fun providerVMClass(): Class<VM>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +46,12 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
             lifecycle.addObserver(viewModel)
         }
     }
+
+    /**
+     *  viewModel实例
+     *
+     */
+    abstract fun providerVMClass(): Class<VM>
 
     /**
      * 初始化数据
