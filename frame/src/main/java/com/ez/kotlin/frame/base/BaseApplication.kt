@@ -22,6 +22,7 @@ import kotlin.system.exitProcess
 
 abstract class BaseApplication : Application() {
     private var allActivities: HashSet<AppCompatActivity>? = null
+    var isDebug = false
 
     companion object {
         lateinit var instance: BaseApplication
@@ -48,6 +49,7 @@ abstract class BaseApplication : Application() {
      */
     private fun lateInitSDK() {
         Thread {
+            isDebug = debug()
             //设置进程的优先级，不与主线程抢资源
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             LiveEventBus.config().lifecycleObserverAlwaysActive(false).setContext(this)
@@ -90,11 +92,15 @@ abstract class BaseApplication : Application() {
             .build()
         Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
             override fun isLoggable(priority: Int, tag: String?): Boolean {
-                return BuildConfig.DEBUG
+                return isDebug
             }
         })
     }
 
+    /**
+     *  debug
+     * */
+    abstract fun debug(): Boolean
 
     /**
      * Logger TAG

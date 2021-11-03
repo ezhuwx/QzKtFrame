@@ -20,6 +20,7 @@ import kotlinx.coroutines.withTimeout
 open class BaseViewModel : ViewModel(), LifecycleObserver {
     private val start by lazy { SingleLiveEvent<Boolean>() }
     private val error by lazy { SingleLiveEvent<Exception>() }
+    private val success by lazy { SingleLiveEvent<Boolean>() }
     private val finally by lazy { SingleLiveEvent<Int>() }
 
     //运行在UI线程的协程
@@ -28,6 +29,7 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
             start.value = true
             withTimeout(RetrofitClient.TIME_OUT) {
                 block()
+                success.value = true
             }
         } catch (e: Exception) {
             //此处接收到BaseRepository里的request抛出的异常，直接赋值给error
@@ -40,15 +42,19 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
     /**
      * TODO 请求开始
      */
-    fun getStart(): LiveData<Boolean> = start
+    fun start(): LiveData<Boolean> = start
 
     /**
-     * 请求失败，出现异常
+     *TODO 请求失败，出现异常
      */
-    fun getError(): LiveData<Exception> = error
+    fun error(): LiveData<Exception> = error
+    /**
+     * TODO 请求开始
+     */
+    fun success(): LiveData<Boolean> = success
 
     /**
-     * 请求完成，在此处做一些关闭操作
+     *TODO 请求完成，在此处做一些关闭操作
      */
-    fun getFinally(): LiveData<Int> = finally
+    fun finally(): LiveData<Int> = finally
 }

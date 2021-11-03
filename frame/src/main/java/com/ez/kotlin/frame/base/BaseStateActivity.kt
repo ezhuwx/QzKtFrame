@@ -67,20 +67,22 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     }
 
 
-
     /**
      * TODO 请求监听
      *
      */
     private fun startObserve() {
         viewModel.run {
-            getStart().observe(this@BaseStateActivity, {
+            start().observe(this@BaseStateActivity, {
                 requestStart(it)
             })
-            getError().observe(this@BaseStateActivity, {
+            success().observe(this@BaseStateActivity, {
+                requestSuccess(it)
+            })
+            error().observe(this@BaseStateActivity, {
                 requestError(it)
             })
-            getFinally().observe(this@BaseStateActivity, {
+            finally().observe(this@BaseStateActivity, {
                 requestFinally(it)
             })
         }
@@ -91,6 +93,13 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *  */
     open fun requestStart(it: Boolean) {
         stateLoading()
+    }
+
+    /**
+     *  接口请求成功，子类可以重写此方法做一些操作
+     *  */
+    open fun requestSuccess(it: Boolean) {
+        stateMain()
     }
 
     /**

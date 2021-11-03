@@ -41,12 +41,10 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     private var isEmptyViewAdded = false
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startObserve()
     }
-
 
 
     /**
@@ -65,22 +63,22 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     }
 
 
-
-
-
     /**
      * TODO 请求监听
      *
      */
     private fun startObserve() {
         viewModel.run {
-            getStart().observe(requireActivity(), {
+            start().observe(requireActivity(), {
                 requestStart(it)
             })
-            getError().observe(requireActivity(), {
+            success().observe(requireActivity(), {
+                requestSuccess(it)
+            })
+            error().observe(requireActivity(), {
                 requestError(it)
             })
-            getFinally().observe(requireActivity(), {
+            finally().observe(requireActivity(), {
                 requestFinally(it)
             })
         }
@@ -94,10 +92,16 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     }
 
     /**
+     *  接口请求成功，子类可以重写此方法做一些操作
+     *  */
+    open fun requestSuccess(it: Boolean) {
+        stateMain()
+    }
+
+    /**
      * 接口请求完毕，子类可以重写此方法做一些操作
      * */
     open fun requestFinally(it: Int?) {
-        stateMain()
     }
 
     /**

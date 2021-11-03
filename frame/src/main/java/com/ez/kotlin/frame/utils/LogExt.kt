@@ -1,6 +1,6 @@
 package com.ez.kotlin.frame.utils
 
-import com.orhanobut.logger.BuildConfig;
+import com.ez.kotlin.frame.base.BaseApplication
 import com.orhanobut.logger.Logger;
 
 /**
@@ -12,47 +12,47 @@ import com.orhanobut.logger.Logger;
  * version 1.0.0
  */
 fun logD(message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.d(message!!, *args)
     }
 }
 
 fun logD(`object`: Any?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.d(`object`)
     }
 }
 
 fun logE(message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.e(Throwable(), message!!, *args)
     }
 }
 
 fun logE(throwable: Throwable?, message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.e(throwable, message!!, *args)
     }
 }
 
 fun logI(message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.i(message!!, *args)
     }
 }
 
 fun logV(message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) Logger.v(message!!, *args)
+    if (BaseApplication.instance.isDebug) Logger.v(message!!, *args)
 }
 
 fun logW(message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.w(message!!, *args)
     }
 }
 
 fun logWtf(message: String?, vararg args: Any?) {
-    if (BuildConfig.DEBUG) Logger.wtf(message!!, *args)
+    if (BaseApplication.instance.isDebug) Logger.wtf(message!!, *args)
 }
 
 /**
@@ -61,7 +61,7 @@ fun logWtf(message: String?, vararg args: Any?) {
  * @param json the json content
  */
 fun logJson(json: String?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.json(json)
     }
 }
@@ -72,7 +72,7 @@ fun logJson(json: String?) {
  * @param xml the xml content
  */
 fun logXml(xml: String?) {
-    if (BuildConfig.DEBUG) {
+    if (BaseApplication.instance.isDebug) {
         Logger.xml(xml)
     }
 }

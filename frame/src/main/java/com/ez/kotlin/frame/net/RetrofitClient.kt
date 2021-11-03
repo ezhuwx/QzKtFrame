@@ -1,7 +1,7 @@
 package com.ez.kotlin.frame.net
 
+import com.ez.kotlin.frame.base.BaseApplication
 import com.ez.kotlin.frame.utils.logD
-import com.orhanobut.logger.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -70,7 +70,7 @@ abstract class RetrofitClient<Api> {
     private fun getOkHttpClient(): OkHttpClient {
         val builder = OkHttpClient().newBuilder()
         val loggingInterceptor: HttpLoggingInterceptor
-        if (BuildConfig.DEBUG) {
+        if (BaseApplication.instance.isDebug) {
             loggingInterceptor = HttpLoggingInterceptor { message -> logD(message) }
             loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         } else loggingInterceptor = HttpLoggingInterceptor()
