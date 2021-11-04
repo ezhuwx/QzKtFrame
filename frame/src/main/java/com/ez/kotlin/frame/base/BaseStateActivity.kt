@@ -8,8 +8,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication.Companion.mContext
+import com.ez.kotlin.frame.net.ApiException
+import com.ez.kotlin.frame.net.ExceptionHandler
+import com.ez.kotlin.frame.net.ResponseException
+import com.ez.kotlin.frame.utils.NetWorkUtil.Companion.isNetworkConnected
 import com.ez.kotlin.frame.utils.ToastUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
+import com.ez.kotlin.frame.utils.logD
+import com.ez.kotlin.frame.utils.logE
 import kotlinx.coroutines.TimeoutCancellationException
 import retrofit2.HttpException
 import kotlin.coroutines.cancellation.CancellationException
@@ -74,15 +80,19 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     private fun startObserve() {
         viewModel.run {
             start().observe(this@BaseStateActivity, {
+                //开始
                 requestStart(it)
             })
             success().observe(this@BaseStateActivity, {
+                //成功
                 requestSuccess(it)
             })
             error().observe(this@BaseStateActivity, {
+                //报错
                 requestError(it)
             })
             finally().observe(this@BaseStateActivity, {
+                //结束
                 requestFinally(it)
             })
         }
@@ -115,20 +125,34 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     open fun requestError(it: Exception?) {
         //处理一些已知异常
         it?.run {
-            when (it) {
-                is CancellationException -> Log.d(
-                    getString(R.string.cancel_request),
-                    it.message.toString()
-                )
-                is TimeoutCancellationException ->
-                    stateUnknownError(getString(R.string.request_time_out))
-                is HttpException -> {
-                    if (it.code() == 504) stateNetError()
-                    else ToastUtil(this@BaseStateActivity).shortShow(it.message.toString())
+            if (isNetworkConnected(this@BaseStateActivity)) {
+                when (it) {
+                    //服务器特殊错误处理
+                    is ApiException -> {
+                        onServiceError(it.code, it.message)
+                    }
+                    //正常错误显示
+                    is ResponseException -> {
+                        stateUnknownError("${it.message}(${it.code})")
+                    }
+                    //无提示信息错误显示
+                    else -> {
+                        stateUnknownError()
+                    }
                 }
-                else -> stateUnknownError(it.message.toString())
+            } else {
+                //无网络提示
+                stateNetError()
             }
         }
+    }
+
+    /**
+     * 服务器特殊错误处理
+     * ‘登录超时’等
+     * */
+    open fun onServiceError(code: Int, message: String?) {
+
     }
 
     /**
@@ -138,6 +162,10 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      */
     protected abstract fun onErrorOrEmptyRetry(isError: Boolean)
 
+    /**
+     * TODO 网络错误
+     *
+     */
     open fun stateNetError() {
         if (currentState == STATE_NET_ERROR || isSkipError) {
             if (isSkipError) {
@@ -146,10 +174,13 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
             return
         }
         if (!isNetErrorViewAdded) {
+            //网络错误
             isNetErrorViewAdded = true
+            //网络错误UI
             val mNetErrorResource: Int = R.layout.view_net_error
             View.inflate(mContext, mNetErrorResource, mParent)
             viewNetError = mParent!!.findViewById(R.id.view_net_error)
+            //错误重试事件
             mParent!!.findViewById<View>(R.id.view_net_error_tv)
                 .setOnClickListener { v: View? ->
                     if (!isInvalidClick(v!!)) {
@@ -163,11 +194,19 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
         viewNetError!!.visibility = View.VISIBLE
     }
 
+    /**
+     * TODO 未知错误状态
+     *
+     * @param errorMsg 错误提示文字
+     */
     open fun stateUnknownError(errorMsg: String) {
         this.mUnknownResourceMsg = errorMsg
         stateUnknownError()
     }
 
+    /**
+     * TODO 未知错误状态
+     */
     open fun stateUnknownError() {
         if (currentState == STATE_UNKNOWN_ERROR || isSkipError) {
             if (isSkipError) {
@@ -176,14 +215,17 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
             return
         }
         if (!isUnknownErrorViewAdded) {
+            //未知错误
             isUnknownErrorViewAdded = true
+            //未知错误UI
             View.inflate(mContext, mUnknownErrorResource, mParent)
             viewUnknownError = mParent!!.findViewById(R.id.view_unknown_error)
-            val tipMsg: TextView =
-                mParent!!.findViewById(R.id.view_unknown_error_content_tv)
+            //未知错误提示文字
+            val tipMsg: TextView = mParent!!.findViewById(R.id.view_unknown_error_content_tv)
             if (!TextUtils.isEmpty(mUnknownResourceMsg)) {
                 tipMsg.text = mUnknownResourceMsg
             }
+            //错误重试事件
             mParent!!.findViewById<View>(R.id.view_unknown_error_tv)
                 .setOnClickListener { v: View? ->
                     if (!isInvalidClick(v!!)) {
@@ -197,6 +239,9 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
         viewUnknownError!!.visibility = View.VISIBLE
     }
 
+    /**
+     * TODO 加载状态
+     * */
     open fun stateLoading() {
         if (currentState == STATE_LOADING || isSkipLoading) {
             if (isSkipLoading) {
@@ -209,18 +254,26 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
         viewLoading!!.visibility = View.VISIBLE
     }
 
+    /**
+     * TODO 无数据状态
+     *
+     */
     open fun stateEmpty() {
         if (currentState == STATE_EMPTY) {
             return
         }
         if (!isEmptyViewAdded) {
+            //无数据
             isEmptyViewAdded = true
+            //无数据UI
             View.inflate(mContext, mEmptyResource, mParent)
             viewEmpty = mParent!!.findViewById(R.id.view_empty)
+            //无数据提示文字
             val tipMsg: TextView = mParent!!.findViewById(R.id.view_empty_content_tv)
             if (!TextUtils.isEmpty(mEmptyResourceMsg)) {
                 tipMsg.text = mEmptyResourceMsg
             }
+            //无数据重新获取事件
             mParent!!.findViewById<View>(R.id.view_empty_tv)
                 .setOnClickListener { v: View? ->
                     if (!isInvalidClick(v!!)) {
@@ -235,6 +288,10 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     }
 
 
+    /**
+     * TODO 主视图
+     *
+     */
     open fun stateMain() {
         hideCurrentView()
         currentState = STATE_MAIN

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.ez.kotlin.frame.net.NetDialog
+import com.gyf.immersionbar.ImmersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
 
 abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
@@ -19,16 +20,16 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     private val mNetDialog by lazy { NetDialog(activity as AppCompatActivity) }
 
 
+    /**
+     *  viewModel实例
+     *  */
+    abstract fun providerVMClass(): Class<VM>?
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ImmersionBar.with(this).init()
         initView(view)
         initData()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (this::viewModel.isInitialized)
-            lifecycle.removeObserver(viewModel)
     }
 
     /**
@@ -43,19 +44,20 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     }
 
     /**
-     *  viewModel实例
-     *  */
-    abstract fun providerVMClass(): Class<VM>?
+     * 初始化 View
+     */
+    abstract fun initView(view: View)
 
     /**
      * 初始化数据
      */
     abstract fun initData()
 
-    /**
-     * 初始化 View
-     */
-    abstract fun initView(view: View)
+    override fun onDestroy() {
+        super.onDestroy()
+        if (this::viewModel.isInitialized)
+            lifecycle.removeObserver(viewModel)
+    }
 
     /**
      *  DialogLoading 显示

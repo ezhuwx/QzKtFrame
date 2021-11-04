@@ -9,17 +9,17 @@ package com.ez.kotlin.frame.net
  */
 open class BaseResponseData<out T>(
     /**
-     * 错误码
+     * 状态码
      */
-    var errorCode: Int,
+    var statusCode: Int,
     /**
      * 总数量
      */
     var totalCount: Int,
     /**
-     * 错误信息
+     * 提示信息
      */
-    var errorMsg: String,
+    var message: String,
     /**
      * 数据
      */

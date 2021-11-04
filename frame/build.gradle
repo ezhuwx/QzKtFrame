@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 31
-        versionCode 1601
-        versionName "0.1.6"
+        versionCode 2001
+        versionName "0.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -87,10 +87,12 @@ dependencies {
     implementation 'com.guolindev.permissionx:permissionx:1.6.1'
     //dataBinding严格模式
     api 'com.kunminx.arch:strict-databinding:4.0.0-beta1'
+    //内存检查
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.1.6'
+    PUBLISH_VERSION = '0.2.0'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

@@ -18,6 +18,11 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * */
     private val mNetDialog by lazy { NetDialog(this) }
 
+    /**
+     *  viewModel实例
+     *
+     */
+    abstract fun providerVMClass(): Class<VM>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,15 +30,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         BaseApplication.instance.addActivity(this)
         initView()
         initData()
-    }
-
-    /**
-     * 实例销毁
-     */
-    override fun onDestroy() {
-        super.onDestroy()
-        BaseApplication.instance.removeActivity(this)
-        stateDialogDismiss()
     }
 
     /**
@@ -48,12 +44,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     }
 
     /**
-     *  viewModel实例
-     *
-     */
-    abstract fun providerVMClass(): Class<VM>
-
-    /**
      * 初始化数据
      */
     abstract fun initData()
@@ -63,6 +53,15 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *
      */
     abstract fun initView()
+
+    /**
+     * 实例销毁
+     */
+    override fun onDestroy() {
+        super.onDestroy()
+        BaseApplication.instance.removeActivity(this)
+        stateDialogDismiss()
+    }
 
 
     /**

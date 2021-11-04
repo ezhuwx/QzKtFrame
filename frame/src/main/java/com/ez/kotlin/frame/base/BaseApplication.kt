@@ -1,5 +1,6 @@
 package com.ez.kotlin.frame.base
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
@@ -25,7 +26,9 @@ abstract class BaseApplication : Application() {
     var isDebug = false
 
     companion object {
+        @SuppressLint("StaticFieldLeak")
         lateinit var instance: BaseApplication
+        @SuppressLint("StaticFieldLeak")
         lateinit var mContext: Context
     }
 
@@ -38,7 +41,7 @@ abstract class BaseApplication : Application() {
             val builder = StrictMode.VmPolicy.Builder()
             StrictMode.setVmPolicy(builder.build())
         }
-        //初始化mmkv
+        //初始化腾讯mmkv
         val rootDir = MMKV.initialize(this)
         logD("mmkv_root------:${rootDir}")
         lateInitSDK()
@@ -62,7 +65,7 @@ abstract class BaseApplication : Application() {
     abstract fun init()
 
     /**
-     * 初始化 Bugly
+     * 初始化 腾讯Bugly
      */
     fun initBugly(buglyID: String) {
         Bugly.init(applicationContext, buglyID, false)

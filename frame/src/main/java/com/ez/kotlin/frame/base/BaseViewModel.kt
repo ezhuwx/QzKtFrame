@@ -3,7 +3,8 @@ package com.ez.kotlin.frame.base
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.ez.kotlin.frame.net.RetrofitClient
+import com.ez.kotlin.frame.net.BaseRetrofitClient
+import com.ez.kotlin.frame.net.ExceptionHandler
 import com.ez.kotlin.frame.utils.SingleLiveEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -27,13 +28,13 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
     fun launchUI(block: suspend CoroutineScope.() -> Unit) = MainScope().launch {
         try {
             start.value = true
-            withTimeout(RetrofitClient.TIME_OUT) {
+            withTimeout(BaseRetrofitClient.TIME_OUT) {
                 block()
                 success.value = true
             }
         } catch (e: Exception) {
-            //此处接收到BaseRepository里的request抛出的异常，直接赋值给error
-            error.value = e
+            //此处接收到BaseRepository里的request抛出的异常，处理后赋值给error
+            error.value = ExceptionHandler.parseException(e)
         } finally {
             finally.value = 200
         }
@@ -48,6 +49,7 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
      *TODO 请求失败，出现异常
      */
     fun error(): LiveData<Exception> = error
+
     /**
      * TODO 请求开始
      */

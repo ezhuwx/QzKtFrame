@@ -8,4 +8,10 @@
     <string name="click_to_retry">重新加载</string>
     <string name="network_error_content">您的网络不给力，请检查网络</string>
     <string name="unknown_error">似乎发生了一些错误…</string>
+    <string name="system_time_error_tip">系统时间和实际时间不符,请同步至最新时间。</string>
+    <string name="net_error">网络异常</string>
+    <string name="request_error">请求异常</string>
+    <string name="server_error">服务器异常</string>
+    <string name="parse_error">解析错误</string>
+    <string name="ssl_error">证书验证失败</string>
 </resources>
