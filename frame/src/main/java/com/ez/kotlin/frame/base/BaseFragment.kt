@@ -27,7 +27,10 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ImmersionBar.with(this).init()
+        ImmersionBar.with(this)
+            .fitsSystemWindows(true)
+            .statusBarColor(BaseApplication.instance.statusBarColorId)
+            .init()
         initView(view)
         initData()
     }

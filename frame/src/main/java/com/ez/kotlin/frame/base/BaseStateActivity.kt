@@ -16,6 +16,7 @@ import com.ez.kotlin.frame.utils.ToastUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
 import com.ez.kotlin.frame.utils.logD
 import com.ez.kotlin.frame.utils.logE
+import com.gyf.immersionbar.ImmersionBar
 import kotlinx.coroutines.TimeoutCancellationException
 import retrofit2.HttpException
 import kotlin.coroutines.cancellation.CancellationException
@@ -116,7 +117,6 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *  接口请求完毕，子类可以重写此方法做一些操作
      *  */
     open fun requestFinally(it: Int?) {
-        stateMain()
     }
 
     /**

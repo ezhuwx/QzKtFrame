@@ -3,6 +3,7 @@ package com.ez.kotlin.frame.net
 import android.net.ParseException
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication
+import com.ez.kotlin.frame.utils.logE
 import com.google.gson.JsonParseException
 import org.json.JSONException
 import retrofit2.HttpException
@@ -34,7 +35,7 @@ class ExceptionHandler {
         const val NETWORK_ERROR = 1002
         const val HTTP_ERROR = 1003
         const val SSL_ERROR = 1005
-       fun parseException(e: Throwable?): ResponseException {
+        fun parseException(e: Throwable): ResponseException {
             var ex = ResponseException(e, HTTP_ERROR)
             when (e) {
                 is HttpException -> {
@@ -44,12 +45,14 @@ class ExceptionHandler {
                             ex.message = BaseApplication.mContext.getString(R.string.net_error)
                         }
                         SYSTEM_TIME_ERROR -> {
-                            ex.message = BaseApplication.mContext.getString(R.string.system_time_error_tip)
+                            ex.message =
+                                BaseApplication.mContext.getString(R.string.system_time_error_tip)
                         }
                         UNAUTHORIZED, FORBIDDEN, NOT_FOUND, REQUEST_TIMEOUT, INTERNAL_SERVER_ERROR,
                         BAD_GATEWAY, SERVICE_UNAVAILABLE ->
                             ex.message = BaseApplication.mContext.getString(R.string.request_error)
-                        else -> ex.message = BaseApplication.mContext.getString(R.string.server_error)
+                        else -> ex.message =
+                            BaseApplication.mContext.getString(R.string.server_error)
                     }
                 }
                 is ServerException -> {
@@ -76,7 +79,6 @@ class ExceptionHandler {
             return ex
         }
     }
-
 
 
     /**

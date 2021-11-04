@@ -26,7 +26,10 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ImmersionBar.with(this).init()
+        ImmersionBar.with(this)
+            .fitsSystemWindows(true)
+            .statusBarColor(BaseApplication.instance.statusBarColorId)
+            .init()
         BaseApplication.instance.addActivity(this)
         initView()
         initData()
@@ -61,6 +64,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         super.onDestroy()
         BaseApplication.instance.removeActivity(this)
         stateDialogDismiss()
+        // 必须调用该方法，防止内存泄漏
     }
 
 

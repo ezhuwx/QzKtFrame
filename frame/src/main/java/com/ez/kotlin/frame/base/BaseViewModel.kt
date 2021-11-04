@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.ez.kotlin.frame.net.BaseRetrofitClient
 import com.ez.kotlin.frame.net.ExceptionHandler
 import com.ez.kotlin.frame.utils.SingleLiveEvent
+import com.ez.kotlin.frame.utils.logE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -34,6 +35,7 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
             }
         } catch (e: Exception) {
             //此处接收到BaseRepository里的request抛出的异常，处理后赋值给error
+            logE("Request Error(${e.cause})：${e.message}")
             error.value = ExceptionHandler.parseException(e)
         } finally {
             finally.value = 200

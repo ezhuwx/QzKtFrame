@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.os.Process
 import android.os.StrictMode
@@ -24,10 +25,12 @@ import kotlin.system.exitProcess
 abstract class BaseApplication : Application() {
     private var allActivities: HashSet<AppCompatActivity>? = null
     var isDebug = false
+    var statusBarColorId = Color.BLACK
 
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var instance: BaseApplication
+
         @SuppressLint("StaticFieldLeak")
         lateinit var mContext: Context
     }
@@ -53,6 +56,7 @@ abstract class BaseApplication : Application() {
     private fun lateInitSDK() {
         Thread {
             isDebug = debug()
+            statusBarColorId = statusBarColor()
             //设置进程的优先级，不与主线程抢资源
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             LiveEventBus.config().lifecycleObserverAlwaysActive(false).setContext(this)
@@ -109,6 +113,11 @@ abstract class BaseApplication : Application() {
      * Logger TAG
      * */
     abstract fun getAppName(): String
+
+    /**
+     * 状态栏颜色
+     * */
+    abstract fun statusBarColor(): Int
 
     /**
      * 刷新样式全局设置
