@@ -4,8 +4,9 @@ import com.ez.kotlin.frame.utils.logE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-abstract class BaseRepository {
+typealias RequestService<T> = suspend () -> BaseResponseData<T>
 
+abstract class BaseRepository {
     /**
      * TODO 请求
      *
@@ -13,7 +14,7 @@ abstract class BaseRepository {
      * @param call 请求体
      * @return
      */
-    suspend fun <T : Any> request(call: suspend () -> BaseResponseData<T>): BaseResponseData<T> {
+    suspend fun <T : Any> request(call: RequestService<T>): BaseResponseData<T> {
         return withContext(Dispatchers.IO) {
             call.invoke()
         }.apply {

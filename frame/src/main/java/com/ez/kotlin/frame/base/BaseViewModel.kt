@@ -3,14 +3,10 @@ package com.ez.kotlin.frame.base
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.ez.kotlin.frame.net.BaseRetrofitClient
-import com.ez.kotlin.frame.net.ExceptionHandler
+import com.ez.kotlin.frame.net.*
 import com.ez.kotlin.frame.utils.SingleLiveEvent
 import com.ez.kotlin.frame.utils.logE
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 
 /**
  * @author : ezhuwx
@@ -19,14 +15,18 @@ import kotlinx.coroutines.withTimeout
  * E-mail : ezhuwx@163.com
  * Update on 10:23 by ezhuwx
  */
+typealias CoroutineBlock = suspend CoroutineScope.() -> Unit
+
 open class BaseViewModel : ViewModel(), LifecycleObserver {
     private val start by lazy { SingleLiveEvent<Boolean>() }
     private val error by lazy { SingleLiveEvent<Exception>() }
     private val success by lazy { SingleLiveEvent<Boolean>() }
     private val finally by lazy { SingleLiveEvent<Int>() }
 
-    //运行在UI线程的协程
-    fun launchUI(block: suspend CoroutineScope.() -> Unit) = MainScope().launch {
+    /**
+     * TODO 标准UI线程协程
+     */
+    fun launchUI(block: CoroutineBlock) = MainScope().launch {
         try {
             start.value = true
             withTimeout(BaseRetrofitClient.TIME_OUT) {
@@ -40,6 +40,18 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
         } finally {
             finally.value = 200
         }
+    }
+
+    /**
+     * TODO 下载协程
+     */
+    fun downloadLaunch(
+        call: DownloadService, outputFile: String,
+        onError: Error = {},
+        onProcess: Process = { _, _, _ -> },
+        onSuccess: Success = { }
+    ) = MainScope().launch {
+        DownloadClient.download(call, outputFile, onError, onProcess, onSuccess)
     }
 
     /**
