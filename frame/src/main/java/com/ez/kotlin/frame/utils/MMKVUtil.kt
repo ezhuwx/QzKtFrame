@@ -12,7 +12,7 @@ import com.tencent.mmkv.MMKV
 class MMKVUtil {
 
     companion object {
-        private const val fileName = "mmkv_data"
+        private const val fileName =  "prefs"
 
         /**
          * 初始化mmkv

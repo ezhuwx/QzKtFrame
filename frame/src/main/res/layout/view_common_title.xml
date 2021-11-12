@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout >
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="titleModel"
+            type="com.ez.kotlin.frame.model.TitleIncludeModel" />
+    </data>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:bind="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimaryDark">
+
+        <LinearLayout
+            android:id="@+id/back_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:onClick="@{()->titleModel.backClickListener.onClick()}"
+            android:orientation="horizontal"
+            android:visibility="@{titleModel.backVisible}">
+
+            <ImageView
+                android:id="@+id/iv_common_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="10dp"
+                android:src="@drawable/top_back" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:ellipsize="middle"
+            android:gravity="center"
+            android:maxEms="8"
+            android:singleLine="true"
+            android:text="@{titleModel.title}"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/right_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:onClick="@{()->titleModel.rightClickListener.onClick()}"
+            android:text="@{titleModel.right}"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:visibility="@{titleModel.rightVisible}" />
+
+    </RelativeLayout>
+</layout>

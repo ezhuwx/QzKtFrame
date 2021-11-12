@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import com.ez.kotlin.frame.BuildConfig
 import com.ez.kotlin.frame.base.BaseApplication
 
 /**

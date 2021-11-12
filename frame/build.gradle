@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 30
 
     defaultConfig {
         minSdk 23
-        targetSdk 31
-        versionCode 2501
-        versionName "0.2.5"
+        targetSdk 30
+        versionCode 3001
+        versionName "0.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -30,6 +30,9 @@ android {
         jvmTarget = '1.8'
     }
 
+    buildFeatures {
+        dataBinding true
+    }
 }
 
 dependencies {
@@ -66,8 +69,8 @@ dependencies {
     //腾讯mmkv
     implementation 'com.tencent:mmkv-static:1.2.10'
     //导航栏
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.5"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.4.0-alpha10"
+    implementation "androidx.navigation:navigation-ui-ktx:2.4.0-alpha10"
     //基于LiveData的事件总线
     implementation 'io.github.jeremyliao:live-event-bus-x:1.8.0'
     //RecyclerViewAdapter
@@ -77,8 +80,10 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
     api 'jp.wasabeef:glide-transformations:4.0.0'
-    //SmartRefreshLayout
+    //下拉刷新
     implementation 'com.scwang.smart:refresh-layout-kernel:2.0.3'
+    implementation 'com.scwang.smart:refresh-header-material:2.0.3'
+    implementation 'com.scwang.smart:refresh-footer-classics:2.0.3'
     //屏幕适配
     implementation 'me.jessyan:autosize:1.2.1'
     //日志
@@ -91,6 +96,6 @@ dependencies {
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.2.5'
+    PUBLISH_VERSION = '0.3.0'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

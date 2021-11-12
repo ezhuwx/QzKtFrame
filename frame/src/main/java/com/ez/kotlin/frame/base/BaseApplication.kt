@@ -15,6 +15,7 @@ import com.jeremyliao.liveeventbus.LiveEventBus
 import com.orhanobut.logger.*
 import com.tencent.bugly.Bugly
 import com.tencent.mmkv.MMKV
+import com.tencent.mmkv.MMKVLogLevel
 import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
@@ -45,7 +46,12 @@ abstract class BaseApplication : Application() {
             StrictMode.setVmPolicy(builder.build())
         }
         //初始化腾讯mmkv
-        val rootDir = MMKV.initialize(this)
+        val rootDir =
+            MMKV.initialize(
+                this,
+                if (isDebug) MMKVLogLevel.LevelError
+                else MMKVLogLevel.LevelInfo
+            )
         logD("mmkv_root------:${rootDir}")
         lateInitSDK()
     }
@@ -60,8 +66,10 @@ abstract class BaseApplication : Application() {
             //设置进程的优先级，不与主线程抢资源
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             LiveEventBus.config().lifecycleObserverAlwaysActive(false).setContext(this)
+            initSmartRefresh()
             initAutoSize()
             initLogger()
+            initBugly()
             init()
         }.start()
     }
@@ -69,11 +77,14 @@ abstract class BaseApplication : Application() {
     abstract fun init()
 
     /**
+     * 初始化 SmartRefresh
+     */
+    abstract fun initSmartRefresh()
+
+    /**
      * 初始化 腾讯Bugly
      */
-    fun initBugly(buglyID: String) {
-        Bugly.init(applicationContext, buglyID, false)
-    }
+    abstract fun initBugly()
 
     /**
      * AutoSize屏幕适配初始化
@@ -118,11 +129,6 @@ abstract class BaseApplication : Application() {
      * 状态栏颜色
      * */
     abstract fun statusBarColor(): Int
-
-    /**
-     * 刷新样式全局设置
-     * */
-    abstract fun initSmartRefresh()
 
     /**
      * 分包

@@ -14,4 +14,6 @@
     <string name="server_error">服务器异常</string>
     <string name="parse_error">解析错误</string>
     <string name="ssl_error">证书验证失败</string>
+    <string name="search">搜索</string>
+    <string name="confirm">确定</string>
 </resources>
