@@ -10,6 +10,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.cardview.widget.CardView
 import com.ez.kotlin.frame.R
+import com.ez.kotlin.frame.base.BaseApplication
 
 /**
  * @author : ezhuwx
@@ -18,14 +19,14 @@ import com.ez.kotlin.frame.R
  * E-mail : ezhuwx@163.com
  * Update on 11:27 by ezhuwx
  */
-open class ToastUtil(context: Context) {
+open class ToastUtil {
     private var toast: Toast? = null
     private var toastCv: CardView? = null
     private var toastTv: TextView? = null
 
     init {
-        toast = Toast(context)
-        val view: View = LayoutInflater.from(context).inflate(R.layout.view_content_toast, null)
+        toast = Toast(BaseApplication.mContext)
+        val view: View = LayoutInflater.from(BaseApplication.mContext).inflate(R.layout.view_content_toast, null)
         toast!!.setView(view)
         toastCv = view.findViewById(R.id.toast_cv)
         toastTv = view.findViewById(R.id.toast_tv)

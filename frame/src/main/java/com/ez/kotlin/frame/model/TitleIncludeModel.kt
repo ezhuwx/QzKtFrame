@@ -27,6 +27,13 @@ class TitleIncludeModel : BaseViewModel() {
     val inputStr = SingleLiveEvent<String>()
 
     /**
+     * 输入提示
+     */
+    val inputHint = SingleLiveEvent<String>().apply {
+        value = BaseApplication.mContext.getString(R.string.default_hint)
+    }
+
+    /**
      * 返回按钮显示
      */
     val backVisible = SingleLiveEvent<Int>().apply { value = View.VISIBLE }
@@ -54,6 +61,12 @@ class TitleIncludeModel : BaseViewModel() {
      */
     val rightClickListener = SingleLiveEvent<OnRightClick>()
 
+    /**
+     * 背景颜色
+     */
+    val backgroundColor = SingleLiveEvent<Int>().apply {
+        value = BaseApplication.mContext.getColor(R.color.colorPrimary)
+    }
 
     /**
      * TODO 返回点击代理

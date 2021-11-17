@@ -16,4 +16,5 @@
     <string name="ssl_error">证书验证失败</string>
     <string name="search">搜索</string>
     <string name="confirm">确定</string>
+    <string name="default_hint">请输入~</string>
 </resources>

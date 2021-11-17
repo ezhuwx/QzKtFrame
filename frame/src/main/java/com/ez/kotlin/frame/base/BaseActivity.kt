@@ -24,6 +24,17 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     abstract fun providerVMClass(): Class<VM>
 
+    /**
+     * 初始化 View
+     *
+     */
+    abstract fun initView()
+
+    /**
+     * 初始化数据
+     */
+    abstract fun initData()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ImmersionBar.with(this)
@@ -46,16 +57,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         }
     }
 
-    /**
-     * 初始化数据
-     */
-    abstract fun initData()
-
-    /**
-     * 初始化 View
-     *
-     */
-    abstract fun initView()
 
     /**
      * 实例销毁

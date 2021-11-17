@@ -13,7 +13,6 @@ import androidx.multidex.MultiDex
 import com.ez.kotlin.frame.utils.logD
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.orhanobut.logger.*
-import com.tencent.bugly.Bugly
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import me.jessyan.autosize.AutoSize
@@ -21,12 +20,13 @@ import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
 import kotlin.system.exitProcess
-
+import com.ez.kotlin.frame.R
 
 abstract class BaseApplication : Application() {
     private var allActivities: HashSet<AppCompatActivity>? = null
     var isDebug = false
     var statusBarColorId = Color.BLACK
+    var loadingFilterColor: Int? = resources.getColor(R.color.colorPrimary)
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -129,6 +129,7 @@ abstract class BaseApplication : Application() {
      * 状态栏颜色
      * */
     abstract fun statusBarColor(): Int
+
 
     /**
      * 分包

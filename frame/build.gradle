@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 3001
-        versionName "0.3.0"
+        versionCode 4701
+        versionName "0.4.7"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -69,8 +69,7 @@ dependencies {
     //腾讯mmkv
     implementation 'com.tencent:mmkv-static:1.2.10'
     //导航栏
-    implementation "androidx.navigation:navigation-fragment-ktx:2.4.0-alpha10"
-    implementation "androidx.navigation:navigation-ui-ktx:2.4.0-alpha10"
+    implementation 'com.ashokvarma.android:bottom-navigation-bar:2.2.0'
     //基于LiveData的事件总线
     implementation 'io.github.jeremyliao:live-event-bus-x:1.8.0'
     //RecyclerViewAdapter
@@ -92,10 +91,12 @@ dependencies {
     implementation 'com.guolindev.permissionx:permissionx:1.6.1'
     //dataBinding严格模式
     api 'com.kunminx.arch:strict-databinding:4.0.0-beta1'
+    //lottie动画
+    implementation "com.airbnb.android:lottie:4.2.1"
 }
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.3.0'
+    PUBLISH_VERSION = '0.4.7'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

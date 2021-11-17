@@ -75,6 +75,30 @@ object CommonBinder {
     }
 
     /**
+     * TODO backgroundColor 方法适配
+     *
+     * @param view
+     * @param backgroundColor
+     */
+    @BindingAdapter(value = ["backgroundColor"], requireAll = false)
+    @JvmStatic
+    fun backgroundColor(view: View, backgroundColor: Int) {
+        view.setBackgroundColor(backgroundColor)
+    }
+
+    /**
+     * TODO backgroundColor 方法适配
+     *
+     * @param view
+     * @param backgroundRes
+     */
+    @BindingAdapter(value = ["backgroundRes"], requireAll = false)
+    @JvmStatic
+    fun backgroundRes(view: View, backgroundRes: Int) {
+        view.setBackgroundResource(backgroundRes)
+    }
+
+    /**
      * TODO OnFocusChangeListener 方法适配
      *
      */

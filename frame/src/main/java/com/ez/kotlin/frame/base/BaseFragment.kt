@@ -25,6 +25,16 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *  */
     abstract fun providerVMClass(): Class<VM>?
 
+    /**
+     * 初始化 View
+     */
+    abstract fun initView(view: View)
+
+    /**
+     * 初始化数据
+     */
+    abstract fun initData()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ImmersionBar.with(this)
@@ -46,15 +56,6 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         }
     }
 
-    /**
-     * 初始化 View
-     */
-    abstract fun initView(view: View)
-
-    /**
-     * 初始化数据
-     */
-    abstract fun initData()
 
     override fun onDestroy() {
         super.onDestroy()

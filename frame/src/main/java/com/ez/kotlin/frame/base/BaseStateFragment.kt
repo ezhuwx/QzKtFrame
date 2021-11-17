@@ -6,6 +6,9 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.SimpleColorFilter
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.ResponseException
@@ -24,6 +27,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         const val STATE_UNKNOWN_ERROR = 0x04
     }
 
+    private var loadingJson: String = "loading.json"
     private var viewNetError: View? = null
     private var viewUnknownError: View? = null
     private var viewEmpty: View? = null
@@ -242,6 +246,15 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         hideCurrentView()
         currentState = BaseStateActivity.STATE_LOADING
         viewLoading!!.visibility = View.VISIBLE
+        viewLoading?.let {
+            val lottie = it.findViewById<LottieAnimationView>(R.id.animation_view)
+            lottie.setAnimation(loadingJson)
+            BaseApplication.instance.loadingFilterColor?.let { color ->
+                val csl = AppCompatResources.getColorStateList(requireContext(), color)
+                val filter = SimpleColorFilter(csl.defaultColor)
+                lottie.colorFilter = filter
+            }
+        }
     }
 
     /**
@@ -300,6 +313,13 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
             else -> {
             }
         }
+    }
+
+    /**
+     * 设置loading布局
+     */
+    open fun setLoadingJson(loadingJson: String) {
+        this.loadingJson = loadingJson
     }
 
     /**
