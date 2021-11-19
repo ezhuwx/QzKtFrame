@@ -1,6 +1,7 @@
 package com.ez.kotlin.frame.utils
 
 import com.tencent.mmkv.MMKV
+import java.sql.ResultSet
 
 /**
  * @author : ezhuwx
@@ -9,30 +10,27 @@ import com.tencent.mmkv.MMKV
  * E-mail : ezhuwx@163.com
  * Update on 10:57 by ezhuwx
  */
-class MMKVUtil {
+object MMKVUtil {
+    private const val fileName = "prefs"
 
-    companion object {
-        private const val fileName =  "prefs"
+    /**
+     * 初始化mmkv
+     */
+     val mmkv: MMKV
+        get() = MMKV.mmkvWithID(fileName)
 
-        /**
-         * 初始化mmkv
-         */
-        private val mmkv: MMKV
-            get() = MMKV.mmkvWithID(fileName)
-
-        /**
-         * 删除全部数据(传了参数就是按key删除)
-         */
-        fun deleteKeyOrAll(key: String? = null) {
-            if (key == null) mmkv.clearAll()
-            else mmkv.removeValueForKey(key)
-        }
-
-        /** 查询某个key是否已经存在
-         *
-         * @param key
-         * @return
-         */
-        fun contains(key: String) = mmkv.contains(key)
+    /**
+     * 删除全部数据(传了参数就是按key删除)
+     */
+    fun deleteKeyOrAll(key: String? = null) {
+        if (key == null) mmkv.clearAll()
+        else mmkv.removeValueForKey(key)
     }
+
+    /** 查询某个key是否已经存在
+     *
+     * @param key
+     * @return
+     */
+    fun contains(key: String) = mmkv.contains(key)
 }

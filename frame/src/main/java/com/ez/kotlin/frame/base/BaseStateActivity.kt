@@ -42,11 +42,6 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     private var isEmptyViewAdded = false
 
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        startObserve()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         lifecycle.removeObserver(viewModel)
@@ -70,54 +65,29 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
 
 
     /**
-     * TODO 请求监听
-     *
-     */
-    private fun startObserve() {
-        viewModel.run {
-            start().observe(this@BaseStateActivity, {
-                //开始
-                requestStart(it)
-            })
-            success().observe(this@BaseStateActivity, {
-                //成功
-                requestSuccess(it)
-            })
-            error().observe(this@BaseStateActivity, {
-                //报错
-                requestError(it)
-            })
-            finally().observe(this@BaseStateActivity, {
-                //结束
-                requestFinally(it)
-            })
-        }
-    }
-
-    /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    open fun requestStart(it: Boolean) {
+    override fun requestStart(it: Boolean) {
         stateLoading()
     }
 
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    open fun requestSuccess(it: Boolean) {
+    override fun requestSuccess(it: Boolean) {
         stateMain()
     }
 
     /**
      *  接口请求完毕，子类可以重写此方法做一些操作
      *  */
-    open fun requestFinally(it: Int?) {
+    override fun requestFinally(it: Int?) {
     }
 
     /**
      *  接口请求出错，子类可以重写此方法做一些操作
      *  */
-    open fun requestError(it: Exception?) {
+    override fun requestError(it: Exception?) {
         //处理一些已知异常
         it?.run {
             if (isNetworkConnected(this@BaseStateActivity)) {
@@ -146,7 +116,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      * 服务器特殊错误处理
      * ‘登录超时’等
      * */
-    open fun onServiceError(code: Int, message: String?) {
+    override fun onServiceError(code: Int, message: String?) {
 
     }
 
