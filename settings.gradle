@@ -6,6 +6,7 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        maven { url "https://dl.bintray.com/bfears/maven" }
     }
 }
 rootProject.name = "KOTLIN-FRAME"

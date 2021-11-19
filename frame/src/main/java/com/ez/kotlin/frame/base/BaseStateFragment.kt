@@ -2,21 +2,15 @@ package com.ez.kotlin.frame.base
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
-import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.SimpleColorFilter
+import androidx.annotation.CallSuper
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.*
-import kotlinx.coroutines.TimeoutCancellationException
-import retrofit2.HttpException
 import java.lang.Exception
-import kotlin.coroutines.cancellation.CancellationException
 
 abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     companion object {
@@ -56,6 +50,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * TODO 初始化页面
      *
      */
+    @CallSuper
     override fun initView(view: View) {
         viewMain = view.findViewById(R.id.view_main)
         checkNotNull(viewMain) { "The subclass of RootActivity must contain a View named 'view_main'." }
@@ -161,7 +156,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateNetError() {
-        if (currentState == BaseStateActivity.STATE_NET_ERROR || isSkipError) {
+        if (currentState == STATE_NET_ERROR || isSkipError) {
             if (isSkipError) {
                 isSkipError = false
             }
@@ -184,7 +179,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
             checkNotNull(viewNetError) { "A View should be named 'view_error' in ErrorLayoutResource." }
         }
         hideCurrentView()
-        currentState = BaseStateActivity.STATE_NET_ERROR
+        currentState = STATE_NET_ERROR
         viewNetError!!.visibility = View.VISIBLE
     }
 
@@ -202,7 +197,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * TODO 未知错误状态
      */
     open fun stateUnknownError() {
-        if (currentState == BaseStateActivity.STATE_UNKNOWN_ERROR || isSkipError) {
+        if (currentState == STATE_UNKNOWN_ERROR || isSkipError) {
             if (isSkipError) {
                 isSkipError = false
             }
@@ -229,7 +224,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
             checkNotNull(viewUnknownError) { "A View should be named 'view_error' in ErrorLayoutResource." }
         }
         hideCurrentView()
-        currentState = BaseStateActivity.STATE_UNKNOWN_ERROR
+        currentState = STATE_UNKNOWN_ERROR
         viewUnknownError!!.visibility = View.VISIBLE
     }
 
@@ -237,24 +232,15 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * TODO 加载状态
      * */
     open fun stateLoading() {
-        if (currentState == BaseStateActivity.STATE_LOADING || isSkipLoading) {
+        if (currentState == STATE_LOADING || isSkipLoading) {
             if (isSkipLoading) {
                 isSkipLoading = false
             }
             return
         }
         hideCurrentView()
-        currentState = BaseStateActivity.STATE_LOADING
+        currentState = STATE_LOADING
         viewLoading!!.visibility = View.VISIBLE
-        viewLoading?.let {
-            val lottie = it.findViewById<LottieAnimationView>(R.id.animation_view)
-            lottie.setAnimation(loadingJson)
-            BaseApplication.instance.loadingFilterColor?.let { color ->
-                val csl = AppCompatResources.getColorStateList(requireContext(), color)
-                val filter = SimpleColorFilter(csl.defaultColor)
-                lottie.colorFilter = filter
-            }
-        }
     }
 
     /**
@@ -262,7 +248,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateEmpty() {
-        if (currentState == BaseStateActivity.STATE_EMPTY) {
+        if (currentState == STATE_EMPTY) {
             return
         }
         if (!isEmptyViewAdded) {
@@ -286,7 +272,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
             checkNotNull(viewEmpty) { "A View should be named 'view_empty' in ErrorLayoutResource." }
         }
         hideCurrentView()
-        currentState = BaseStateActivity.STATE_EMPTY
+        currentState = STATE_EMPTY
         viewEmpty?.visibility = View.VISIBLE
     }
 
@@ -296,7 +282,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      */
     open fun stateMain() {
         hideCurrentView()
-        currentState = BaseStateActivity.STATE_MAIN
+        currentState = STATE_MAIN
         viewMain?.visibility = View.VISIBLE
     }
 
@@ -305,11 +291,11 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      */
     private fun hideCurrentView() {
         when (currentState) {
-            BaseStateActivity.STATE_MAIN -> viewMain!!.visibility = View.GONE
-            BaseStateActivity.STATE_LOADING -> viewLoading?.visibility = View.GONE
-            BaseStateActivity.STATE_EMPTY -> viewEmpty?.visibility = View.GONE
-            BaseStateActivity.STATE_NET_ERROR -> viewNetError?.visibility = View.GONE
-            BaseStateActivity.STATE_UNKNOWN_ERROR -> viewUnknownError?.visibility = View.GONE
+            STATE_MAIN -> viewMain!!.visibility = View.GONE
+            STATE_LOADING -> viewLoading?.visibility = View.GONE
+            STATE_EMPTY -> viewEmpty?.visibility = View.GONE
+            STATE_NET_ERROR -> viewNetError?.visibility = View.GONE
+            STATE_UNKNOWN_ERROR -> viewUnknownError?.visibility = View.GONE
             else -> {
             }
         }

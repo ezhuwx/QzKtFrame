@@ -109,11 +109,13 @@ abstract class BaseRetrofitClient<Api> {
                 // 有网络时, 不缓存, 最大保存时长为0
                 val maxAge = 0
                 responseBuilder.header("Cache-Control", "public, max-age=$maxAge")
-                    .addHeader(
-                        "Content-Type",
-                        "application/x-www-form-urlencoded;charset=UTF-8"
-                    )
                     .removeHeader("Pragma")
+                    .apply {
+                        val headers = getHeaders()
+                        for (header in headers) {
+                            addHeader(header.key, header.value)
+                        }
+                    }
                     .build()
             } else {
                 // 无网络时，设置超时为4周
@@ -134,9 +136,17 @@ abstract class BaseRetrofitClient<Api> {
         //builder
         val builder = OkHttpClient().newBuilder()
         builder.run {
+            //添加自定义拦截器
+            val customInterceptors = getInterceptors()
+            for (interceptor in customInterceptors) {
+                addInterceptor(interceptor)
+            }
+            //缓存
             addNetworkInterceptor(cacheInterceptor)
             addInterceptor(cacheInterceptor)
+            //日志
             addInterceptor(loggingInterceptor)
+            //超时时间设置
             connectTimeout(TIME_OUT, TimeUnit.SECONDS)
             readTimeout(TIME_OUT, TimeUnit.SECONDS)
             writeTimeout(TIME_OUT, TimeUnit.SECONDS)
@@ -176,7 +186,17 @@ abstract class BaseRetrofitClient<Api> {
     abstract fun getMaxAllowDiffTime(): Int
 
     /**
+     *  添加请求头
+     * */
+    open fun getHeaders(): MutableMap<String, String> = mutableMapOf()
+
+    /**
+     *  添加请求头
+     * */
+    open fun getInterceptors(): MutableList<Interceptor> = mutableListOf()
+
+    /**
      *  超时时间
      * */
-    fun getTimeOut(): Long = 30 * 1000
+    open fun getTimeOut(): Long = 30 * 1000
 }

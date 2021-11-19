@@ -18,16 +18,23 @@ import me.jessyan.autosize.AutoSizeCompat
  * Update on 14:34 by ezhuwx
  */
 class NetDialog constructor(context: AppCompatActivity) : AlertDialog(context, R.style.NetDialog) {
-    override fun onCreate(savedInstanceState: Bundle) {
+
+    var inflater: LayoutInflater = LayoutInflater.from(context)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val contentView: View = layoutInflater.inflate(R.layout.view_progress, null)
+        //view
+        val contentView: View =
+            inflater.inflate(R.layout.view_dialog_progress, null)
+        //适配
         AutoSizeCompat.autoConvertDensityOfGlobal(context.resources)
         setContentView(contentView)
     }
 
     init {
-        var layoutInflater = LayoutInflater.from(this.context)
+        //全屏
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+        //可取消
         setCancelable(true)
         setCanceledOnTouchOutside(false)
     }

@@ -1,5 +1,6 @@
 package com.ez.kotlin.frame.binder
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.EditText
@@ -40,23 +41,12 @@ object CommonBinder {
     }
 
     /**
-     * TODO animation 方法适配
-     *
-     * @param view
-     */
-    @BindingAdapter(value = ["animation"], requireAll = false)
-    @JvmStatic
-    fun animation(view: View, animation: Animation?) {
-        animation?.let { view.startAnimation(it) }
-    }
-
-    /**
      * TODO ImageSrc 方法适配
      *
      * @param view
      * @param src
      */
-    @BindingAdapter(value = ["src"], requireAll = false)
+    @BindingAdapter(value = ["imageSrc"], requireAll = false)
     @JvmStatic
     fun imageSrc(view: ImageView, src: Int) {
         view.setImageResource(src)
@@ -68,7 +58,7 @@ object CommonBinder {
      * @param view
      * @param bitmap
      */
-    @BindingAdapter(value = ["src"], requireAll = false)
+    @BindingAdapter(value = ["imageBitmap"], requireAll = false)
     @JvmStatic
     fun imageBitmap(view: ImageView, bitmap: Bitmap) {
         view.setImageBitmap(bitmap)
@@ -120,6 +110,28 @@ object CommonBinder {
     @JvmStatic
     fun setOnHasFocus(view: EditText, hasFocus: Boolean) {
 
+    }
+
+    /**
+     * TODO animation 方法适配
+     *
+     * @param view
+     */
+    @BindingAdapter(value = ["animation"], requireAll = false)
+    @JvmStatic
+    fun animation(view: View, animation: Animation?) {
+        animation?.let { view.startAnimation(it) }
+    }
+
+    /**
+     * TODO viewTint 方法适配
+     *
+     * @param view
+     */
+    @BindingAdapter(value = ["viewTint"], requireAll = false)
+    @JvmStatic
+    fun viewTint(view: ImageView, color: Int?) {
+        color?.let { view.imageTintList = ColorStateList.valueOf(color) }
     }
 
     /**

@@ -2,8 +2,10 @@ package com.ez.kotlin.frame.base
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.NetDialog
 import com.gyf.immersionbar.ImmersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
@@ -19,21 +21,6 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      * */
     private val mNetDialog by lazy { NetDialog(activity as AppCompatActivity) }
 
-
-    /**
-     *  viewModel实例
-     *  */
-    abstract fun providerVMClass(): Class<VM>?
-
-    /**
-     * 初始化 View
-     */
-    abstract fun initView(view: View)
-
-    /**
-     * 初始化数据
-     */
-    abstract fun initData()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,6 +43,15 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         }
     }
 
+    /**
+     *  添加ViewModel
+     *
+     */
+    fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
+        val vm = ViewModelProvider(this).get(clazz)
+        lifecycle.addObserver(vm)
+        return vm
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -79,15 +75,31 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         }
     }
 
-    open fun stateDialogLoading(isCancel: Boolean, cancelOperation: Boolean) {
+    open fun stateDialogLoading(isCancel: Boolean, loading: String?) {
         if (!mNetDialog.isShowing) {
             mNetDialog.setCancelable(isCancel)
-            mNetDialog.setOnCancelListener { dialog ->
-                if (cancelOperation) {
-
+            loading?.let {
+                mNetDialog.findViewById<TextView>(R.id.loading_tv)?.run {
+                    visibility = View.VISIBLE
+                    text = it
                 }
             }
             mNetDialog.show()
         }
     }
+
+    /**
+     *  viewModel实例
+     *  */
+    abstract fun providerVMClass(): Class<VM>?
+
+    /**
+     * 初始化 View
+     */
+    abstract fun initView(view: View)
+
+    /**
+     * 初始化数据
+     */
+    abstract fun initData()
 }

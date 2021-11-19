@@ -14,6 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:background="@color/colorPrimary"
         bind:backgroundColor="@{titleModel.backgroundColor}">
 
         <LinearLayout
@@ -31,7 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:padding="10dp"
-                android:src="@drawable/top_back" />
+                android:src="@drawable/top_back"
+                bind:viewTint="@{titleModel.backTintColor}" />
 
         </LinearLayout>
 
@@ -78,7 +80,7 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
             android:text="@string/search"
-            android:textColor="@color/white"
+            android:textColor="@{titleModel.rightColor}"
             android:textSize="16sp"
             android:visibility="@{titleModel.rightVisible}" />
 

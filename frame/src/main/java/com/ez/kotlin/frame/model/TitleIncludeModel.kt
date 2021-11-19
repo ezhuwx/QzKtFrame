@@ -39,10 +39,22 @@ class TitleIncludeModel : BaseViewModel() {
     val backVisible = SingleLiveEvent<Int>().apply { value = View.VISIBLE }
 
     /**
+     * 返回按钮显示颜色
+     */
+    val backTintColor = SingleLiveEvent<Int>()
+
+    /**
      * 右侧按钮
      */
     val right = SingleLiveEvent<String>().apply {
         value = BaseApplication.mContext.getString(R.string.confirm)
+    }
+
+    /**
+     * 右侧按钮颜色
+     */
+    val rightColor = SingleLiveEvent<Int>().apply {
+        value = R.color.white
     }
 
     /**

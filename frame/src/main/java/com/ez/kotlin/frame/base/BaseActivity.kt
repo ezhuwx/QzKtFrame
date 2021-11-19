@@ -1,8 +1,12 @@
 package com.ez.kotlin.frame.base
 
 import android.os.Bundle
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.NetDialog
 import com.gyf.immersionbar.ImmersionBar
 import com.kunminx.architecture.ui.page.DataBindingActivity
@@ -18,22 +22,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * */
     private val mNetDialog by lazy { NetDialog(this) }
 
-    /**
-     *  viewModel实例
-     *
-     */
-    abstract fun providerVMClass(): Class<VM>
-
-    /**
-     * 初始化 View
-     *
-     */
-    abstract fun initView()
-
-    /**
-     * 初始化数据
-     */
-    abstract fun initData()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +35,16 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     }
 
     /**
+     *  添加ViewModel
+     *
+     */
+    fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
+        val vm = ViewModelProvider(this).get(clazz)
+        lifecycle.addObserver(vm)
+        return vm
+    }
+
+    /**
      *  初始化ViewModel
      *
      */
@@ -57,7 +55,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         }
     }
 
-
     /**
      * 实例销毁
      */
@@ -67,7 +64,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         stateDialogDismiss()
         // 必须调用该方法，防止内存泄漏
     }
-
 
     /**
      *  DialogLoading 显示
@@ -85,16 +81,33 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         }
     }
 
-    open fun stateDialogLoading(isCancel: Boolean, cancelOperation: Boolean) {
+    open fun stateDialogLoading(isCancel: Boolean, loading: String?) {
         if (!mNetDialog.isShowing) {
             mNetDialog.setCancelable(isCancel)
-            mNetDialog.setOnCancelListener { dialog ->
-                if (cancelOperation) {
-
+            loading?.let {
+                mNetDialog.findViewById<TextView>(R.id.loading_tv)?.run {
+                    visibility = View.VISIBLE
+                    text = it
                 }
             }
             mNetDialog.show()
         }
     }
 
+    /**
+     *  viewModel实例
+     *
+     */
+    abstract fun providerVMClass(): Class<VM>
+
+    /**
+     * 初始化 View
+     *
+     */
+    abstract fun initView()
+
+    /**
+     * 初始化数据
+     */
+    abstract fun initData()
 }

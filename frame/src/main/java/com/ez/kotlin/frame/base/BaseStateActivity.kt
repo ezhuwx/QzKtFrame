@@ -1,32 +1,18 @@
 package com.ez.kotlin.frame.base
 
-import android.content.res.ColorStateList
-import android.graphics.ColorFilter
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
-import com.airbnb.lottie.Lottie
-import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieConfig
-import com.airbnb.lottie.SimpleColorFilter
+import androidx.annotation.CallSuper
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication.Companion.mContext
 import com.ez.kotlin.frame.net.ApiException
-import com.ez.kotlin.frame.net.ExceptionHandler
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.NetWorkUtil.Companion.isNetworkConnected
-import com.ez.kotlin.frame.utils.ToastUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
-import com.ez.kotlin.frame.utils.logD
-import com.ez.kotlin.frame.utils.logE
-import com.gyf.immersionbar.ImmersionBar
-import kotlinx.coroutines.TimeoutCancellationException
-import retrofit2.HttpException
-import kotlin.coroutines.cancellation.CancellationException
+
 
 abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     companion object {
@@ -70,6 +56,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      * TODO 初始化页面
      *
      */
+    @CallSuper
     override fun initView() {
         viewMain = findViewById(R.id.view_main)
         checkNotNull(viewMain) { "The subclass of RootActivity must contain a View named 'view_main'." }
@@ -260,16 +247,6 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
         hideCurrentView()
         currentState = STATE_LOADING
         viewLoading!!.visibility = View.VISIBLE
-        viewLoading?.let {
-            val lottie = it.findViewById<LottieAnimationView>(R.id.animation_view)
-            lottie.setAnimation(loadingJson)
-            BaseApplication.instance.loadingFilterColor?.let { color ->
-                val csl = AppCompatResources.getColorStateList(this, color)
-                val filter = SimpleColorFilter(csl.defaultColor)
-                lottie.colorFilter = filter
-            }
-        }
-
     }
 
     /**

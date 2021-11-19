@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 4701
-        versionName "0.4.7"
+        versionCode 6201
+        versionName "0.6.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -91,12 +91,14 @@ dependencies {
     implementation 'com.guolindev.permissionx:permissionx:1.6.1'
     //dataBinding严格模式
     api 'com.kunminx.arch:strict-databinding:4.0.0-beta1'
-    //lottie动画
-    implementation "com.airbnb.android:lottie:4.2.1"
+    //shimmer动画
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    //事件总线
+    implementation 'io.github.jeremyliao:live-event-bus-x:1.8.0'
 }
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.4.7'
+    PUBLISH_VERSION = '0.6.2'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

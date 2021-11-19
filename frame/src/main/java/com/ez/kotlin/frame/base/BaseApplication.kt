@@ -26,7 +26,6 @@ abstract class BaseApplication : Application() {
     private var allActivities: HashSet<AppCompatActivity>? = null
     var isDebug = false
     var statusBarColorId = Color.BLACK
-    var loadingFilterColor: Int? = resources.getColor(R.color.colorPrimary)
 
     companion object {
         @SuppressLint("StaticFieldLeak")
