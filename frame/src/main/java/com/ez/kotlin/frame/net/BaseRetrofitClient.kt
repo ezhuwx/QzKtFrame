@@ -89,10 +89,17 @@ abstract class BaseRetrofitClient<Api> {
         //缓存
         val cacheInterceptor = Interceptor { chain: Interceptor.Chain ->
             var request = chain.request()
-            if (!isNetworkConnected(BaseApplication.mContext)) {
-                request = request.newBuilder()
+            request = if (!isNetworkConnected(BaseApplication.mContext)) {
+                request.newBuilder()
                     .cacheControl(CacheControl.FORCE_CACHE)
                     .build()
+            } else {
+                request.newBuilder().apply {
+                    val headers = getHeaders()
+                    for (header in headers) {
+                        addHeader(header.key, header.value)
+                    }
+                }.build()
             }
             var response = chain.proceed(request)
             val responseBuilder: Response.Builder = response.newBuilder()
@@ -110,12 +117,6 @@ abstract class BaseRetrofitClient<Api> {
                 val maxAge = 0
                 responseBuilder.header("Cache-Control", "public, max-age=$maxAge")
                     .removeHeader("Pragma")
-                    .apply {
-                        val headers = getHeaders()
-                        for (header in headers) {
-                            addHeader(header.key, header.value)
-                        }
-                    }
                     .build()
             } else {
                 // 无网络时，设置超时为4周

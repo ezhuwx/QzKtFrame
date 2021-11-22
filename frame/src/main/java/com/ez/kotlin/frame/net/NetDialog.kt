@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.ez.kotlin.frame.R
@@ -18,14 +19,21 @@ import me.jessyan.autosize.AutoSizeCompat
  * Update on 14:34 by ezhuwx
  */
 class NetDialog constructor(context: AppCompatActivity) : AlertDialog(context, R.style.NetDialog) {
-
-    var inflater: LayoutInflater = LayoutInflater.from(context)
+    private var loadingContent: String? = null
+    private var inflater: LayoutInflater = LayoutInflater.from(context)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //view
         val contentView: View =
             inflater.inflate(R.layout.view_dialog_progress, null)
+        //提示文字
+        findViewById<TextView>(R.id.loading_tv)?.run {
+            loadingContent?.let {
+                visibility = View.VISIBLE
+                text = it
+            }
+        }
         //适配
         AutoSizeCompat.autoConvertDensityOfGlobal(context.resources)
         setContentView(contentView)
@@ -37,5 +45,9 @@ class NetDialog constructor(context: AppCompatActivity) : AlertDialog(context, R
         //可取消
         setCancelable(true)
         setCanceledOnTouchOutside(false)
+    }
+
+    fun showLoadingText(loadingContent: String?) {
+        this.loadingContent = loadingContent
     }
 }

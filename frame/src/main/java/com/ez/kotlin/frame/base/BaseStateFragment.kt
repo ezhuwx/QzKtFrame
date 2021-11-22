@@ -21,7 +21,6 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         const val STATE_UNKNOWN_ERROR = 0x04
     }
 
-    private var loadingJson: String = "loading.json"
     private var viewNetError: View? = null
     private var viewUnknownError: View? = null
     private var viewEmpty: View? = null
@@ -60,27 +59,27 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    override fun requestStart(it: Boolean) {
+    override fun onRequestStart(it: Boolean) {
         stateLoading()
     }
 
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    override fun requestSuccess(it: Boolean) {
+    override fun onRequestSuccess(it: Boolean) {
         stateMain()
     }
 
     /**
      * 接口请求完毕，子类可以重写此方法做一些操作
      * */
-    override fun requestFinally(it: Int?) {
+    override fun onRequestFinally(it: Int?) {
     }
 
     /**
      * 接口请求出错，子类可以重写此方法做一些操作
      * */
-    override fun requestError(it: Exception?) {
+    override fun onRequestError(it: Exception?) {
         //处理一些已知异常
         it?.run {
             if (NetWorkUtil.isNetworkConnected(requireContext())) {
@@ -91,7 +90,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
                     }
                     //正常错误显示
                     is ResponseException -> {
-                        stateUnknownError("${it.message}(${it.code})")
+                        stateUnknownError("(${it.code})${it.message}")
                     }
                     //无提示信息错误显示
                     else -> {
@@ -268,13 +267,6 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
             else -> {
             }
         }
-    }
-
-    /**
-     * 设置loading布局
-     */
-    open fun setLoadingJson(loadingJson: String) {
-        this.loadingJson = loadingJson
     }
 
     /**

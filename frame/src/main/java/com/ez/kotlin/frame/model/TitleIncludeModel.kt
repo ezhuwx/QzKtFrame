@@ -54,7 +54,7 @@ class TitleIncludeModel : BaseViewModel() {
      * 右侧按钮颜色
      */
     val rightColor = SingleLiveEvent<Int>().apply {
-        value = R.color.white
+        value = BaseApplication.mContext.getColor(R.color.white)
     }
 
     /**

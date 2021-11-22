@@ -25,6 +25,6 @@
         android:paddingEnd="10dp"
         android:paddingBottom="5dp"
         android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textSize="12sp" />
 
 </androidx.cardview.widget.CardView>

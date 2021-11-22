@@ -3,11 +3,10 @@ package com.ez.kotlin.frame.net
 import android.net.ParseException
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication
-import com.ez.kotlin.frame.utils.logE
 import com.google.gson.JsonParseException
+import kotlinx.coroutines.TimeoutCancellationException
 import org.json.JSONException
 import retrofit2.HttpException
-import java.lang.Exception
 import java.lang.RuntimeException
 import java.net.ConnectException
 import javax.net.ssl.SSLHandshakeException
@@ -21,20 +20,20 @@ import javax.net.ssl.SSLHandshakeException
  */
 class ExceptionHandler {
     companion object {
-        const val UNAUTHORIZED = 401
-        const val FORBIDDEN = 403
-        const val NOT_FOUND = 404
-        const val REQUEST_TIMEOUT = 408
-        const val INTERNAL_SERVER_ERROR = 500
-        const val BAD_GATEWAY = 502
-        const val SERVICE_UNAVAILABLE = 503
-        const val GATEWAY_TIMEOUT = 504
-        const val SYSTEM_TIME_ERROR = 9999
-        const val UNKNOWN = 1000
-        const val PARSE_ERROR = 1001
-        const val NETWORK_ERROR = 1002
-        const val HTTP_ERROR = 1003
-        const val SSL_ERROR = 1005
+        private const val UNAUTHORIZED = 401
+        private const val FORBIDDEN = 403
+        private const val NOT_FOUND = 404
+        private const val REQUEST_TIMEOUT = 408
+        private const val INTERNAL_SERVER_ERROR = 500
+        private const val BAD_GATEWAY = 502
+        private const val SERVICE_UNAVAILABLE = 503
+        private const val GATEWAY_TIMEOUT = 504
+        private const val SYSTEM_TIME_ERROR = 9999
+        private const val UNKNOWN = 1000
+        private const val PARSE_ERROR = 1001
+        private const val NETWORK_ERROR = 1002
+        private const val HTTP_ERROR = 1003
+        private const val SSL_ERROR = 1005
         fun parseException(e: Throwable): ResponseException {
             var ex = ResponseException(e, HTTP_ERROR)
             when (e) {
@@ -48,11 +47,24 @@ class ExceptionHandler {
                             ex.message =
                                 BaseApplication.mContext.getString(R.string.system_time_error_tip)
                         }
-                        UNAUTHORIZED, FORBIDDEN, NOT_FOUND, REQUEST_TIMEOUT, INTERNAL_SERVER_ERROR,
-                        BAD_GATEWAY, SERVICE_UNAVAILABLE ->
-                            ex.message = BaseApplication.mContext.getString(R.string.request_error)
+                        UNAUTHORIZED -> ex.message =
+                            BaseApplication.mContext.getString(R.string.request_unauthorized)
+
+                        FORBIDDEN -> ex.message =
+                            BaseApplication.mContext.getString(R.string.request_forbidden)
+
+                        NOT_FOUND -> ex.message =
+                            BaseApplication.mContext.getString(R.string.request_invalid)
+
+                        REQUEST_TIMEOUT -> ex.message =
+                            BaseApplication.mContext.getString(R.string.request_time_out)
+
+                        INTERNAL_SERVER_ERROR, BAD_GATEWAY, SERVICE_UNAVAILABLE ->
+                            ex.message = BaseApplication.mContext.getString(R.string.server_error)
+
                         else -> ex.message =
-                            BaseApplication.mContext.getString(R.string.server_error)
+                            BaseApplication.mContext.getString(R.string.request_error)
+
                     }
                 }
                 is ServerException -> {
@@ -70,6 +82,10 @@ class ExceptionHandler {
                 is SSLHandshakeException -> {
                     ex = ResponseException(e, SSL_ERROR)
                     ex.message = BaseApplication.mContext.getString(R.string.ssl_error)
+                }
+                is TimeoutCancellationException -> {
+                    ex = ResponseException(e, REQUEST_TIMEOUT)
+                    ex.message = BaseApplication.mContext.getString(R.string.request_time_out)
                 }
                 else -> {
                     ex = ResponseException(e, UNKNOWN)

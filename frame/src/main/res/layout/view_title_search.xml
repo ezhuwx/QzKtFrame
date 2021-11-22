@@ -46,11 +46,12 @@
             android:layout_toEndOf="@+id/back_ll"
             android:background="@drawable/search_top_bg">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="15dp"
+                android:tint="#EAEBEC"
                 android:src="@drawable/search_top" />
 
             <EditText

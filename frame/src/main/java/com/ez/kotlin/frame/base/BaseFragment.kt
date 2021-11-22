@@ -83,12 +83,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     open fun stateDialogLoading(isCancel: Boolean, loading: String?) {
         if (!mNetDialog.isShowing) {
             mNetDialog.setCancelable(isCancel)
-            loading?.let {
-                mNetDialog.findViewById<TextView>(R.id.loading_tv)?.run {
-                    visibility = View.VISIBLE
-                    text = it
-                }
-            }
+            mNetDialog.showLoadingText(loading)
             mNetDialog.show()
         }
     }
@@ -116,19 +111,19 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         viewModel.run {
             start().observe(requireActivity(), {
                 //开始
-                requestStart(it)
+                onRequestStart(it)
             })
             success().observe(requireActivity(), {
                 //成功
-                requestSuccess(it)
+                onRequestSuccess(it)
             })
             error().observe(requireActivity(), {
                 //报错
-                requestError(it)
+                onRequestError(it)
             })
             finally().observe(requireActivity(), {
                 //结束
-                requestFinally(it)
+                onRequestFinally(it)
             })
         }
     }
@@ -136,25 +131,33 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    open fun requestStart(it: Boolean) {
+    open fun onRequestStart(it: Boolean) {
     }
 
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    open fun requestSuccess(it: Boolean) {
+    open fun onRequestSuccess(it: Boolean) {
     }
 
     /**
      * 接口请求完毕，子类可以重写此方法做一些操作
      * */
-    open fun requestFinally(it: Int?) {
+    open fun onRequestFinally(it: Int?) {
     }
 
     /**
      *  接口请求出错，子类可以重写此方法做一些操作
      *  */
-    open fun requestError(it: Exception?) {
+    open fun onRequestError(it: Exception?) {
+        //处理一些已知异常
+        showErrorTip(it)
+    }
+
+    /**
+     * 处理一些已知异常
+     */
+    open fun showErrorTip(it: Exception?) {
         //处理一些已知异常
         it?.run {
             if (NetWorkUtil.isNetworkConnected(requireContext())) {
@@ -165,7 +168,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
                     }
                     //正常错误显示
                     is ResponseException -> {
-                        ToastUtil().longShow("${it.message}(${it.code})")
+                        ToastUtil().longShow("(${it.code})${it.message}")
                     }
                     //无提示信息错误显示
                     else -> {
