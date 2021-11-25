@@ -28,7 +28,7 @@ class NetDialog constructor(context: AppCompatActivity) : AlertDialog(context, R
         val contentView: View =
             inflater.inflate(R.layout.view_dialog_progress, null)
         //提示文字
-        findViewById<TextView>(R.id.loading_tv)?.run {
+        contentView.findViewById<TextView>(R.id.loading_tv)?.run {
             loadingContent?.let {
                 visibility = View.VISIBLE
                 text = it

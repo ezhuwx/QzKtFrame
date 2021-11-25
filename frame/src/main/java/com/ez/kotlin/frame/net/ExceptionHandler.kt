@@ -38,9 +38,9 @@ class ExceptionHandler {
             var ex = ResponseException(e, HTTP_ERROR)
             when (e) {
                 is HttpException -> {
+                    ex.code = e.code()
                     when (e.code()) {
                         GATEWAY_TIMEOUT -> {
-                            ex.code = NETWORK_ERROR
                             ex.message = BaseApplication.mContext.getString(R.string.net_error)
                         }
                         SYSTEM_TIME_ERROR -> {
@@ -86,6 +86,10 @@ class ExceptionHandler {
                 is TimeoutCancellationException -> {
                     ex = ResponseException(e, REQUEST_TIMEOUT)
                     ex.message = BaseApplication.mContext.getString(R.string.request_time_out)
+                }
+                is ResponseException -> {
+                    ex.code = e.code
+                    return ex
                 }
                 else -> {
                     ex = ResponseException(e, UNKNOWN)

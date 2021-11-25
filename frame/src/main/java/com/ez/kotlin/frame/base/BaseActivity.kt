@@ -1,8 +1,9 @@
 package com.ez.kotlin.frame.base
 
+import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
@@ -12,6 +13,10 @@ import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
 import com.gyf.immersionbar.ImmersionBar
 import com.kunminx.architecture.ui.page.DataBindingActivity
+
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.LifecycleOwner
+
 
 abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     /**
@@ -25,15 +30,23 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     private val mNetDialog by lazy { NetDialog(this) }
 
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //锁定竖屏
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        //状态栏适配
         ImmersionBar.with(this)
             .fitsSystemWindows(true)
             .statusBarColor(BaseApplication.instance.statusBarColorId)
             .init()
+        //activity管理
         BaseApplication.instance.addActivity(this)
+        //请求状态监听
         startObserve()
-        initView()
+        //view绑定方法
+        initBindView()
+        //数据初始化方法
         initData()
     }
 
@@ -52,7 +65,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *
      */
     override fun initViewModel() {
-        providerVMClass().let {
+        getBindingVMClass().let {
             viewModel = ViewModelProvider(this).get(it)
             lifecycle.addObserver(viewModel)
         }
@@ -66,6 +79,23 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         BaseApplication.instance.removeActivity(this)
         stateDialogDismiss()
         // 必须调用该方法，防止内存泄漏
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (BaseApplication.instance.isFollowNightMode) {
+            when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    //关闭夜间模式
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    //打开夜间模式
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+                else -> {}
+            }
+        }
     }
 
     /**
@@ -96,13 +126,13 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *  viewModel实例
      *
      */
-    abstract fun providerVMClass(): Class<VM>
+    abstract fun getBindingVMClass(): Class<VM>
 
     /**
-     * 初始化 View
+     *  绑定视图
      *
      */
-    abstract fun initView()
+    abstract fun initBindView()
 
     /**
      * 初始化数据

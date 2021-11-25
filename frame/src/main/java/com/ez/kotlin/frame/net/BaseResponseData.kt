@@ -7,23 +7,16 @@ package com.ez.kotlin.frame.net
  * E-mail : ezhuwx@163.com
  * Update on 14:42 by ezhuwx
  */
-open class BaseResponseData<out T>(
+abstract class BaseResponseData {
     /**
      * 状态码
      */
-    var statusCode: Int,
-    /**
-     * 总数量
-     */
-    var totalCount: Int,
+    open var code: String = ""
+
     /**
      * 提示信息
      */
-    var message: String,
-    /**
-     * 数据
-     */
-    val data: T
-)
+    open var message: String = ""
+}
 
 

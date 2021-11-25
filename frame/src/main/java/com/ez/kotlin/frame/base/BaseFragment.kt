@@ -33,7 +33,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
             .statusBarColor(BaseApplication.instance.statusBarColorId)
             .init()
         startObserve()
-        initView(view)
+        initBindView(view)
         initData()
     }
 
@@ -42,7 +42,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *
      */
     override fun initViewModel() {
-        providerVMClass()?.let {
+        getBindingVMClass()?.let {
             viewModel = ViewModelProvider(this).get(it)
             lifecycle.addObserver(viewModel)
         }
@@ -91,12 +91,12 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     /**
      *  viewModel实例
      *  */
-    abstract fun providerVMClass(): Class<VM>?
+    abstract fun getBindingVMClass(): Class<VM>?
 
     /**
      * 初始化 View
      */
-    abstract fun initView(view: View)
+    abstract fun initBindView(view: View)
 
     /**
      * 初始化数据

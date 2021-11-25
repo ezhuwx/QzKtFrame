@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#000000</color>
+    <color name="colorLightPrimary">#000000</color>
+    <!--Glide place holder color-->
+    <color name="random_color_1">#000506</color>
+    <color name="random_color_2">#070f04</color>
+    <color name="random_color_3">#120605</color>
+    <color name="random_color_4">#0f0425</color>
+    <color name="random_color_5">#030904</color>
+    <color name="random_color_6">#232404</color>
+    <color name="random_color_7">#022e39</color>
+    <color name="random_color_8">#020a26</color>
+    <color name="random_color_9">#000506</color>
+    <color name="random_color_10">#090c30</color>
+
+    <color name="black">#FFFFFFFF</color>
+    <color name="white">#FF000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="tip_text_color">#C1C1C1</color>
+    <color name="default_gray">#4F4F4F</color>
+    <color name="white_in_deep_bg">#FFFFFFFF</color>
+    <color name="black_in_light_bg">#000000</color>
+    <color name="button_color">#1B77F9</color>
+</resources>

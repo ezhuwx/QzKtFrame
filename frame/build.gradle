@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 7101
-        versionName "0.7.1"
+        versionCode 8501
+        versionName "0.8.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -62,8 +62,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
-    //腾讯bugly
-    implementation 'com.tencent.bugly:crashreport:3.3.3'
     //dex分包,解决方法数超限(65535)
     implementation 'com.android.support:multidex:1.0.3'
     //腾讯mmkv
@@ -99,6 +97,6 @@ dependencies {
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.7.1'
+    PUBLISH_VERSION = '0.8.5'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

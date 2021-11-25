@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary"
-        bind:backgroundColor="@{titleModel.backgroundColor}">
+        bind:backgroundColor="@{titleModel.backgroundColor,default= @color/colorPrimary}">
 
         <LinearLayout
             android:id="@+id/back_ll"
@@ -47,7 +47,7 @@
             android:maxEms="8"
             android:singleLine="true"
             android:text="@{titleModel.title}"
-            android:textColor="@color/white"
+            android:textColor="@{titleModel.titleColor,default=@color/white_in_deep_bg}"
             android:textSize="18sp" />
 
         <TextView
@@ -59,7 +59,7 @@
             android:gravity="center"
             android:onClick="@{()->titleModel.rightClickListener.onClick()}"
             android:text="@{titleModel.right}"
-            android:textColor="@{titleModel.rightColor}"
+            android:textColor="@{titleModel.rightColor,default=@color/white_in_deep_bg}"
             android:textSize="15sp"
             android:visibility="@{titleModel.rightVisible}" />
 

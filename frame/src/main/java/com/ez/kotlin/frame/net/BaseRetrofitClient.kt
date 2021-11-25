@@ -3,6 +3,7 @@ package com.ez.kotlin.frame.net
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication
 import com.ez.kotlin.frame.utils.NetWorkUtil.Companion.isNetworkConnected
+import com.google.gson.Gson
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,6 +13,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
+import com.google.gson.GsonBuilder
+
 
 /**
  * @author : ezhuwx

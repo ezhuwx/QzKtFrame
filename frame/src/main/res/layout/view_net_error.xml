@@ -15,7 +15,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/network_error_icon" />
+        android:src="@drawable/network_error_icon" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,12 +25,12 @@
         android:lineSpacingMultiplier="1.4"
         android:text="@string/network_error_content"
         android:textColor="@color/tip_text_color"
-        android:textSize="12sp" />
+        android:textSize="14sp" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/view_net_error_tv"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="30dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/corner_solid_blue_bg"
         android:gravity="center"
@@ -38,6 +38,6 @@
         android:paddingStart="10dp"
         android:paddingEnd="10dp"
         android:text="@string/click_to_retry"
-        android:textColor="@color/white"
-        android:textSize="12sp" />
+        android:textColor="@color/white_in_deep_bg"
+        android:textSize="14sp" />
 </LinearLayout>

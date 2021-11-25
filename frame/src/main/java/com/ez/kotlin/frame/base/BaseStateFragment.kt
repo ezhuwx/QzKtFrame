@@ -44,7 +44,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     @CallSuper
-    override fun initView(view: View) {
+    override fun initBindView(view: View) {
         viewMain = view.findViewById(R.id.view_main)
         checkNotNull(viewMain) { "The subclass of RootActivity must contain a View named 'view_main'." }
         check(viewMain!!.parent is ViewGroup) { "view_main's ParentView should be a ViewGroup." }

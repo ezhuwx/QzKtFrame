@@ -23,9 +23,17 @@ import kotlin.system.exitProcess
 import com.ez.kotlin.frame.R
 
 abstract class BaseApplication : Application() {
+    //activity集合
     private var allActivities: HashSet<AppCompatActivity>? = null
+
+    //是否是debug模式
     var isDebug = false
+
+    //默认状态栏颜色
     var statusBarColorId = Color.BLACK
+
+    //默认跟随系统深色模式
+    var isFollowNightMode = true
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -68,7 +76,6 @@ abstract class BaseApplication : Application() {
             initSmartRefresh()
             initAutoSize()
             initLogger()
-            initBugly()
             init()
         }.start()
     }
@@ -79,11 +86,6 @@ abstract class BaseApplication : Application() {
      * 初始化 SmartRefresh
      */
     abstract fun initSmartRefresh()
-
-    /**
-     * 初始化 腾讯Bugly
-     */
-    abstract fun initBugly()
 
     /**
      * AutoSize屏幕适配初始化

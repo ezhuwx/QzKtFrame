@@ -2,6 +2,8 @@ package com.ez.kotlin.frame.model
 
 import android.view.View
 import androidx.annotation.IntDef
+import androidx.core.content.ContextCompat
+import androidx.core.view.ContentInfoCompat
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication
 import com.ez.kotlin.frame.base.BaseViewModel
@@ -20,6 +22,13 @@ class TitleIncludeModel : BaseViewModel() {
      * 标题
      */
     val title = SingleLiveEvent<String>()
+
+    /**
+     * 标题颜色
+     */
+    val titleColor = SingleLiveEvent<Int>().apply {
+        value = ContextCompat.getColor(BaseApplication.mContext, R.color.white_in_deep_bg)
+    }
 
     /**
      * 输入
@@ -54,7 +63,7 @@ class TitleIncludeModel : BaseViewModel() {
      * 右侧按钮颜色
      */
     val rightColor = SingleLiveEvent<Int>().apply {
-        value = BaseApplication.mContext.getColor(R.color.white)
+        value = ContextCompat.getColor(BaseApplication.mContext, R.color.white_in_deep_bg)
     }
 
     /**
@@ -77,8 +86,9 @@ class TitleIncludeModel : BaseViewModel() {
      * 背景颜色
      */
     val backgroundColor = SingleLiveEvent<Int>().apply {
-        value = BaseApplication.mContext.getColor(R.color.colorPrimary)
+        value = ContextCompat.getColor(BaseApplication.mContext, R.color.colorPrimary)
     }
+
 
     /**
      * TODO 返回点击代理

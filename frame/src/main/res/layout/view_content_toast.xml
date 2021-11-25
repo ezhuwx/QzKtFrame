@@ -5,7 +5,7 @@
     android:id="@+id/toast_cv"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    app:cardBackgroundColor="@color/colorPrimary"
+    app:cardBackgroundColor="@color/button_color"
     app:cardCornerRadius="15dp"
     app:cardElevation="5dp">
 
@@ -24,7 +24,7 @@
         android:paddingTop="5dp"
         android:paddingEnd="10dp"
         android:paddingBottom="5dp"
-        android:textColor="@color/white"
+        android:textColor="@color/white_in_deep_bg"
         android:textSize="12sp" />
 
 </androidx.cardview.widget.CardView>

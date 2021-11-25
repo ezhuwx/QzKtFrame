@@ -12,13 +12,13 @@
     <string name="net_error">当前网络异常，请稍后再试~</string>
     <string name="request_error">当前请求异常，请稍后再试~</string>
     <string name="server_error">当前服务器异常，请稍后再试~</string>
-    <string name="parse_error">解析错误，正在努力修复，请您耐心等待~</string>
-    <string name="ssl_error">证书验证失败，正在努力修复，请您耐心等待~</string>
-    <string name="request_invalid">您的请求无效，请稍后再试~</string>
-    <string name="request_forbidden">您的请求被禁止，请登录后重试~</string>
-    <string name="request_unauthorized">您的请求未经授权，请登录后重试~</string>
+    <string name="parse_error">解析错误，正在努力修复~</string>
+    <string name="ssl_error">证书验证失败，正在努力修复~</string>
+    <string name="request_invalid">当前请求无效，请稍后再试~</string>
+    <string name="request_forbidden">当前请求被禁止。</string>
+    <string name="request_unauthorized">当前请求暂未授权。</string>
     <string name="search">搜索</string>
     <string name="confirm">确定</string>
-    <string name="default_hint">请输入内容~</string>
+    <string name="default_hint">请输入搜索内容~</string>
 
 </resources>
