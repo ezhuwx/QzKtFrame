@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.appcompat.app.AppCompatDelegate
 import com.ez.kotlin.frame.BuildConfig
 import com.ez.kotlin.frame.base.BaseApplication
 
@@ -108,4 +109,84 @@ fun goSoftMarket(packageName: String) {
     marketIntent.data = Uri.parse(mAddress)
     marketIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
     BaseApplication.instance.startActivity(marketIntent)
+}
+
+/**
+ * 深色模式切换
+ *
+ */
+fun switchDayNightMode(listener: OnDayNightChange) {
+    val userSet = DayNightMode.valueOf(
+        MMKVUtil.mmkv.getString(
+            DayNightMode::class.simpleName,
+            DayNightMode.SYSTEM.name
+        )!!
+    )
+    when (userSet) {
+        DayNightMode.SYSTEM -> {
+            //打开深色模式
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            MMKVUtil.mmkv.putString(
+                DayNightMode::class.simpleName,
+                DayNightMode.NIGHT.name
+            )
+            BaseApplication.instance.dayNightMode = DayNightMode.NIGHT
+            listener.onChange(DayNightMode.NIGHT)
+        }
+        DayNightMode.NIGHT -> {
+            //打开浅色模式
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            MMKVUtil.mmkv.putString(
+                DayNightMode::class.simpleName,
+                DayNightMode.LIGHT.name
+            )
+            BaseApplication.instance.dayNightMode = DayNightMode.LIGHT
+            listener.onChange(DayNightMode.LIGHT)
+        }
+        DayNightMode.LIGHT -> {
+            //跟随系统
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            MMKVUtil.mmkv.putString(
+                DayNightMode::class.simpleName,
+                DayNightMode.SYSTEM.name
+            )
+            BaseApplication.instance.dayNightMode = DayNightMode.SYSTEM
+            listener.onChange(DayNightMode.SYSTEM)
+        }
+    }
+
+}
+
+/**
+ * TODO 深色模式
+ *
+ */
+enum class DayNightMode {
+    /**
+     * 跟随系统
+     *
+     */
+    SYSTEM,
+
+    /**
+     * 浅色模式
+     *
+     */
+    LIGHT,
+
+    /**
+     * 深色模式
+     *
+     */
+    NIGHT
+
+}
+
+interface OnDayNightChange {
+    /**
+     * TODO 深色模式变化
+     *
+     * @param mode 当前模式
+     */
+    fun onChange(mode: DayNightMode)
 }

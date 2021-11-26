@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 8501
-        versionName "0.8.5"
+        versionCode 8801
+        versionName "0.8.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -97,6 +97,6 @@ dependencies {
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.8.5'
+    PUBLISH_VERSION = '0.8.8'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

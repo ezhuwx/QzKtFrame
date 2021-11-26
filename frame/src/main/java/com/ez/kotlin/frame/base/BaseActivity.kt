@@ -16,6 +16,7 @@ import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.LifecycleOwner
+import com.ez.kotlin.frame.utils.DayNightMode
 
 
 abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
@@ -83,7 +84,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (BaseApplication.instance.isFollowNightMode) {
+        if (BaseApplication.instance.dayNightMode == DayNightMode.SYSTEM) {
             when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
                 Configuration.UI_MODE_NIGHT_NO -> {
                     //关闭夜间模式

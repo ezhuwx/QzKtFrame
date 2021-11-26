@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Process
 import android.os.StrictMode
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDex
 import com.ez.kotlin.frame.utils.logD
 import com.jeremyliao.liveeventbus.LiveEventBus
@@ -21,6 +22,9 @@ import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
 import kotlin.system.exitProcess
 import com.ez.kotlin.frame.R
+import com.ez.kotlin.frame.utils.DayNightMode
+import com.ez.kotlin.frame.utils.MMKVUtil
+import com.ez.kotlin.frame.utils.switchDayNightMode
 
 abstract class BaseApplication : Application() {
     //activity集合
@@ -33,7 +37,7 @@ abstract class BaseApplication : Application() {
     var statusBarColorId = Color.BLACK
 
     //默认跟随系统深色模式
-    var isFollowNightMode = true
+    var dayNightMode = DayNightMode.SYSTEM
 
     companion object {
         @SuppressLint("StaticFieldLeak")
@@ -52,15 +56,8 @@ abstract class BaseApplication : Application() {
             val builder = StrictMode.VmPolicy.Builder()
             StrictMode.setVmPolicy(builder.build())
         }
-        //初始化腾讯mmkv
-        val rootDir =
-            MMKV.initialize(
-                this,
-                if (isDebug) MMKVLogLevel.LevelError
-                else MMKVLogLevel.LevelInfo
-            )
-        logD("mmkv_root------:${rootDir}")
         lateInitSDK()
+
     }
 
     /**
@@ -73,11 +70,41 @@ abstract class BaseApplication : Application() {
             //设置进程的优先级，不与主线程抢资源
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             LiveEventBus.config().lifecycleObserverAlwaysActive(false).setContext(this)
+            initMMKVAndDayNight()
             initSmartRefresh()
             initAutoSize()
             initLogger()
             init()
         }.start()
+    }
+
+    /**
+     * 初始化MMKV和深色模式
+     * */
+    private fun initMMKVAndDayNight() {
+        //初始化腾讯mmkv
+        MMKV.initialize(
+            this,
+            if (isDebug) MMKVLogLevel.LevelDebug
+            else MMKVLogLevel.LevelNone
+        )
+        //保存的深色模式设置
+        dayNightMode = DayNightMode.valueOf(
+            MMKVUtil.mmkv.getString(
+                DayNightMode::class.simpleName,
+                DayNightMode.SYSTEM.name
+            )!!
+        )
+        //恢复设置
+        when (dayNightMode) {
+            DayNightMode.NIGHT ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            DayNightMode.LIGHT ->
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            else -> {
+                logD("DayNightMode：${DayNightMode.SYSTEM.name}")
+            }
+        }
     }
 
     abstract fun init()
@@ -95,7 +122,8 @@ abstract class BaseApplication : Application() {
         AutoSizeConfig.getInstance() //屏蔽系统字体大小
             .setExcludeFontScale(true).onAdaptListener = object : onAdaptListener {
             override fun onAdaptBefore(target: Any, activity: Activity) {
-                AutoSizeConfig.getInstance().screenWidth = ScreenUtils.getScreenSize(activity)[0]
+                AutoSizeConfig.getInstance().screenWidth =
+                    ScreenUtils.getScreenSize(activity)[0]
             }
 
             override fun onAdaptAfter(target: Any, activity: Activity) {}

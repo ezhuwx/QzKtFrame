@@ -1,14 +1,17 @@
 package com.ez.kotlin.frame.base
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.NetDialog
 import com.ez.kotlin.frame.net.ResponseException
+import com.ez.kotlin.frame.utils.DayNightMode
 import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
 import com.gyf.immersionbar.ImmersionBar
@@ -62,6 +65,23 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         super.onDestroy()
         if (this::viewModel.isInitialized)
             lifecycle.removeObserver(viewModel)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (BaseApplication.instance.dayNightMode == DayNightMode.SYSTEM) {
+            when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    //关闭夜间模式
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    //打开夜间模式
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+                else -> {}
+            }
+        }
     }
 
     /**
