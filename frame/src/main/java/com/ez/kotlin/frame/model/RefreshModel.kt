@@ -22,6 +22,11 @@ class RefreshModel : BaseViewModel() {
     }
 
     /**
+     * 是否无更多数据
+     */
+    val isNoMoreData = SingleLiveEvent<Boolean>().apply { value = false }
+
+    /**
      * 页码
      *
      * */

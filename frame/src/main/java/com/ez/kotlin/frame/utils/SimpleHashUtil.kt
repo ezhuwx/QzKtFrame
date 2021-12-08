@@ -1,8 +1,8 @@
-package com.ez.kotlin.frame.utils
+package com.goldenwater.hlj.hydrology.utils
 
+import com.ez.kotlin.frame.utils.Hex
 import java.lang.NullPointerException
 import java.security.MessageDigest
-import java.security.MessageDigestSpi
 import java.security.NoSuchAlgorithmException
 import kotlin.math.max
 
@@ -13,7 +13,13 @@ import kotlin.math.max
  * E-mail : ezhuwx@163.com
  * Update on 15:14 by ezhuwx
  */
-class SimpleHashUtil {
+
+class SimpleHashUtils(
+    var algorithmName: String,
+    source: String,
+    var salt: String?,
+    iterations: Int
+) {
     companion object ALGORITHM {
         /**
          * 算法名称
@@ -32,81 +38,59 @@ class SimpleHashUtil {
         private const val DEFAULT_ITERATIONS = 1
     }
 
-    private var algorithmName: String = ""
-    private var bytes = ByteArray(0)
-    private var salt: ByteArray? = null
-    private var iterations = 0
+    lateinit var hashBytes: ByteArray
+    var iterations = 0
+        set(value) {
+            field = max(DEFAULT_ITERATIONS, value)
+        }
 
+    constructor(algorithmName: String, source: String) : this(
+        algorithmName,
+        source,
+        null as String?,
+        DEFAULT_ITERATIONS
+    )
 
-    @Throws(NoSuchAlgorithmException::class)
-    constructor(algorithmName: String, source: String) {
-        SimpleHashUtil(algorithmName, source, null as String?, DEFAULT_ITERATIONS)
-    }
+    constructor(algorithmName: String, source: String, salt: String?) : this(
+        algorithmName,
+        source,
+        salt,
+        DEFAULT_ITERATIONS
+    )
 
-    @Throws(NoSuchAlgorithmException::class)
-    constructor(algorithmName: String, source: String, salt: String?) {
-        SimpleHashUtil(algorithmName, source, salt, DEFAULT_ITERATIONS)
-    }
-
-    @Throws(NoSuchAlgorithmException::class)
-    constructor(algorithmName: String, source: String, salt: String?, hashIterations: Int) {
+    init {
         if (algorithmName.isEmpty()) {
             throw NullPointerException("algorithmName argument cannot be null or empty.")
         } else {
-            this.algorithmName = algorithmName
-            iterations = max(DEFAULT_ITERATIONS, hashIterations)
+            this.iterations = iterations
             var saltBytes: ByteArray? = null
-            if (salt != null) {
-                saltBytes = salt.toByteArray()
-                this.salt = saltBytes
+            salt?.let {
+                saltBytes = salt?.toByteArray()
             }
             val sourceBytes = source.toByteArray()
-            hashSet(sourceBytes, saltBytes, hashIterations)
+            hashSet(sourceBytes, saltBytes, iterations)
         }
     }
 
 
     @Throws(NoSuchAlgorithmException::class)
-    private fun hashSet(source: ByteArray, salt: ByteArray?, hashIterations: Int) {
-        val hashedBytes = this.hash(source, salt, hashIterations)
-        setBytes(hashedBytes)
+    fun hashSet(source: ByteArray, salt: ByteArray?, hashIterations: Int) {
+        hashBytes = this.hash(source, salt, hashIterations)
     }
 
-    fun getAlgorithmName(): String {
-        return algorithmName
-    }
 
-    fun getSalt(): ByteArray? {
-        return salt
-    }
-
-    fun getIterations(): Int {
-        return iterations
-    }
-
-    fun getBytes(): ByteArray {
-        return bytes
-    }
-
-    fun setBytes(alreadyHashedBytes: ByteArray) {
-        bytes = alreadyHashedBytes
-    }
-
-    fun setIterations(iterations: Int) {
+    fun setHashIterations(iterations: Int) {
         this.iterations = max(DEFAULT_ITERATIONS, iterations)
     }
 
-    fun setSalt(salt: ByteArray) {
-        this.salt = salt
-    }
 
     @Throws(NoSuchAlgorithmException::class)
-    private fun getDigest(algorithmName: String): MessageDigest {
+    fun getDigest(algorithmName: String): MessageDigest {
         return MessageDigest.getInstance(algorithmName)
     }
 
     @Throws(NoSuchAlgorithmException::class)
-    private fun hash(bytes: ByteArray): ByteArray {
+    fun hash(bytes: ByteArray): ByteArray {
         return this.hash(bytes, null, 1)
     }
 
@@ -116,8 +100,8 @@ class SimpleHashUtil {
     }
 
     @Throws(NoSuchAlgorithmException::class)
-    private fun hash(bytes: ByteArray, salt: ByteArray?, hashIterations: Int): ByteArray {
-        val digest = getDigest(getAlgorithmName())
+    fun hash(bytes: ByteArray, salt: ByteArray?, hashIterations: Int): ByteArray {
+        val digest = getDigest(algorithmName)
         if (salt != null) {
             digest.reset()
             digest.update(salt)
@@ -132,10 +116,10 @@ class SimpleHashUtil {
     }
 
     fun isEmpty(): Boolean {
-        return bytes.isEmpty()
+        return hashBytes.isEmpty()
     }
 
     fun toHex(): String {
-        return Hex.encodeToString(bytes)
+        return Hex.encodeToString(hashBytes)
     }
 }

@@ -11,11 +11,14 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 import android.graphics.Bitmap
 import android.view.animation.Animation
+import android.widget.TextView
 import androidx.annotation.IntDef
 
 import androidx.databinding.InverseBindingListener
 
 import androidx.databinding.BindingAdapter
+import com.ez.kotlin.frame.utils.addRedStar
+import com.google.android.material.textfield.TextInputLayout
 
 
 /**
@@ -141,7 +144,7 @@ object CommonBinder {
      * @param listener  监听
      */
     @BindingAdapter(
-        value = ["pageSize", "dataSize", "listener"],
+        value = ["pageSize", "dataSize", "isAutoRefresh", "listener"],
         requireAll = false
     )
     @JvmStatic
@@ -149,10 +152,15 @@ object CommonBinder {
         refreshLayout: SmartRefreshLayout,
         pageSize: Int,
         dataSize: Int,
+        isAutoRefresh: Boolean,
         listener: OnRefreshLoadMoreListener,
     ) {
+        if (isAutoRefresh) {
+            refreshLayout.autoRefresh()
+        }
         //结束刷新
         if (refreshLayout.isRefreshing) {
+            refreshLayout.resetNoMoreData()
             refreshLayout.finishRefresh()
         }
         //结束加载
@@ -165,4 +173,48 @@ object CommonBinder {
         refreshLayout.setOnRefreshLoadMoreListener(listener)
     }
 
+    /**
+     * TODO 下拉刷新SmartRefreshLayout 方法适配
+     * @param isNoMoreData  是否无更多数据
+     */
+    @BindingAdapter(
+        value = ["isNoMoreData"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun refreshNoMore(
+        refreshLayout: SmartRefreshLayout,
+        isNoMoreData: Boolean,
+    ) {
+        refreshLayout.setNoMoreData(isNoMoreData)
+    }
+
+    /**
+     * TODO 添加红星
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["addRedStar"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun addRedStarAdapter(view: TextView, text: String) {
+        view.text = text
+        addRedStar(view)
+    }
+
+    /**
+     * TODO 添加inputError
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["inputError"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setNavigator(view: TextInputLayout, inputError: String?) {
+        view.error = inputError
+    }
 }
