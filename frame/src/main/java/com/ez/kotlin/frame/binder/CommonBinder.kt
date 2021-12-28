@@ -13,10 +13,12 @@ import android.graphics.Bitmap
 import android.view.animation.Animation
 import android.widget.TextView
 import androidx.annotation.IntDef
+import androidx.constraintlayout.motion.widget.MotionLayout
 
 import androidx.databinding.InverseBindingListener
 
 import androidx.databinding.BindingAdapter
+import com.ez.kotlin.frame.interfaces.MotionAnimListener
 import com.ez.kotlin.frame.utils.addRedStar
 import com.google.android.material.textfield.TextInputLayout
 
@@ -160,8 +162,11 @@ object CommonBinder {
         }
         //结束刷新
         if (refreshLayout.isRefreshing) {
-            refreshLayout.resetNoMoreData()
-            refreshLayout.finishRefresh()
+            if (dataSize < pageSize) refreshLayout.finishRefreshWithNoMoreData()
+            else {
+                refreshLayout.finishRefresh()
+                refreshLayout.resetNoMoreData()
+            }
         }
         //结束加载
         if (refreshLayout.isLoading) {
@@ -178,15 +183,28 @@ object CommonBinder {
      * @param isNoMoreData  是否无更多数据
      */
     @BindingAdapter(
-        value = ["isNoMoreData"],
+        value = ["isNoMoreData", "canLoadMore", "canRefresh"],
         requireAll = false
     )
     @JvmStatic
     fun refreshNoMore(
         refreshLayout: SmartRefreshLayout,
-        isNoMoreData: Boolean,
+        isNoMoreData: Boolean?,
+        canLoadMore: Boolean?,
+        canRefresh: Boolean?,
     ) {
-        refreshLayout.setNoMoreData(isNoMoreData)
+        //有无更多数据
+        isNoMoreData?.let {
+            refreshLayout.setNoMoreData(isNoMoreData)
+        }
+        //是否可以加载更多
+        canLoadMore?.let {
+            refreshLayout.setEnableLoadMore(it)
+        }
+        //是否可以下拉刷新
+        canRefresh?.let {
+            refreshLayout.setEnableRefresh(it)
+        }
     }
 
     /**
@@ -204,17 +222,53 @@ object CommonBinder {
         addRedStar(view)
     }
 
+
     /**
-     * TODO 添加inputError
+     * TODO TextInputLayout
      *
      * @param view
      */
     @BindingAdapter(
-        value = ["inputError"],
+        value = ["inputError", "backgroundEnable", "endIconClick"],
         requireAll = false
     )
     @JvmStatic
-    fun setNavigator(view: TextInputLayout, inputError: String?) {
-        view.error = inputError
+    fun textInputLayout(
+        view: TextInputLayout,
+        inputError: String?,
+        enable: Boolean?,
+        endIconClick: View.OnClickListener?
+    ) {
+        inputError?.let {
+            view.error = inputError
+        }
+        enable?.let {
+            view.boxBackgroundMode =
+                if (enable) TextInputLayout.BOX_BACKGROUND_FILLED else TextInputLayout.BOX_BACKGROUND_NONE
+        }
+        endIconClick?.let {
+            view.setEndIconOnClickListener(endIconClick)
+        }
+    }
+
+    /**
+     * TODO completeListener
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["motionAnimListener"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun completeListener(view: MotionLayout, listener: MotionAnimListener) {
+        view.addTransitionListener(listener)
+    }
+
+
+    @BindingConversion
+    @JvmStatic
+    fun visibleConversion(visible: Boolean): Int {
+        return if (visible) View.VISIBLE else View.GONE
     }
 }

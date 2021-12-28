@@ -3,7 +3,6 @@ package com.ez.kotlin.frame.base
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
@@ -33,6 +32,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         super.onViewCreated(view, savedInstanceState)
         ImmersionBar.with(this)
             .fitsSystemWindows(true)
+            .transparentNavigationBar()
             .statusBarColor(BaseApplication.instance.statusBarColorId)
             .init()
         startObserve()
@@ -180,7 +180,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     open fun showErrorTip(it: Exception?) {
         //处理一些已知异常
         it?.run {
-            if (NetWorkUtil.isNetworkConnected(requireContext())) {
+            if (NetWorkUtil.isNoProxyConnected(requireContext())) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {

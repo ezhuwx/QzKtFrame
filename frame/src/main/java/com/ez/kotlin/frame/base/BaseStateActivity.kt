@@ -1,6 +1,5 @@
 package com.ez.kotlin.frame.base
 
-import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +9,7 @@ import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication.Companion.mContext
 import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.ResponseException
-import com.ez.kotlin.frame.utils.NetWorkUtil.Companion.isNetworkConnected
+import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
 
 
@@ -89,7 +88,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     override fun onRequestError(it: Exception?) {
         //处理一些已知异常
         it?.run {
-            if (isNetworkConnected(this@BaseStateActivity)) {
+            if (NetWorkUtil.isNoProxyConnected(this@BaseStateActivity)) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {

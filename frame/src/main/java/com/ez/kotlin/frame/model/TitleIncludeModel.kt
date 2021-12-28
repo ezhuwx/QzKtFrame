@@ -75,6 +75,11 @@ class TitleIncludeModel : BaseViewModel() {
     /**
      * 点击事件代理
      */
+    val titleClickListener = SingleLiveEvent<OnTitleClick>()
+
+    /**
+     * 点击事件代理
+     */
     val backClickListener = SingleLiveEvent<OnBackClick>()
 
     /**
@@ -89,12 +94,19 @@ class TitleIncludeModel : BaseViewModel() {
         value = ContextCompat.getColor(BaseApplication.mContext, R.color.colorPrimary)
     }
 
+    /**
+     * TODO 标题点击代理
+     *
+     */
+    fun interface OnTitleClick {
+        fun onClick()
+    }
 
     /**
      * TODO 返回点击代理
      *
      */
-    interface OnBackClick {
+    fun interface OnBackClick {
         fun onClick()
     }
 
@@ -102,7 +114,7 @@ class TitleIncludeModel : BaseViewModel() {
      * TODO 右键点击代理
      *
      */
-    interface OnRightClick {
+    fun interface OnRightClick {
         fun onClick()
     }
 }

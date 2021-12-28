@@ -206,7 +206,7 @@ class PreciseTimerUtil {
         fun onShutdown()
     }
 
-    interface OnMultiTimeListener {
+    fun interface OnMultiTimeListener {
         /**
          * 定时时间到
          */

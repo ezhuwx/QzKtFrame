@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:bind="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
 
@@ -10,7 +11,7 @@
             type="com.ez.kotlin.frame.model.TitleIncludeModel" />
     </data>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary"
@@ -40,11 +41,11 @@
             android:id="@+id/title_tv"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
+            android:layout_centerInParent="true"
             android:ellipsize="middle"
             android:gravity="center"
             android:maxEms="8"
+            android:onClick="@{v->titleModel.titleClickListener.onClick()}"
             android:singleLine="true"
             android:text="@{titleModel.title}"
             android:textColor="@{titleModel.titleColor,default=@color/white_in_deep_bg}"

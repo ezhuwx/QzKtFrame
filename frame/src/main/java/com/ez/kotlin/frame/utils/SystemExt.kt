@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.net.Uri
+import android.net.*
 import android.os.Build
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
@@ -182,7 +182,7 @@ enum class DayNightMode {
 
 }
 
-interface OnDayNightChange {
+fun interface OnDayNightChange {
     /**
      * TODO 深色模式变化
      *
@@ -190,3 +190,5 @@ interface OnDayNightChange {
      */
     fun onChange(mode: DayNightMode)
 }
+
+

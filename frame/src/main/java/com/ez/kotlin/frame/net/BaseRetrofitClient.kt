@@ -1,9 +1,8 @@
 package com.ez.kotlin.frame.net
 
-import com.ez.kotlin.frame.R
+import android.text.TextUtils
 import com.ez.kotlin.frame.base.BaseApplication
-import com.ez.kotlin.frame.utils.NetWorkUtil.Companion.isNetworkConnected
-import com.google.gson.Gson
+import com.ez.kotlin.frame.utils.NetWorkUtil
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -13,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
-import com.google.gson.GsonBuilder
+import java.net.Proxy
 
 
 /**
@@ -92,7 +91,7 @@ abstract class BaseRetrofitClient<Api> {
         //缓存
         val cacheInterceptor = Interceptor { chain: Interceptor.Chain ->
             var request = chain.request()
-            request = if (!isNetworkConnected(BaseApplication.mContext)) {
+            request = if (!NetWorkUtil.isNoProxyConnected(BaseApplication.mContext)) {
                 request.newBuilder()
                     .cacheControl(CacheControl.FORCE_CACHE)
                     .build()
@@ -106,7 +105,7 @@ abstract class BaseRetrofitClient<Api> {
             }
             var response = chain.proceed(request)
             val responseBuilder: Response.Builder = response.newBuilder()
-            response = if (isNetworkConnected(BaseApplication.mContext)) {
+            response = if (NetWorkUtil.isNoProxyConnected(BaseApplication.mContext)) {
                 //设置服务器时间
                 val responseTime: Long = getHeaderTime(response.header("Date"))
                 //服务器时间与系统时间应当不超过超时间
@@ -138,7 +137,7 @@ abstract class BaseRetrofitClient<Api> {
             loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         } else loggingInterceptor = HttpLoggingInterceptor()
         //builder
-        val builder = OkHttpClient().newBuilder()
+        val builder = OkHttpClient().newBuilder().proxy(Proxy.NO_PROXY)
         builder.run {
             //添加自定义拦截器
             val customInterceptors = getInterceptors()
@@ -181,6 +180,16 @@ abstract class BaseRetrofitClient<Api> {
             }
         }
         return System.currentTimeMillis()
+    }
+
+    open fun isProxy(): Boolean {
+        val proxyPort: Int
+        //获取代理主机
+        val proxyAddress: String? = System.getProperty("http.proxyHost")
+        //获取代理端口
+        val portStr = System.getProperty("http.proxyPort")
+        proxyPort = (portStr ?: "-1").toInt()
+        return !TextUtils.isEmpty(proxyAddress) && proxyPort != -1
     }
 
     /**

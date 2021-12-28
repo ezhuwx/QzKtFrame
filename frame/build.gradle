@@ -11,8 +11,8 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 9301
-        versionName "0.9.3"
+        versionCode 9801
+        versionName "0.9.8"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,7 +39,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.2'
     testImplementation 'junit:junit:4.13'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
@@ -78,9 +78,9 @@ dependencies {
     api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
     api 'jp.wasabeef:glide-transformations:4.0.0'
     //下拉刷新
-    implementation 'com.scwang.smart:refresh-layout-kernel:2.0.3'
-    implementation 'com.scwang.smart:refresh-header-material:2.0.3'
-    implementation 'com.scwang.smart:refresh-footer-classics:2.0.3'
+    implementation 'com.scwang.smart:refresh-layout-kernel:2.0.5'
+    implementation 'com.scwang.smart:refresh-header-material:2.0.5'
+    implementation 'com.scwang.smart:refresh-footer-classics:2.0.5'
     //屏幕适配
     implementation 'me.jessyan:autosize:1.2.1'
     //日志
@@ -97,6 +97,6 @@ dependencies {
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.9.3'
+    PUBLISH_VERSION = '0.9.7'
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

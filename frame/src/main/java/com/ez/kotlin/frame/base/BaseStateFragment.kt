@@ -1,6 +1,5 @@
 package com.ez.kotlin.frame.base
 
-import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.view.ViewGroup
@@ -82,7 +81,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     override fun onRequestError(it: Exception?) {
         //处理一些已知异常
         it?.run {
-            if (NetWorkUtil.isNetworkConnected(requireContext())) {
+            if (NetWorkUtil.isNoProxyConnected(requireContext())) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {

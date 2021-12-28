@@ -28,7 +28,10 @@ import com.ez.kotlin.frame.utils.switchDayNightMode
 
 abstract class BaseApplication : Application() {
     //activity集合
-    private var allActivities: HashSet<AppCompatActivity>? = null
+    private var allActivities = mutableSetOf<AppCompatActivity>()
+
+    //是否屏蔽系统字体大小
+    var isExcludeFontScale = false
 
     //是否是debug模式
     var isDebug = false
@@ -63,7 +66,7 @@ abstract class BaseApplication : Application() {
     /**
      * 非必须在主线程初始化的SDK放到子线程初始化
      */
-    private fun lateInitSDK() {
+    open fun lateInitSDK() {
         Thread {
             isDebug = debug()
             statusBarColorId = statusBarColor()
@@ -81,7 +84,7 @@ abstract class BaseApplication : Application() {
     /**
      * 初始化MMKV和深色模式
      * */
-    private fun initMMKVAndDayNight() {
+    open fun initMMKVAndDayNight() {
         //初始化腾讯mmkv
         MMKV.initialize(
             this,
@@ -117,10 +120,10 @@ abstract class BaseApplication : Application() {
     /**
      * AutoSize屏幕适配初始化
      */
-    private fun initAutoSize() {
+    open fun initAutoSize() {
         AutoSize.initCompatMultiProcess(this)
         AutoSizeConfig.getInstance() //屏蔽系统字体大小
-            .setExcludeFontScale(true).onAdaptListener = object : onAdaptListener {
+            .setExcludeFontScale(isExcludeFontScale).onAdaptListener = object : onAdaptListener {
             override fun onAdaptBefore(target: Any, activity: Activity) {
                 AutoSizeConfig.getInstance().screenWidth =
                     ScreenUtils.getScreenSize(activity)[0]
@@ -133,7 +136,7 @@ abstract class BaseApplication : Application() {
     /**
      * Logger初始化
      */
-    private fun initLogger() {
+    open fun initLogger() {
         val formatStrategy: FormatStrategy = PrettyFormatStrategy.newBuilder()
             .tag(getAppName())
             .build()
@@ -172,29 +175,23 @@ abstract class BaseApplication : Application() {
      * 添加Activity管理
      */
     open fun addActivity(act: AppCompatActivity) {
-        if (allActivities == null) {
-            allActivities = hashSetOf()
-        }
-        allActivities!!.add(act)
+        allActivities.add(act)
     }
 
     /**
      * 从管理中移出
      */
     open fun removeActivity(act: AppCompatActivity) {
-        allActivities!!.remove(act)
+        allActivities.remove(act)
     }
 
     /**
      * 退出程序
      */
     open fun exitApp() {
-        if (allActivities != null) {
-            for (act in allActivities!!) {
-                act.finish()
-            }
+        allActivities.forEach {
+            it.finish()
         }
-        Process.killProcess(Process.myPid())
-        exitProcess(0)
+        allActivities.clear()
     }
 }

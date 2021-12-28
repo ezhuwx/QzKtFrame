@@ -15,7 +15,6 @@ import com.gyf.immersionbar.ImmersionBar
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.LifecycleOwner
 import com.ez.kotlin.frame.utils.DayNightMode
 
 
@@ -39,6 +38,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         //状态栏适配
         ImmersionBar.with(this)
             .fitsSystemWindows(true)
+            .transparentNavigationBar()
             .statusBarColor(BaseApplication.instance.statusBarColorId)
             .init()
         //activity管理
@@ -201,7 +201,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     open fun showErrorTip(it: Exception?) {
         //处理一些已知异常
         it?.run {
-            if (NetWorkUtil.isNetworkConnected(this@BaseActivity)) {
+            if (NetWorkUtil.isNoProxyConnected(this@BaseActivity)) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {
