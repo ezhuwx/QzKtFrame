@@ -15,7 +15,7 @@ import com.chad.library.adapter.base.viewholder.BaseDataBindingHolder
  * Update on 16:40 by ezhuwx
  */
 abstract class BaseDataBindingAdapter<T, BD : ViewDataBinding>(resId: Int) :
-    BaseQuickAdapter<T, BaseDataBindingHolder<BD>>(resId) {
+    BaseQuickAdapter<T, BaseDataBindingHolder<BD>>(resId)  {
     /**
      * 当 ViewHolder 创建完毕以后，会执行此回掉
      * 可以在这里做任何你想做的事情
@@ -47,4 +47,6 @@ abstract class BaseDataBindingAdapter<T, BD : ViewDataBinding>(resId: Int) :
     }
 
     abstract fun convertData(holder: BaseDataBindingHolder<BD>, binding: BD, item: T)
+
+
 }

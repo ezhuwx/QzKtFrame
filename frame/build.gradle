@@ -5,14 +5,16 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
+def version = "0.9.9.6"
+
 android {
     compileSdk 30
 
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 9801
-        versionName "0.9.8"
+        versionCode 9906
+        versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -71,16 +73,16 @@ dependencies {
     //基于LiveData的事件总线
     implementation 'io.github.jeremyliao:live-event-bus-x:1.8.0'
     //RecyclerViewAdapter
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.4'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
     //glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
     api 'jp.wasabeef:glide-transformations:4.0.0'
     //下拉刷新
-    implementation 'com.scwang.smart:refresh-layout-kernel:2.0.5'
-    implementation 'com.scwang.smart:refresh-header-material:2.0.5'
-    implementation 'com.scwang.smart:refresh-footer-classics:2.0.5'
+    implementation 'io.github.scwang90:refresh-layout-kernel:2.0.5'
+    implementation 'io.github.scwang90:refresh-header-material:2.0.5'
+    implementation 'io.github.scwang90:refresh-footer-classics:2.0.5'
     //屏幕适配
     implementation 'me.jessyan:autosize:1.2.1'
     //日志
@@ -97,6 +99,6 @@ dependencies {
 ext {
     PUBLISH_GROUP_ID = "io.github.ezhuwx"
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
-    PUBLISH_VERSION = '0.9.7'
+    PUBLISH_VERSION = version
 }
 apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"

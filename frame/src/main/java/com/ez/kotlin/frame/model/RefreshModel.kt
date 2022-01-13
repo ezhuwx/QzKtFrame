@@ -22,6 +22,17 @@ class RefreshModel : BaseViewModel() {
     }
 
     /**
+     * 请求方法
+     */
+    lateinit var call: () -> Unit
+
+    /**
+     * 预加载页数 0关闭
+     */
+    var preLoadPage = 1
+
+
+    /**
      * 是否无更多数据
      */
     val isNoMoreData = SingleLiveEvent<Boolean>().apply { value = false }
@@ -63,13 +74,10 @@ class RefreshModel : BaseViewModel() {
         view: V,
         call: () -> Unit,
     ) where E : BaseViewModel {
+        this.call = call
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isLoadMore = false
-                //屏蔽loading
-                view.setSkipLoading(true)
-                //屏蔽错误状态UI
-                view.setSkipError(false)
                 //重置页码
                 page = PAGE_FIRST_INDEX
                 //请求
@@ -78,10 +86,6 @@ class RefreshModel : BaseViewModel() {
 
             override fun onLoadMore(refreshLayout: RefreshLayout) {
                 isLoadMore = true
-                //屏蔽loading
-                view.setSkipLoading(true)
-                //屏蔽错误状态UI
-                view.setSkipError(true)
                 //请求
                 call()
             }
@@ -95,38 +99,7 @@ class RefreshModel : BaseViewModel() {
         view: V,
         call: () -> Unit,
     ) where E : BaseViewModel {
-        refreshListener = object : OnRefreshLoadMoreListener {
-            override fun onRefresh(refreshLayout: RefreshLayout) {
-                isLoadMore = false
-                //屏蔽loading
-                view.setSkipLoading(true)
-                //屏蔽错误状态UI
-                view.setSkipError(false)
-                //重置页码
-                page = PAGE_FIRST_INDEX
-                //请求
-                call()
-            }
-
-            override fun onLoadMore(refreshLayout: RefreshLayout) {
-                isLoadMore = true
-                //屏蔽loading
-                view.setSkipLoading(true)
-                //屏蔽错误状态UI
-                view.setSkipError(true)
-                //请求
-                call()
-            }
-        }
-    }
-
-    /**
-     * 刷新加载
-     * */
-    fun <E, V : BaseActivity<E>> observeRefreshLoadMore(
-        view: V,
-        call: () -> Unit,
-    ) where E : BaseViewModel {
+        this.call = call
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isLoadMore = false
@@ -147,10 +120,10 @@ class RefreshModel : BaseViewModel() {
     /**
      * 刷新加载
      * */
-    fun <E, V : BaseFragment<E>> observeRefreshLoadMore(
-        view: V,
+    fun <E> observeRefreshLoadMore(
         call: () -> Unit,
     ) where E : BaseViewModel {
+        this.call = call
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isLoadMore = false
@@ -173,8 +146,17 @@ class RefreshModel : BaseViewModel() {
      *
      * */
     fun finished(dataSize: Int) {
+        this.isNoMoreData.value = dataSize < pageSize.value!!
         this.dataSize.value = dataSize
         isLoadMore = false
         page++
+    }
+
+    /**
+     * 刷新加载结束页码自增
+     *
+     * */
+    fun loadError() {
+        this.dataSize.value = -1
     }
 }

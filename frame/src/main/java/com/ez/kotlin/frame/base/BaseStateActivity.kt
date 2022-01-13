@@ -10,6 +10,7 @@ import com.ez.kotlin.frame.base.BaseApplication.Companion.mContext
 import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.NetWorkUtil
+import com.ez.kotlin.frame.utils.ToastUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
 
 
@@ -22,6 +23,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
         const val STATE_UNKNOWN_ERROR = 0x04
     }
 
+
     private var viewNetError: View? = null
     private var viewUnknownError: View? = null
     private var viewEmpty: View? = null
@@ -33,12 +35,15 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     private var mUnknownErrorResource: Int = R.layout.view_unknown_error
     private var mUnknownResourceMsg: String? = null
     private var isSkipLoading = false
+    private var isSkipAllLoading = false
+    private var isOnceSkip = false
+    private var isSkipAllError = false
     private var isSkipError = false
     private var currentState = STATE_MAIN
     private var isNetErrorViewAdded = false
     private var isUnknownErrorViewAdded = false
     private var isEmptyViewAdded = false
-
+    private var isErrorToastShowed = false
 
     override fun onDestroy() {
         super.onDestroy()
@@ -66,6 +71,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
     override fun onRequestStart(it: Boolean) {
+        isErrorToastShowed = false
         stateLoading()
     }
 
@@ -74,6 +80,8 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *  */
     override fun onRequestSuccess(it: Boolean) {
         stateMain()
+        isSkipAllLoading = true
+        isSkipError = true
     }
 
     /**
@@ -130,9 +138,13 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *
      */
     open fun stateNetError() {
-        if (currentState == STATE_NET_ERROR || isSkipError) {
-            if (isSkipError) {
-                isSkipError = false
+        stateDialogDismiss()
+        if (currentState == STATE_NET_ERROR || isSkipError || isSkipAllError) {
+            if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+            else if (isSkipError && !isErrorToastShowed) {
+                ToastUtil().shortShow(R.string.net_error)
+                isErrorToastShowed = true
+                if (isOnceSkip) isSkipError = false
             }
             return
         }
@@ -171,9 +183,13 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      * TODO 未知错误状态
      */
     open fun stateUnknownError() {
-        if (currentState == STATE_UNKNOWN_ERROR || isSkipError) {
-            if (isSkipError) {
-                isSkipError = false
+        stateDialogDismiss()
+        if (currentState == STATE_UNKNOWN_ERROR || isSkipError || isSkipAllError) {
+            if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+            else if (isSkipError && !isErrorToastShowed) {
+                ToastUtil().shortShow(R.string.net_error)
+                isErrorToastShowed = true
+                if (isOnceSkip) isSkipError = false
             }
             return
         }
@@ -206,9 +222,11 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      * TODO 加载状态
      * */
     open fun stateLoading() {
-        if (currentState == STATE_LOADING || isSkipLoading) {
-            if (isSkipLoading) {
-                isSkipLoading = false
+        if (currentState == STATE_LOADING || isSkipLoading || isSkipAllLoading) {
+            if (isSkipAllLoading) if (isOnceSkip) isSkipAllLoading = false
+            else if (isSkipLoading) {
+                stateDialogLoading()
+                if (isOnceSkip) isSkipLoading = false
             }
             return
         }
@@ -222,6 +240,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *
      */
     open fun stateEmpty() {
+        stateDialogDismiss()
         if (currentState == STATE_EMPTY) {
             return
         }
@@ -256,6 +275,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *
      */
     open fun stateMain() {
+        stateDialogDismiss()
         hideCurrentView()
         currentState = STATE_MAIN
         viewMain?.visibility = View.VISIBLE
@@ -305,11 +325,36 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     }
 
     /**
+     * 跳过一次
+     * @param skipOnce
+     */
+    open fun setSkipOnce(skipOnce: Boolean) {
+        isOnceSkip = skipOnce
+    }
+
+
+    /**
+     * 跳过内部loading 及弹出loading
+     * @param isSkipAllLoading
+     */
+    open fun setSkipAllLoading(isSkipAllLoading: Boolean) {
+        this.isSkipAllLoading = isSkipAllLoading
+    }
+
+    /**
      * 跳过loading
      * @param skipLoading
      */
     open fun setSkipLoading(skipLoading: Boolean) {
         isSkipLoading = skipLoading
+    }
+
+    /**
+     * 跳过内部错误布局及Toast提示
+     * @param isSkipAllError
+     */
+    open fun setSkipAllError(isSkipAllError: Boolean) {
+        this.isSkipAllError = isSkipAllError
     }
 
     /**

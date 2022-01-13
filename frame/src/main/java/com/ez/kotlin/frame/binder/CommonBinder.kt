@@ -162,7 +162,7 @@ object CommonBinder {
         }
         //结束刷新
         if (refreshLayout.isRefreshing) {
-            if (dataSize < pageSize) refreshLayout.finishRefreshWithNoMoreData()
+            if (dataSize in 0 until pageSize) refreshLayout.finishRefreshWithNoMoreData()
             else {
                 refreshLayout.finishRefresh()
                 refreshLayout.resetNoMoreData()
@@ -171,7 +171,7 @@ object CommonBinder {
         //结束加载
         if (refreshLayout.isLoading) {
             //无更多数据
-            if (dataSize < pageSize) refreshLayout.finishLoadMoreWithNoMoreData()
+            if (dataSize in 0 until pageSize) refreshLayout.finishLoadMoreWithNoMoreData()
             //正常结束
             else refreshLayout.finishLoadMore()
         }

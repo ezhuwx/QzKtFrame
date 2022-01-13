@@ -193,6 +193,6 @@ object NetWorkUtil {
         //属性
         val linkProperties = manager.getLinkProperties(activeNetwork)
         val info = linkProperties!!.httpProxy
-        return capabilities!!.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN) && info != null
+        return !capabilities!!.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN) || info != null
     }
 }

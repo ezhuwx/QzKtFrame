@@ -31,11 +31,15 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     private var mUnknownErrorResource: Int = R.layout.view_unknown_error
     private var mUnknownResourceMsg: String? = null
     private var isSkipLoading = false
+    private var isSkipAllLoading = false
+    private var isOnceSkip = false
     private var isSkipError = false
+    private var isSkipAllError = false
     private var currentState = STATE_MAIN
     private var isNetErrorViewAdded = false
     private var isUnknownErrorViewAdded = false
     private var isEmptyViewAdded = false
+    private var isErrorToastShowed = false
 
 
     /**
@@ -59,6 +63,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
     override fun onRequestStart(it: Boolean) {
+        isErrorToastShowed = false
         stateLoading()
     }
 
@@ -67,6 +72,8 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *  */
     override fun onRequestSuccess(it: Boolean) {
         stateMain()
+        isSkipAllLoading = true
+        isSkipError = true
     }
 
     /**
@@ -123,9 +130,13 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateNetError() {
-        if (currentState == STATE_NET_ERROR || isSkipError) {
-            if (isSkipError) {
-                isSkipError = false
+        stateDialogDismiss()
+        if (currentState == STATE_NET_ERROR || isSkipError || isSkipAllError) {
+            if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+            else if (isSkipError && !isErrorToastShowed) {
+                ToastUtil().shortShow(R.string.net_error)
+                isErrorToastShowed = true
+                if (isOnceSkip)  isSkipError = false
             }
             return
         }
@@ -164,9 +175,13 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * TODO 未知错误状态
      */
     open fun stateUnknownError() {
-        if (currentState == STATE_UNKNOWN_ERROR || isSkipError) {
-            if (isSkipError) {
-                isSkipError = false
+        stateDialogDismiss()
+        if (currentState == STATE_UNKNOWN_ERROR || isSkipError || isSkipAllError) {
+            if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+            else if (isSkipError && !isErrorToastShowed) {
+                ToastUtil().shortShow(R.string.net_error)
+                isErrorToastShowed = true
+                if (isOnceSkip) isSkipError = false
             }
             return
         }
@@ -199,9 +214,11 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * TODO 加载状态
      * */
     open fun stateLoading() {
-        if (currentState == STATE_LOADING || isSkipLoading) {
-            if (isSkipLoading) {
-                isSkipLoading = false
+        if (currentState == STATE_LOADING || isSkipLoading || isSkipAllLoading) {
+            if (isSkipAllLoading) if (isOnceSkip) isSkipAllLoading = false
+            else if (isSkipLoading) {
+                stateDialogLoading()
+                if (isOnceSkip) isSkipLoading = false
             }
             return
         }
@@ -215,6 +232,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateEmpty() {
+        stateDialogDismiss()
         if (currentState == STATE_EMPTY) {
             return
         }
@@ -248,6 +266,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateMain() {
+        stateDialogDismiss()
         hideCurrentView()
         currentState = STATE_MAIN
         viewMain?.visibility = View.VISIBLE
@@ -296,8 +315,32 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         this.mEmptyResourceMsg = empty
     }
 
+    /**
+     * 跳过一次
+     * @param skipOnce
+     */
+    open fun setSkipOnce(skipOnce: Boolean) {
+        isOnceSkip = skipOnce
+    }
+
+    /**
+     * 跳过内部loading 及弹出loading
+     * @param isSkipAllLoading
+     */
+    open fun setSkipAllLoading(isSkipAllLoading: Boolean) {
+        this.isSkipAllLoading = isSkipAllLoading
+    }
+
     open fun setSkipLoading(skipLoading: Boolean) {
         isSkipLoading = skipLoading
+    }
+
+    /**
+     * 跳过内部错误布局及Toast提示
+     * @param isSkipAllError
+     */
+    open fun setSkipAllError(isSkipAllError: Boolean) {
+        this.isSkipAllError = isSkipAllError
     }
 
     open fun setSkipError(skipError: Boolean) {
