@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Process
 import android.os.StrictMode
+import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDex
@@ -52,6 +53,13 @@ abstract class BaseApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+    }
+
+    /**
+     * 初始化
+     * */
+    @CallSuper
+    open fun install() {
         instance = this
         mContext = applicationContext
         //解决7.0版本后调用相机报错的问题
@@ -60,7 +68,6 @@ abstract class BaseApplication : Application() {
             StrictMode.setVmPolicy(builder.build())
         }
         lateInitSDK()
-
     }
 
     /**
@@ -110,7 +117,7 @@ abstract class BaseApplication : Application() {
         }
     }
 
-    abstract fun init()
+    open fun init() {}
 
     /**
      * 初始化 SmartRefresh

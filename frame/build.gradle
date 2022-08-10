@@ -5,7 +5,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
-def version = "0.9.9.6"
+def version = "0.9.9.8"
 
 android {
     compileSdk 30
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 9906
+        versionCode 9908
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,15 +39,15 @@ android {
 
 dependencies {
     implementation 'androidx.core:core-ktx:1.3.2'
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     // ViewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
     // LiveData
@@ -67,7 +67,7 @@ dependencies {
     //dex分包,解决方法数超限(65535)
     implementation 'com.android.support:multidex:1.0.3'
     //腾讯mmkv
-    implementation 'com.tencent:mmkv-static:1.2.10'
+    implementation 'com.tencent:mmkv-static:1.2.13'
     //导航栏
     implementation 'com.ashokvarma.android:bottom-navigation-bar:2.2.0'
     //基于LiveData的事件总线
@@ -75,9 +75,9 @@ dependencies {
     //RecyclerViewAdapter
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.7'
     //glide
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-    api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
+    implementation 'com.github.bumptech.glide:glide:4.13.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.2'
+    api 'com.github.bumptech.glide:okhttp3-integration:4.13.2'
     api 'jp.wasabeef:glide-transformations:4.0.0'
     //下拉刷新
     implementation 'io.github.scwang90:refresh-layout-kernel:2.0.5'
@@ -88,9 +88,9 @@ dependencies {
     //日志
     implementation 'com.orhanobut:logger:2.2.0'
     //权限处理
-    implementation 'com.guolindev.permissionx:permissionx:1.6.1'
+    implementation 'com.guolindev.permissionx:permissionx:1.6.4'
     //dataBinding严格模式
-    api 'com.kunminx.arch:strict-databinding:4.0.0-beta1'
+    api 'com.kunminx.arch:strict-databinding:5.0.0-beta1'
     //shimmer动画
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     //事件总线
