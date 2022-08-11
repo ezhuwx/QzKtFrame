@@ -5,7 +5,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
-def version = "0.9.9.8"
+def version = "0.9.9.9"
 
 android {
     compileSdk 30
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 9908
+        versionCode 9909
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
@@ -140,6 +141,10 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     abstract fun initData()
 
+    /**
+     * 点击事件
+     */
+    abstract fun onClick(v: View)
 
     /**
      * TODO 请求监听
@@ -147,22 +152,22 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     private fun startObserve() {
         viewModel.run {
-            start().observe(this@BaseActivity, {
+            start().observe(this@BaseActivity) {
                 //开始
                 onRequestStart(it)
-            })
-            success().observe(this@BaseActivity, {
+            }
+            success().observe(this@BaseActivity) {
                 //成功
                 onRequestSuccess(it)
-            })
-            error().observe(this@BaseActivity, {
+            }
+            error().observe(this@BaseActivity) {
                 //报错
                 onRequestError(it)
-            })
-            finally().observe(this@BaseActivity, {
+            }
+            finally().observe(this@BaseActivity) {
                 //结束
                 onRequestFinally(it)
-            })
+            }
         }
     }
 

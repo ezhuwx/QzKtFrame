@@ -51,10 +51,6 @@ abstract class BaseApplication : Application() {
         lateinit var mContext: Context
     }
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     /**
      * 初始化
      * */

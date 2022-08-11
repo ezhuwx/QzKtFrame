@@ -124,27 +124,32 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     abstract fun initData()
 
     /**
+     * 点击事件
+     */
+    abstract fun onClick(v: View)
+
+    /**
      * TODO 请求监听
      *
      */
     private fun startObserve() {
         viewModel.run {
-            start().observe(requireActivity(), {
+            start().observe(requireActivity()) {
                 //开始
                 onRequestStart(it)
-            })
-            success().observe(requireActivity(), {
+            }
+            success().observe(requireActivity()) {
                 //成功
                 onRequestSuccess(it)
-            })
-            error().observe(requireActivity(), {
+            }
+            error().observe(requireActivity()) {
                 //报错
                 onRequestError(it)
-            })
-            finally().observe(requireActivity(), {
+            }
+            finally().observe(requireActivity()) {
                 //结束
                 onRequestFinally(it)
-            })
+            }
         }
     }
 
