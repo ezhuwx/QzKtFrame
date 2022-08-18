@@ -14,6 +14,7 @@ import com.ez.kotlin.frame.utils.DayNightMode
 import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
 import com.gyf.immersionbar.ImmersionBar
+import com.gyf.immersionbar.ktx.immersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
 
 abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
@@ -30,11 +31,11 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ImmersionBar.with(this)
-            .fitsSystemWindows(true)
-            .transparentNavigationBar()
-            .statusBarColor(BaseApplication.instance.statusBarColorId)
-            .init()
+        immersionBar {
+            fitsSystemWindows(true)
+            transparentNavigationBar()
+            statusBarColor(BaseApplication.instance.statusBarColorId)
+        }
         startObserve()
         initBindView(view)
         initData()

@@ -17,6 +17,7 @@ import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
 import com.ez.kotlin.frame.utils.DayNightMode
+import com.gyf.immersionbar.ktx.immersionBar
 
 
 abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
@@ -37,11 +38,11 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         //锁定竖屏
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         //状态栏适配
-        ImmersionBar.with(this)
-            .fitsSystemWindows(true)
-            .transparentNavigationBar()
-            .statusBarColor(BaseApplication.instance.statusBarColorId)
-            .init()
+        immersionBar {
+            fitsSystemWindows(true)
+            transparentNavigationBar()
+            statusBarColor(BaseApplication.instance.statusBarColorId)
+        }
         //activity管理
         BaseApplication.instance.addActivity(this)
         //请求状态监听
