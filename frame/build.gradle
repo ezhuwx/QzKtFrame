@@ -5,7 +5,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
-def version = "1.0.1"
+def version = "1.0.2"
 
 android {
     compileSdk 30
@@ -13,7 +13,7 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 10001
+        versionCode 10002
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -54,8 +54,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     // Saved state module for ViewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.1'
-    //状态栏适配基础依赖包
-    implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
     //fragment快速实现（可选）
     implementation 'com.geyifeng.immersionbar:immersionbar:3.2.2'
     // kotlin扩展（可选）
