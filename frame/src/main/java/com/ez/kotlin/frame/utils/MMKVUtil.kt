@@ -1,5 +1,6 @@
 package com.ez.kotlin.frame.utils
 
+import com.ez.kotlin.frame.base.BaseApplication
 import com.tencent.mmkv.MMKV
 import java.sql.ResultSet
 
@@ -11,13 +12,12 @@ import java.sql.ResultSet
  * Update on 10:57 by ezhuwx
  */
 object MMKVUtil {
-    private const val fileName = "prefs"
 
     /**
      * 初始化mmkv
      */
-     val mmkv: MMKV
-        get() = MMKV.mmkvWithID(fileName)
+    val mmkv: MMKV
+        get() = MMKV.mmkvWithID(BaseApplication.instance.mmkvName)
 
     /**
      * 删除全部数据(传了参数就是按key删除)

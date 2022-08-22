@@ -43,6 +43,9 @@ abstract class BaseApplication : Application() {
     //默认跟随系统深色模式
     var dayNightMode = DayNightMode.SYSTEM
 
+    //MMKV file名称
+    var mmkvName = "prefs"
+
     companion object {
         @SuppressLint("StaticFieldLeak")
         lateinit var instance: BaseApplication
