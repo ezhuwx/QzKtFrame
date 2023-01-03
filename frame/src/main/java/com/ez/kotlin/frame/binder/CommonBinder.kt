@@ -10,6 +10,7 @@ import com.ez.kotlin.frame.utils.glideWith
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 import android.graphics.Bitmap
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.widget.TextView
 import androidx.annotation.IntDef
@@ -18,8 +19,10 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.databinding.InverseBindingListener
 
 import androidx.databinding.BindingAdapter
+import androidx.viewpager.widget.ViewPager
 import com.ez.kotlin.frame.interfaces.MotionAnimListener
 import com.ez.kotlin.frame.utils.addRedStar
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 
 
@@ -270,5 +273,82 @@ object CommonBinder {
     @JvmStatic
     fun visibleConversion(visible: Boolean): Int {
         return if (visible) View.VISIBLE else View.GONE
+    }
+
+    /**
+     * TODO completeListener
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["onGlobalLayout"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun globalLayoutListener(view: View, onGlobalLayout: (v: View) -> Unit) {
+        view.viewTreeObserver.addOnGlobalLayoutListener {
+            onGlobalLayout.invoke(view)
+            //view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        }
+
+    }
+
+    /**
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["isSelected"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setSelected(view: View, isSelected: Boolean) {
+        view.isSelected = isSelected
+    }
+
+    /**
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["marginTop", "marginBottom", "marginStart", "marginEnd"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setMarginTop(
+        view: View,
+        marginTop: Int?,
+        marginBottom: Int?,
+        marginStart: Int?,
+        marginEnd: Int?
+    ) {
+        view.layoutParams.let {
+            if (it is ViewGroup.MarginLayoutParams) {
+                marginTop?.run { it.topMargin = this }
+                marginBottom?.run { it.bottomMargin = this }
+                marginStart?.run { it.marginStart = this }
+                marginEnd?.run { it.marginEnd = this }
+            }
+        }
+    }
+
+
+    /**
+     * TODO 绑定ViewPager
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["viewPagerId"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun bindViewPager(
+        view: TabLayout,
+        viewPagerId: String,
+    ) {
+        //id获取
+        val id: Int = view.resources.getIdentifier(viewPagerId, "id", view.context.packageName)
+        //viewPager
+        val viewPager = (view.rootView as View).findViewById<ViewPager>(id)
+        view.setupWithViewPager(viewPager)
     }
 }

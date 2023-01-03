@@ -18,10 +18,10 @@ import kotlinx.coroutines.*
 typealias CoroutineBlock = suspend CoroutineScope.() -> Unit
 
 open class BaseViewModel : ViewModel(), LifecycleObserver {
-    private val start by lazy { SingleLiveEvent<Boolean>() }
-    private val error by lazy { SingleLiveEvent<Exception>() }
-    private val success by lazy { SingleLiveEvent<Boolean>() }
-    private val finally by lazy { SingleLiveEvent<Int>() }
+    protected val start by lazy { SingleLiveEvent<Boolean>() }
+    protected val error by lazy { SingleLiveEvent<Exception>() }
+    protected val success by lazy { SingleLiveEvent<Boolean>() }
+    protected val finally by lazy { SingleLiveEvent<Int>() }
 
     /**
      * TODO 标准UI线程协程

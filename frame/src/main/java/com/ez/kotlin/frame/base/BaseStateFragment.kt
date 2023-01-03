@@ -9,6 +9,7 @@ import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.*
+import kotlinx.coroutines.NonDisposableHandle.parent
 import java.lang.Exception
 
 abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
@@ -50,12 +51,16 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     override fun initBindView(view: View) {
         viewMain = view.findViewById(R.id.view_main)
         checkNotNull(viewMain) { "The subclass of RootActivity must contain a View named 'view_main'." }
-        check(viewMain!!.parent is ViewGroup) { "view_main's ParentView should be a ViewGroup." }
-        mParent = viewMain!!.parent as ViewGroup
-        View.inflate(BaseApplication.mContext, R.layout.view_progress, mParent)
-        viewLoading = mParent!!.findViewById(R.id.view_loading_fl)
-        viewLoading!!.visibility = View.GONE
-        viewMain!!.visibility = View.GONE
+        viewMain?.let { main ->
+            check(main.parent is ViewGroup) { "view_main's ParentView should be a ViewGroup." }
+            mParent = main.parent as ViewGroup
+            View.inflate(requireContext(), R.layout.view_progress, mParent)
+            mParent?.let { parent ->
+                viewLoading = parent.findViewById(R.id.view_loading_fl)
+                viewLoading?.visibility = View.GONE
+                main.visibility = View.GONE
+            }
+        }
     }
 
 
@@ -130,35 +135,37 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateNetError() {
-        stateDialogDismiss()
-        if (currentState == STATE_NET_ERROR || isSkipError || isSkipAllError) {
-            if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
-            else if (isSkipError && !isErrorToastShowed) {
-                ToastUtil().shortShow(R.string.net_error)
-                isErrorToastShowed = true
-                if (isOnceSkip)  isSkipError = false
-            }
-            return
-        }
-        if (!isNetErrorViewAdded) {
-            //网络错误
-            isNetErrorViewAdded = true
-            //网络错误UI
-            val mNetErrorResource: Int = R.layout.view_net_error
-            View.inflate(BaseApplication.mContext, mNetErrorResource, mParent)
-            viewNetError = mParent!!.findViewById(R.id.view_net_error)
-            //错误重试事件
-            mParent!!.findViewById<View>(R.id.view_net_error_tv)
-                .setOnClickListener { v: View? ->
-                    if (!isInvalidClick(v!!)) {
-                        onErrorOrEmptyRetry(true)
-                    }
+        mParent?.let { parent ->
+            stateDialogDismiss()
+            if (currentState == STATE_NET_ERROR || isSkipError || isSkipAllError) {
+                if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+                else if (isSkipError && !isErrorToastShowed) {
+                    ToastUtil().shortShow(R.string.net_error)
+                    isErrorToastShowed = true
+                    if (isOnceSkip) isSkipError = false
                 }
-            checkNotNull(viewNetError) { "A View should be named 'view_error' in ErrorLayoutResource." }
+                return
+            }
+            if (!isNetErrorViewAdded) {
+                //网络错误
+                isNetErrorViewAdded = true
+                //网络错误UI
+                val mNetErrorResource: Int = R.layout.view_net_error
+                View.inflate(requireContext(), mNetErrorResource, parent)
+                viewNetError = parent.findViewById(R.id.view_net_error)
+                //错误重试事件
+                parent.findViewById<View>(R.id.view_net_error_tv)
+                    .setOnClickListener { v: View? ->
+                        if (!isInvalidClick(v!!)) {
+                            onErrorOrEmptyRetry(true)
+                        }
+                    }
+                checkNotNull(viewNetError) { "A View should be named 'view_error' in ErrorLayoutResource." }
+            }
+            hideCurrentView()
+            currentState = STATE_NET_ERROR
+            viewNetError?.visibility = View.VISIBLE
         }
-        hideCurrentView()
-        currentState = STATE_NET_ERROR
-        viewNetError!!.visibility = View.VISIBLE
     }
 
     /**
@@ -175,39 +182,41 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * TODO 未知错误状态
      */
     open fun stateUnknownError() {
-        stateDialogDismiss()
-        if (currentState == STATE_UNKNOWN_ERROR || isSkipError || isSkipAllError) {
-            if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
-            else if (isSkipError && !isErrorToastShowed) {
-                ToastUtil().shortShow(R.string.net_error)
-                isErrorToastShowed = true
-                if (isOnceSkip) isSkipError = false
-            }
-            return
-        }
-        if (!isUnknownErrorViewAdded) {
-            //未知错误
-            isUnknownErrorViewAdded = true
-            //未知错误UI
-            View.inflate(BaseApplication.mContext, mUnknownErrorResource, mParent)
-            viewUnknownError = mParent!!.findViewById(R.id.view_unknown_error)
-            //未知错误提示文字
-            val tipMsg: TextView = mParent!!.findViewById(R.id.view_unknown_error_content_tv)
-            if (!TextUtils.isEmpty(mUnknownResourceMsg)) {
-                tipMsg.text = mUnknownResourceMsg
-            }
-            //错误重试事件
-            mParent!!.findViewById<View>(R.id.view_unknown_error_tv)
-                .setOnClickListener { v: View? ->
-                    if (!isInvalidClick(v!!)) {
-                        onErrorOrEmptyRetry(true)
-                    }
+        mParent?.let { parent ->
+            stateDialogDismiss()
+            if (currentState == STATE_UNKNOWN_ERROR || isSkipError || isSkipAllError) {
+                if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+                else if (isSkipError && !isErrorToastShowed) {
+                    ToastUtil().shortShow(R.string.net_error)
+                    isErrorToastShowed = true
+                    if (isOnceSkip) isSkipError = false
                 }
-            checkNotNull(viewUnknownError) { "A View should be named 'view_error' in ErrorLayoutResource." }
+                return
+            }
+            if (!isUnknownErrorViewAdded) {
+                //未知错误
+                isUnknownErrorViewAdded = true
+                //未知错误UI
+                View.inflate(requireContext(), mUnknownErrorResource, parent)
+                viewUnknownError = parent.findViewById(R.id.view_unknown_error)
+                //未知错误提示文字
+                val tipMsg: TextView = parent.findViewById(R.id.view_unknown_error_content_tv)
+                if (!TextUtils.isEmpty(mUnknownResourceMsg)) {
+                    tipMsg.text = mUnknownResourceMsg
+                }
+                //错误重试事件
+                parent.findViewById<View>(R.id.view_unknown_error_tv)
+                    .setOnClickListener { v: View? ->
+                        if (!isInvalidClick(v!!)) {
+                            onErrorOrEmptyRetry(true)
+                        }
+                    }
+                checkNotNull(viewUnknownError) { "A View should be named 'view_error' in ErrorLayoutResource." }
+            }
+            hideCurrentView()
+            currentState = STATE_UNKNOWN_ERROR
+            viewUnknownError?.visibility = View.VISIBLE
         }
-        hideCurrentView()
-        currentState = STATE_UNKNOWN_ERROR
-        viewUnknownError!!.visibility = View.VISIBLE
     }
 
     /**
@@ -224,7 +233,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         }
         hideCurrentView()
         currentState = STATE_LOADING
-        viewLoading!!.visibility = View.VISIBLE
+        viewLoading?.visibility = View.VISIBLE
     }
 
     /**
@@ -232,33 +241,35 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *
      */
     open fun stateEmpty() {
-        stateDialogDismiss()
-        if (currentState == STATE_EMPTY) {
-            return
-        }
-        if (!isEmptyViewAdded) {
-            //无数据
-            isEmptyViewAdded = true
-            //无数据UI
-            View.inflate(BaseApplication.mContext, mEmptyResource, mParent)
-            viewEmpty = mParent!!.findViewById(R.id.view_empty)
-            //无数据提示文字
-            val tipMsg: TextView = mParent!!.findViewById(R.id.view_empty_content_tv)
-            if (!TextUtils.isEmpty(mEmptyResourceMsg)) {
-                tipMsg.text = mEmptyResourceMsg
+        mParent?.let { parent ->
+            stateDialogDismiss()
+            if (currentState == STATE_EMPTY) {
+                return
             }
-            //无数据重新获取事件
-            mParent!!.findViewById<View>(R.id.view_empty_tv)
-                .setOnClickListener { v: View? ->
-                    if (!isInvalidClick(v!!)) {
-                        onErrorOrEmptyRetry(false)
-                    }
+            if (!isEmptyViewAdded) {
+                //无数据
+                isEmptyViewAdded = true
+                //无数据UI
+                View.inflate(requireContext(), mEmptyResource, parent)
+                viewEmpty = parent.findViewById(R.id.view_empty)
+                //无数据提示文字
+                val tipMsg: TextView = parent.findViewById(R.id.view_empty_content_tv)
+                if (!TextUtils.isEmpty(mEmptyResourceMsg)) {
+                    tipMsg.text = mEmptyResourceMsg
                 }
-            checkNotNull(viewEmpty) { "A View should be named 'view_empty' in ErrorLayoutResource." }
+                //无数据重新获取事件
+                parent.findViewById<View>(R.id.view_empty_tv)
+                    .setOnClickListener { v: View? ->
+                        if (!isInvalidClick(v!!)) {
+                            onErrorOrEmptyRetry(false)
+                        }
+                    }
+                checkNotNull(viewEmpty) { "A View should be named 'view_empty' in ErrorLayoutResource." }
+            }
+            hideCurrentView()
+            currentState = STATE_EMPTY
+            viewEmpty?.visibility = View.VISIBLE
         }
-        hideCurrentView()
-        currentState = STATE_EMPTY
-        viewEmpty?.visibility = View.VISIBLE
     }
 
     /**
@@ -277,7 +288,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      */
     private fun hideCurrentView() {
         when (currentState) {
-            STATE_MAIN -> viewMain!!.visibility = View.GONE
+            STATE_MAIN -> viewMain?.visibility = View.GONE
             STATE_LOADING -> viewLoading?.visibility = View.GONE
             STATE_EMPTY -> viewEmpty?.visibility = View.GONE
             STATE_NET_ERROR -> viewNetError?.visibility = View.GONE

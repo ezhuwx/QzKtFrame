@@ -28,12 +28,13 @@
         android:textColor="@color/tip_text_color"
         android:textSize="14sp" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <TextView
         android:id="@+id/view_empty_tv"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/corner_solid_blue_bg"
+        android:elevation="5dp"
         android:gravity="center"
         android:lineSpacingMultiplier="1.4"
         android:paddingStart="10dp"

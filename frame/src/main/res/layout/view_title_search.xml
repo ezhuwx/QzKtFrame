@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/apk/res-auto">
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tool="http://schemas.android.com/tools">
 
     <data>
 
@@ -46,13 +47,13 @@
             android:layout_toEndOf="@+id/back_ll"
             android:background="@drawable/search_top_bg">
 
-            <androidx.appcompat.widget.AppCompatImageView
+            <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="15dp"
                 android:src="@drawable/search_top"
-                android:tint="#EAEBEC" />
+                tool:tint="#EAEBEC" />
 
             <EditText
                 android:id="@+id/edittext"
