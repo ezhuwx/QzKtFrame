@@ -1,5 +1,6 @@
 package com.ez.kotlin.frame.net
 
+import com.ez.kotlin.frame.utils.json
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -31,11 +32,12 @@ abstract class BaseRepository {
      */
     abstract fun onResult(code: String, msg: String)
 
-    /**
-     * JSON请求体
-     */
-    open fun requestBody(objectBody: Any): RequestBody {
-        val json = Gson().toJson(objectBody)
-        return json.toRequestBody("application/json; charset=utf-8".toMediaType())
-    }
+
+}
+
+/**
+ * JSON请求体
+ */
+fun Any?.toRequestBody(): RequestBody {
+    return json().toRequestBody("application/json; charset=utf-8".toMediaType())
 }

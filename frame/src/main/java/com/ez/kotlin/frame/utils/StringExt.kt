@@ -119,3 +119,68 @@ fun getChineseFilter(): InputFilter {
         null
     }
 }
+
+fun String?.safeToF(): Float {
+    try {
+        return (this ?: "0").toFloat()
+    } catch (_: Exception) {
+
+    }
+    return 0f
+}
+
+fun String?.safeToD(): Double {
+    try {
+        return (this ?: "0").toDouble()
+    } catch (_: Exception) {
+
+    }
+    return 0.0
+}
+
+fun String?.safeToInt(): Int {
+    try {
+        return (this ?: "0").toDouble().toInt()
+    } catch (_: Exception) {
+
+    }
+    return 0
+}
+
+fun String?.empty(): String = if (equals("null")) "" else this ?: ""
+
+fun String?.default(): String = if (empty().trim().isEmpty()) "-" else this!!
+
+fun String?.shortShow() {
+    ToastUtil().shortShow(empty())
+}
+
+fun String?.subSafe10() = endSafe(10)
+
+fun String?.fileName() =
+    empty().subSafe(empty().lastIndexOf("/"), empty().length)
+
+fun String?.ext() =
+    empty().subSafe(empty().lastIndexOf("."), empty().length)
+
+///安全截取
+fun String?.subSafe(start: Int? = null, end: Int? = null): String {
+    if (start != null && end == null) return startSafe(start)
+    if (end != null && start == null) return endSafe(end)
+    if (start != null && end != null) {
+        assert(end > start)
+        val endNew = end.coerceAtMost(empty().length)
+        return empty().substring(start, endNew)
+    }
+    return empty()
+}
+
+///安全截取
+fun String?.startSafe(start: Int): String {
+    return if (empty().length > start) empty().substring(start) else empty()
+}
+
+///安全截取
+fun String?.endSafe(end: Int): String {
+    return if (empty().length > end) empty().substring(0, end) else empty()
+}

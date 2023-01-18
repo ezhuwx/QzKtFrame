@@ -20,5 +20,6 @@
     <string name="search">搜索</string>
     <string name="confirm">确定</string>
     <string name="default_hint">请输入搜索内容~</string>
+    <string name="data_decode_failed">数据解析错误~</string>
 
 </resources>

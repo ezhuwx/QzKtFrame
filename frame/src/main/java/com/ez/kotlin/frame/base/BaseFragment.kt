@@ -158,6 +158,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
     open fun onRequestStart(it: Boolean) {
+        stateDialogLoading()
     }
 
     /**
@@ -170,6 +171,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      * 接口请求完毕，子类可以重写此方法做一些操作
      * */
     open fun onRequestFinally(it: Int?) {
+        stateDialogDismiss()
     }
 
     /**

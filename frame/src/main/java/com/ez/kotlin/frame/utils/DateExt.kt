@@ -18,19 +18,17 @@ import kotlin.math.ceil
  */
 private const val YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss"
 private const val YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm"
+private const val HH_MM_SS = "HH:mm:ss"
 private const val YYYY_MM_DD = "yyyy-MM-dd"
 private const val YYYY = "yyyy"
 private const val MM = "MM"
 private const val DD = "dd"
 
 /**
- * TODO 时间格式化
- *
- * @param time
- * @return
+ *   TODO  根据long毫秒数，获得时分秒
  */
-fun generateTime(time: Long): String {
-    val totalSeconds = (time / 1000).toInt()
+fun Long.hhMmSsColon(): String {
+    val totalSeconds = (this / 1000).toInt()
     val seconds = totalSeconds % 60
     val minutes = totalSeconds / 60 % 60
     val hours = totalSeconds / 3600
@@ -45,68 +43,82 @@ fun generateTime(time: Long): String {
     )
 }
 
-/**
- * TODO  根据long毫秒数，获得时分秒
- */
-fun getDateFormatByLong(time: Long): String {
-    val totalSeconds = (time / 1000).toInt()
-    val seconds = totalSeconds % 60
-    val minutes = totalSeconds / 60 % 60
-    val hours = totalSeconds / 3600
-    return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds)
+
+fun Long?.yyMmDd(): String {
+    return this?.let {
+        SimpleDateFormat(
+            YYYY_MM_DD, Locale.getDefault()
+        ).format(this)
+    } ?: "--"
 }
 
+fun Long?.hhMmSs(): String {
+    return this?.let {
+        SimpleDateFormat(
+            HH_MM_SS, Locale.getDefault()
+        ).format(this)
+    } ?: "--"
+}
+
+fun String?.fromYyMmDd(): Long {
+    return this?.let {
+        SimpleDateFormat(
+            "yyyy-MM-dd", Locale.getDefault()
+        ).parse(this)?.time ?: System.currentTimeMillis()
+    } ?: System.currentTimeMillis()
+}
 /**
  * TODO  获取时间间隔（天）
  */
-fun getIntervalDays(start: Long): String {
-    val interval = abs(start - System.currentTimeMillis())
+fun Long.daysToNow(): String {
+    val interval = abs(this - System.currentTimeMillis())
     return ceil((interval.toFloat() / (1000 * 60 * 60 * 24)).toDouble()).toString()
 }
 
 /**
+ *  TODO Long时间转换为年月日时分秒
+ */
+fun Long?.yyyyMmDmHhMmSs(): String {
+    return this?.let {
+        SimpleDateFormat(
+            YYYY_MM_DD_HH_MM_SS, Locale.getDefault()
+        ).format(this)
+    } ?: "-:-:-"
+}
+/**
  * TODO  格式化日期对象
  */
-fun date2date(date: Date): Date? {
+fun Date.yyyyMmDmHhMmSs(): String {
     val sdf = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
-    val str = sdf.format(date)
-    try {
-        return sdf.parse(str)
-    } catch (e: Exception) {
-        return null
-    }
+    return sdf.format(this)
 }
 
-/**
- *  TODO 时间对象转换成字符串
- */
-fun date2string(date: Date): String? {
-    val sdf = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
-    return sdf.format(date)
-}
 
 /**
  * TODO  sql时间对象转换成字符串
  */
-fun timeStamp2string(timestamp: Timestamp): String? {
-    val strDate: String
+fun Timestamp.yyyyMmDmHhMmSs(): String {
     val sdf = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
-    strDate = sdf.format(timestamp)
-    return strDate
+    return sdf.format(this)
 }
 
 /**
  * TODO  字符串转换成时间对象
  */
-fun string2date(dateString: String?): Date? {
+fun String?.yyyyMmDmHhMmSsToDate(): Date? {
     val format: DateFormat = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
-    return dateString?.let { format.parse(it) }
+    return this?.let { format.parse(it) }
+}
+
+fun String?.yyyyMmDmHhMmSsToLong(): Long? {
+    val format: DateFormat = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
+    return this?.let { format.parse(it) }?.time
 }
 
 /**
  * TODO  字符串转换成时间对象
  */
-fun string2long(year: String, month: String, day: String): Long {
+fun stringToLong(year: String, month: String, day: String): Long {
     val dateString = "$year-$month-$day"
     val format: DateFormat = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
     return try {
@@ -119,34 +131,22 @@ fun string2long(year: String, month: String, day: String): Long {
 /**
  * TODO  字符串转换成时间对象
  */
-fun string2long(date: String?): Long {
-    val formatDate: Date
+fun String?.yyyyMmDd(): Long? {
     val format: DateFormat = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
-    val ca = format.calendar
-    ca[Calendar.HOUR_OF_DAY] = 0
-    ca.clear(Calendar.MINUTE)
-    ca.clear(Calendar.SECOND)
-    ca.clear(Calendar.MILLISECOND)
-    return try {
-        date?.let { format.parse(it)!!.time } ?: System.currentTimeMillis()
-    } catch (e: ParseException) {
-        System.currentTimeMillis()
-    }
+    return this?.let { format.parse(it) }?.time
 }
 
 /**
  * TODO  Date类型转换为Timestamp类型
  */
-fun date2timestamp(date: Date?): Timestamp? {
-    return if (date == null) {
-        null
-    } else Timestamp(date.time)
+fun Date?.timestamp(): Timestamp? {
+    return this?.let { Timestamp(this.time) }
 }
 
 /**
  *  TODO 获得当前年份
  */
-fun getNowYear(): String? {
+fun getNowYear(): String {
     val sdf = SimpleDateFormat(YYYY, Locale.getDefault())
     return sdf.format(Date())
 }
@@ -154,7 +154,7 @@ fun getNowYear(): String? {
 /**
  *  TODO 获得当前月份
  */
-fun getNowMonth(): String? {
+fun getNowMonth(): String {
     val sdf = SimpleDateFormat(MM, Locale.getDefault())
     return sdf.format(Date())
 }
@@ -162,7 +162,7 @@ fun getNowMonth(): String? {
 /**
  *  TODO 获得当前日期
  */
-fun getNowDay(): String? {
+fun getNowDay(): String {
     val sdf = SimpleDateFormat(DD, Locale.getDefault())
     return sdf.format(Date())
 }
@@ -170,7 +170,7 @@ fun getNowDay(): String? {
 /**
  *  TODO 获得当前年月日
  */
-fun getNowYearMonthDay(): String? {
+fun getNowYearMonthDay(): String {
     val sdf = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
     return sdf.format(Date())
 }
@@ -178,32 +178,17 @@ fun getNowYearMonthDay(): String? {
 /**
  *  TODO Long时间转换为年月日
  */
-fun getNowYearMonthDay(time: Long?): String? {
+fun Long?.getNowYearMonthDay(): String? {
     val sdf = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
-    return sdf.format(Date(time!!))
+    return this?.let { sdf.format(Date(it)) }
 }
 
-/**
- *  TODO string时间转换为年月日时分秒
- */
-fun formatString(currentTime: String?): String? {
-    val format: DateFormat = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
-    return format.format(currentTime)
-}
-
-/**
- *  TODO Long时间转换为年月日时分秒
- */
-fun formatString(currentTime: Long): String? {
-    val format: DateFormat = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
-    return format.format(currentTime)
-}
 
 /**
  * TODO 天数
  */
-fun getDaysByTime(time: Long): Long {
-    return time / (24 * 60 * 60 * 1000L)
+fun Long.days(): Long {
+    return this / (24 * 60 * 60 * 1000L)
 }
 
 /**
@@ -292,23 +277,23 @@ fun getEndTimeOfDay(): Long {
 /**
  * TODO 时间范围内首天
  */
-fun getTimeRangeStart(timeRange: Long): Calendar? {
+fun Long.rangeStart(): Calendar? {
     val ca = Calendar.getInstance()
     ca.add(Calendar.DATE, 1)
     ca[Calendar.HOUR_OF_DAY] = 0
     ca.clear(Calendar.MINUTE)
     ca.clear(Calendar.SECOND)
     ca.clear(Calendar.MILLISECOND)
-    ca.time = Date(ca.timeInMillis - timeRange)
+    ca.time = Date(ca.timeInMillis - this)
     return ca
 }
 
 /**
  * TODO 时间
  */
-fun getCalendarOfTime(time: Long): Calendar? {
+fun Long.calendarOfTime(): Calendar? {
     val ca = Calendar.getInstance()
-    ca.time = Date(time)
+    ca.time = Date(this)
     return ca
 }
 

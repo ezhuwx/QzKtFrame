@@ -138,7 +138,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         mParent?.let { parent ->
             stateDialogDismiss()
             if (currentState == STATE_NET_ERROR || isSkipError || isSkipAllError) {
-                if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+                if (isSkipAllError) {if (isOnceSkip) isSkipAllError = false}
                 else if (isSkipError && !isErrorToastShowed) {
                     ToastUtil().shortShow(R.string.net_error)
                     isErrorToastShowed = true
@@ -185,7 +185,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         mParent?.let { parent ->
             stateDialogDismiss()
             if (currentState == STATE_UNKNOWN_ERROR || isSkipError || isSkipAllError) {
-                if (isSkipAllError) if (isOnceSkip) isSkipAllError = false
+                if (isSkipAllError) {if (isOnceSkip) isSkipAllError = false}
                 else if (isSkipError && !isErrorToastShowed) {
                     ToastUtil().shortShow(R.string.net_error)
                     isErrorToastShowed = true
@@ -224,7 +224,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      * */
     open fun stateLoading() {
         if (currentState == STATE_LOADING || isSkipLoading || isSkipAllLoading) {
-            if (isSkipAllLoading) if (isOnceSkip) isSkipAllLoading = false
+            if (isSkipAllLoading) {if (isOnceSkip) isSkipAllLoading = false}
             else if (isSkipLoading) {
                 stateDialogLoading()
                 if (isOnceSkip) isSkipLoading = false
