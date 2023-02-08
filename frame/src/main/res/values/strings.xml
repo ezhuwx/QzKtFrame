@@ -17,7 +17,7 @@
     <string name="request_invalid">当前请求无效，请稍后再试~</string>
     <string name="request_forbidden">当前请求被禁止。</string>
     <string name="request_unauthorized">当前请求暂未授权。</string>
-    <string name="search">搜索</string>
+    <string name="look_for">查询</string>
     <string name="confirm">确定</string>
     <string name="default_hint">请输入搜索内容~</string>
     <string name="data_decode_failed">数据解析错误~</string>

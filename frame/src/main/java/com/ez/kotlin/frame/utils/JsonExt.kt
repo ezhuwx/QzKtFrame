@@ -50,16 +50,18 @@ fun <T> String?.jsonToObject(cls: Class<T>?): T? {
     return t
 }
 
-fun <T> String?.jsonToObject(): T? {
+fun <T> String?.jsonObject(type: Type): T? {
+    var t: T? = null
     try {
-        return Gson().fromJson(this, object : TypeToken<T?>() {}.type)
+        t = Gson().fromJson(this, type)
+        logE(t.toString())
     } catch (e: Exception) {
         MainScope().launch {
             BaseApplication.instance.getString(R.string.data_decode_failed).shortShow()
             logE("Gson Error", e.message)
         }
     }
-    return null
+    return t
 }
 
 /**
