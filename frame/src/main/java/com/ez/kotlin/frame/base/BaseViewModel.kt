@@ -35,10 +35,10 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
             }
         } catch (e: Exception) {
             //此处接收到BaseRepository里的request抛出的异常，处理后赋值给error
-            logE("Request Error(${e.cause})：${e.message}")
+            logE("$block Request Error(${e.cause})：${e.message}")
             error.value = ExceptionHandler.parseException(e)
         } finally {
-            finally.value = 200
+            finally.value = if (error.value != null) -1 else 200
         }
     }
 
