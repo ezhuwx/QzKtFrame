@@ -1,5 +1,6 @@
 package com.ez.kotlin.frame.binder
 
+import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -10,9 +11,13 @@ import com.ez.kotlin.frame.utils.glideWith
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 import android.graphics.Bitmap
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.animation.Animation
 import android.widget.TextView
+import androidx.annotation.ColorRes
 import androidx.annotation.IntDef
 import androidx.constraintlayout.motion.widget.MotionLayout
 
@@ -20,8 +25,11 @@ import androidx.databinding.InverseBindingListener
 
 import androidx.databinding.BindingAdapter
 import androidx.viewpager.widget.ViewPager
+import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.interfaces.MotionAnimListener
+import com.ez.kotlin.frame.utils.INTERNAL_TIME
 import com.ez.kotlin.frame.utils.addRedStar
+import com.ez.kotlin.frame.utils.isInvalidClick
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 
@@ -350,5 +358,74 @@ object CommonBinder {
         //viewPager
         val viewPager = (view.rootView as View).findViewById<ViewPager>(id)
         view.setupWithViewPager(viewPager)
+    }
+
+    /**
+     * TODO colorSpan 方法适配
+     *
+     */
+    @BindingAdapter(value = ["spanText", "spanStart", "spanEnd", "spanColor"], requireAll = false)
+    @JvmStatic
+    fun setColorSpan(
+        view: TextView,
+        spanText: String?,
+        spanStart: Int,
+        spanEnd: Int?,
+        @ColorRes spanColor: Int?
+    ) {
+        val length = spanText?.length ?: 0
+        if (spanStart < length) view.text = SpannableString(spanText ?: "").apply {
+            setSpan(
+                ForegroundColorSpan(spanColor ?: view.context.getColor(R.color.colorPrimary)),
+                spanStart,
+                spanEnd ?: spanText?.length ?: 0,
+                android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
+    /**
+     * TODO ViewPager currentItem
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["pagerCurrent"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setViewPagerCurrent(
+        view: ViewPager,
+        pagerCurrent: Int?
+    ) {
+        var listener: ViewTreeObserver.OnGlobalLayoutListener? = null
+        listener = ViewTreeObserver.OnGlobalLayoutListener {
+            view.currentItem = pagerCurrent ?: 0
+            view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
+        view.viewTreeObserver.addOnGlobalLayoutListener(listener)
+    }
+
+
+    /**
+     * TODO ViewPager currentItem
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["invalidClick", "clickDuration"],
+        requireAll = false
+    )
+    @JvmStatic
+    fun setInvalidClick(
+        view: View,
+        invalidClick: (View) -> Unit,
+        duration: Long?
+    ) {
+        view.setOnClickListener {
+            if (!isInvalidClick(view, duration ?: INTERNAL_TIME)) {
+                invalidClick(it)
+            }
+        }
     }
 }

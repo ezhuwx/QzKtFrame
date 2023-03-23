@@ -2,10 +2,9 @@ package com.ez.kotlin.frame.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.NetworkInfo
+import android.net.*
 import android.telephony.TelephonyManager
+import androidx.core.content.ContextCompat.getSystemService
 import com.ez.kotlin.frame.base.BaseApplication
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -192,7 +191,8 @@ object NetWorkUtil {
         val capabilities = manager.getNetworkCapabilities(activeNetwork)
         //属性
         val linkProperties = manager.getLinkProperties(activeNetwork)
-        val info = linkProperties!!.httpProxy
-        return !capabilities!!.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN) || info != null
+        val info = linkProperties?.httpProxy
+        return capabilities != null && !capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
+                || info != null && info.host != null
     }
 }

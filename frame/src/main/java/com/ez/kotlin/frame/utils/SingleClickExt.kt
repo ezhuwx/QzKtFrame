@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
  * E-mail : ezhuwx@163.com
  * Update on 15:02 by ezhuwx
  */
-private const val INTERNAL_TIME: Long = 1000
+const val INTERNAL_TIME: Long = 1000
 
 /**
  * Whether this click event is invalid.

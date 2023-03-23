@@ -182,16 +182,6 @@ abstract class BaseRetrofitClient<Api> {
         return System.currentTimeMillis()
     }
 
-    open fun isProxy(): Boolean {
-        val proxyPort: Int
-        //获取代理主机
-        val proxyAddress: String? = System.getProperty("http.proxyHost")
-        //获取代理端口
-        val portStr = System.getProperty("http.proxyPort")
-        proxyPort = (portStr ?: "-1").toInt()
-        return !TextUtils.isEmpty(proxyAddress) && proxyPort != -1
-    }
-
     /**
      *  允许服务器与系统最大时间差
      *  （<0不校验）
