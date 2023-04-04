@@ -77,8 +77,6 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
      *  */
     override fun onRequestSuccess(it: Boolean) {
         stateMain()
-        isSkipAllLoading = true
-        isSkipError = true
     }
 
     /**

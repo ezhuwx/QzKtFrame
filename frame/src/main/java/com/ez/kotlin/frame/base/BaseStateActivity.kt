@@ -84,8 +84,6 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      *  */
     override fun onRequestSuccess(it: Boolean) {
         stateMain()
-        isSkipAllLoading = true
-        isSkipError = true
     }
 
     /**

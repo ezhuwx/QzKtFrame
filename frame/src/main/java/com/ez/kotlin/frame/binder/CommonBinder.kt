@@ -1,37 +1,31 @@
 package com.ez.kotlin.frame.binder
 
-import android.animation.ValueAnimator
 import android.content.res.ColorStateList
-import android.graphics.drawable.Drawable
-import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import androidx.databinding.*
-import com.ez.kotlin.frame.utils.glideWith
-import com.scwang.smart.refresh.layout.SmartRefreshLayout
-import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.Animation
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
-import androidx.annotation.IntDef
 import androidx.constraintlayout.motion.widget.MotionLayout
-
-import androidx.databinding.InverseBindingListener
-
-import androidx.databinding.BindingAdapter
+import androidx.databinding.*
 import androidx.viewpager.widget.ViewPager
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.interfaces.MotionAnimListener
 import com.ez.kotlin.frame.utils.INTERNAL_TIME
 import com.ez.kotlin.frame.utils.addRedStar
+import com.ez.kotlin.frame.utils.glideWith
 import com.ez.kotlin.frame.utils.isInvalidClick
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
+import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 
 
 /**
@@ -419,13 +413,14 @@ object CommonBinder {
     @JvmStatic
     fun setInvalidClick(
         view: View,
-        invalidClick: (View) -> Unit,
+        invalidClick: View.OnClickListener,
         duration: Long?
     ) {
         view.setOnClickListener {
             if (!isInvalidClick(view, duration ?: INTERNAL_TIME)) {
-                invalidClick(it)
+                invalidClick.onClick(it)
             }
         }
     }
+
 }
