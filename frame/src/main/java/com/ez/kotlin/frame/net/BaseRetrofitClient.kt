@@ -40,6 +40,13 @@ abstract class BaseRetrofitClient<Api> {
         get() = getMaxAllowDiffTime()
 
     /**
+     * ssl证书忽略
+     * */
+    private val isSSLIgnore
+        get() = getSSLIgnore()
+
+
+    /**
      * 请求的地址
      * */
     private val baseUrl
@@ -156,6 +163,13 @@ abstract class BaseRetrofitClient<Api> {
             callTimeout(TIME_OUT, TimeUnit.SECONDS)
             //错误重连
             retryOnConnectionFailure(true)
+            //证书忽略
+            if (isSSLIgnore) {
+                sslSocketFactory(
+                    TLSSocketFactory(SSLSocketClient.sSLSocketFactory), SSLSocketClient.trustManager
+                )
+                hostnameVerifier(SSLSocketClient.hostnameVerifier)
+            }
         }
         return builder.build()
     }
@@ -187,6 +201,11 @@ abstract class BaseRetrofitClient<Api> {
      *  （<0不校验）
      * */
     abstract fun getMaxAllowDiffTime(): Int
+
+    /**
+     * ssl证书忽略
+     */
+    abstract fun getSSLIgnore(): Boolean
 
     /**
      *  添加请求头
