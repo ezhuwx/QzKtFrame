@@ -1,7 +1,6 @@
 package com.ez.kotlin.frame.net
 
 import com.ez.kotlin.frame.utils.json
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
@@ -20,7 +19,7 @@ abstract class BaseRepository {
         return withContext(Dispatchers.IO) {
             call.invoke()
         }.apply {
-            onResult(code, message)
+            onResult(baseCode, baseMessage)
         }
     }
 

@@ -11,12 +11,12 @@ abstract class BaseResponseData {
     /**
      * 状态码
      */
-    open var code: String = ""
+    open var baseCode: String = ""
 
     /**
      * 提示信息
      */
-    open var message: String = ""
+    open var baseMessage: String = ""
 }
 
 
