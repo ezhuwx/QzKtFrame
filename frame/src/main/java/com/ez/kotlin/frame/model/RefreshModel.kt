@@ -1,9 +1,12 @@
 package com.ez.kotlin.frame.model
 
 import com.ez.kotlin.frame.base.*
+import com.ez.kotlin.frame.interfaces.OnStateChangeListener
 import com.ez.kotlin.frame.utils.SingleLiveEvent
+import com.ez.kotlin.frame.utils.shortShow
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
+import com.scwang.smart.refresh.layout.listener.OnStateChangedListener
 
 /**
  * @author : ezhuwx
@@ -75,6 +78,7 @@ class RefreshModel : BaseViewModel() {
         call: () -> Unit,
     ) where E : BaseViewModel {
         this.call = call
+        view.addStateChangeListener(StateListener())
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isLoadMore = false
@@ -100,6 +104,7 @@ class RefreshModel : BaseViewModel() {
         call: () -> Unit,
     ) where E : BaseViewModel {
         this.call = call
+        view.addStateChangeListener(StateListener())
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isLoadMore = false
@@ -159,4 +164,24 @@ class RefreshModel : BaseViewModel() {
     fun loadError() {
         this.dataSize.value = -1
     }
+
+    inner class StateListener : OnStateChangeListener {
+        override fun stateError(errorMsg: String): Boolean {
+            if (isLoadMore) {
+                loadError()
+                errorMsg.shortShow()
+            }
+            return isLoadMore
+        }
+
+        override fun stateLoading(): Boolean {
+            return isLoadMore
+        }
+
+        override fun stateEmpty(): Boolean {
+            return isLoadMore
+        }
+
+    }
+
 }
