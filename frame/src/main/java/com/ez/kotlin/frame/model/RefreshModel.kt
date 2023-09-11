@@ -6,7 +6,6 @@ import com.ez.kotlin.frame.utils.SingleLiveEvent
 import com.ez.kotlin.frame.utils.shortShow
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
-import com.scwang.smart.refresh.layout.listener.OnStateChangedListener
 
 /**
  * @author : ezhuwx
@@ -47,10 +46,10 @@ class RefreshModel : BaseViewModel() {
     var page = PAGE_FIRST_INDEX
 
     /**
-     * 是否是加载
+     * 是否是刷新或加载
      *
      * */
-    var isLoadMore = false
+    var isRefreshOrLoading = false
 
     /**
      * 单页大小
@@ -81,7 +80,7 @@ class RefreshModel : BaseViewModel() {
         view.addStateChangeListener(StateListener())
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
-                isLoadMore = false
+                isRefreshOrLoading = true
                 //重置页码
                 page = PAGE_FIRST_INDEX
                 //请求
@@ -89,10 +88,11 @@ class RefreshModel : BaseViewModel() {
             }
 
             override fun onLoadMore(refreshLayout: RefreshLayout) {
-                isLoadMore = true
+                isRefreshOrLoading = true
                 //请求
                 call()
             }
+
         }
     }
 
@@ -107,7 +107,7 @@ class RefreshModel : BaseViewModel() {
         view.addStateChangeListener(StateListener())
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
-                isLoadMore = false
+                isRefreshOrLoading = true
                 //重置页码
                 page = PAGE_FIRST_INDEX
                 //请求
@@ -115,7 +115,7 @@ class RefreshModel : BaseViewModel() {
             }
 
             override fun onLoadMore(refreshLayout: RefreshLayout) {
-                isLoadMore = true
+                isRefreshOrLoading = true
                 //请求
                 call()
             }
@@ -131,7 +131,7 @@ class RefreshModel : BaseViewModel() {
         this.call = call
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
-                isLoadMore = false
+                isRefreshOrLoading = true
                 //重置页码
                 page = PAGE_FIRST_INDEX
                 //请求
@@ -139,7 +139,7 @@ class RefreshModel : BaseViewModel() {
             }
 
             override fun onLoadMore(refreshLayout: RefreshLayout) {
-                isLoadMore = true
+                isRefreshOrLoading = true
                 //请求
                 call()
             }
@@ -153,7 +153,7 @@ class RefreshModel : BaseViewModel() {
     fun finished(dataSize: Int) {
         this.isNoMoreData.value = dataSize < pageSize.value!!
         this.dataSize.value = dataSize
-        isLoadMore = false
+        isRefreshOrLoading = false
         page++
     }
 
@@ -167,19 +167,19 @@ class RefreshModel : BaseViewModel() {
 
     inner class StateListener : OnStateChangeListener {
         override fun stateError(errorMsg: String): Boolean {
-            if (isLoadMore) {
+            if (isRefreshOrLoading) {
                 loadError()
                 errorMsg.shortShow()
             }
-            return isLoadMore
+            return isRefreshOrLoading
         }
 
         override fun stateLoading(): Boolean {
-            return isLoadMore
+            return isRefreshOrLoading
         }
 
         override fun stateEmpty(): Boolean {
-            return isLoadMore
+            return isRefreshOrLoading
         }
 
     }

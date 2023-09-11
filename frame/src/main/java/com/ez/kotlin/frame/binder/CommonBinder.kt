@@ -39,7 +39,7 @@ import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 
 object CommonBinder {
     /**
-     * TODO Glide 方法适配
+     *  Glide 方法适配
      *
      * @param view
      * @param url
@@ -52,7 +52,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO ImageSrc 方法适配
+     *  ImageSrc 方法适配
      *
      * @param view
      * @param src
@@ -64,7 +64,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO ImageSrc 方法适配
+     *  ImageSrc 方法适配
      *
      * @param view
      * @param bitmap
@@ -76,7 +76,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO backgroundColor 方法适配
+     *  backgroundColor 方法适配
      *
      * @param view
      * @param backgroundColor
@@ -88,7 +88,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO backgroundColor 方法适配
+     *  backgroundColor 方法适配
      *
      * @param view
      * @param backgroundRes
@@ -100,7 +100,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO OnFocusChangeListener 方法适配
+     *  OnFocusChangeListener 方法适配
      *
      */
     @InverseBindingAdapter(attribute = "hasFocus", event = "onFocusChanged")
@@ -124,7 +124,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO animation 方法适配
+     *  animation 方法适配
      *
      * @param view
      */
@@ -135,7 +135,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO viewTint 方法适配
+     *  viewTint 方法适配
      *
      * @param view
      */
@@ -146,7 +146,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO 下拉刷新SmartRefreshLayout 方法适配
+     *  下拉刷新SmartRefreshLayout 方法适配
      * @param dataSize 数据大小
      * @param pageSize 每页大小
      * @param listener  监听
@@ -185,7 +185,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO 下拉刷新SmartRefreshLayout 方法适配
+     *  下拉刷新SmartRefreshLayout 方法适配
      * @param isNoMoreData  是否无更多数据
      */
     @BindingAdapter(
@@ -214,7 +214,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO 添加红星
+     *  添加红星
      *
      * @param view
      */
@@ -230,7 +230,7 @@ object CommonBinder {
 
 
     /**
-     * TODO TextInputLayout
+     *  TextInputLayout
      *
      * @param view
      */
@@ -258,7 +258,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO completeListener
+     *  completeListener
      *
      * @param view
      */
@@ -279,7 +279,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO completeListener
+     *  completeListener
      *
      * @param view
      */
@@ -335,7 +335,7 @@ object CommonBinder {
 
 
     /**
-     * TODO 绑定ViewPager
+     *  绑定ViewPager
      *
      * @param view
      */
@@ -356,7 +356,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO colorSpan 方法适配
+     *  colorSpan 方法适配
      *
      */
     @BindingAdapter(value = ["spanText", "spanStart", "spanEnd", "spanColor"], requireAll = false)
@@ -380,7 +380,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO ViewPager currentItem
+     *  ViewPager currentItem
      *
      * @param view
      */
@@ -403,7 +403,7 @@ object CommonBinder {
 
 
     /**
-     * TODO ViewPager currentItem
+     *  ViewPager currentItem
      *
      * @param view
      */
@@ -425,7 +425,7 @@ object CommonBinder {
     }
 
     /**
-     * TODO glide load 方法适配
+     *  glide load 方法适配
      *
      */
     @BindingAdapter(value = ["load","loadRadius"], requireAll = false)
