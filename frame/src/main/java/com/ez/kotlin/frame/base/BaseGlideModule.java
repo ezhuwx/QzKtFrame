@@ -50,7 +50,7 @@ public final class BaseGlideModule extends AppGlideModule {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 // .sslSocketFactory(overLockCard().getSocketFactory())
                 .hostnameVerifier((hostname, session) -> true);
-        registry.append(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder.build()));
+        registry.append(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder));
     }
 
     /**

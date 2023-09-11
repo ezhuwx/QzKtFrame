@@ -11,7 +11,7 @@ import kotlin.math.ceil
 
 /**
  * @author : ezhuwx
- * Describe :
+ * Describe :日期拓展
  * Designed on 2021/10/28
  * E-mail : ezhuwx@163.com
  * Update on 14:44 by ezhuwx
@@ -25,7 +25,7 @@ private const val MM = "MM"
 private const val DD = "dd"
 
 /**
- *   TODO  根据long毫秒数，获得时分秒
+ *     根据long毫秒数，获得时分秒
  */
 fun Long.hhMmSsColon(): String {
     val totalSeconds = (this / 1000).toInt()
@@ -67,8 +67,9 @@ fun String?.fromYyMmDd(): Long {
         ).parse(this)?.time ?: System.currentTimeMillis()
     } ?: System.currentTimeMillis()
 }
+
 /**
- * TODO  获取时间间隔（天）
+ *   获取时间间隔（天）
  */
 fun Long.daysToNow(): String {
     val interval = abs(this - System.currentTimeMillis())
@@ -76,7 +77,7 @@ fun Long.daysToNow(): String {
 }
 
 /**
- *  TODO Long时间转换为年月日时分秒
+ *   Long时间转换为年月日时分秒
  */
 fun Long?.yyyyMmDmHhMmSs(): String {
     return this?.let {
@@ -85,8 +86,9 @@ fun Long?.yyyyMmDmHhMmSs(): String {
         ).format(this)
     } ?: "-:-:-"
 }
+
 /**
- * TODO  格式化日期对象
+ *   格式化日期对象
  */
 fun Date.yyyyMmDmHhMmSs(): String {
     val sdf = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
@@ -95,7 +97,7 @@ fun Date.yyyyMmDmHhMmSs(): String {
 
 
 /**
- * TODO  sql时间对象转换成字符串
+ *   sql时间对象转换成字符串
  */
 fun Timestamp.yyyyMmDmHhMmSs(): String {
     val sdf = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
@@ -103,7 +105,7 @@ fun Timestamp.yyyyMmDmHhMmSs(): String {
 }
 
 /**
- * TODO  字符串转换成时间对象
+ *   字符串转换成时间对象
  */
 fun String?.yyyyMmDmHhMmSsToDate(): Date? {
     val format: DateFormat = SimpleDateFormat(YYYY_MM_DD_HH_MM_SS, Locale.getDefault())
@@ -116,7 +118,7 @@ fun String?.yyyyMmDmHhMmSsToLong(): Long? {
 }
 
 /**
- * TODO  字符串转换成时间对象
+ *   字符串转换成时间对象
  */
 fun stringToLong(year: String, month: String, day: String): Long {
     val dateString = "$year-$month-$day"
@@ -129,7 +131,7 @@ fun stringToLong(year: String, month: String, day: String): Long {
 }
 
 /**
- * TODO  字符串转换成时间对象
+ *   字符串转换成时间对象
  */
 fun String?.yyyyMmDd(): Long? {
     val format: DateFormat = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
@@ -137,14 +139,14 @@ fun String?.yyyyMmDd(): Long? {
 }
 
 /**
- * TODO  Date类型转换为Timestamp类型
+ *   Date类型转换为Timestamp类型
  */
 fun Date?.timestamp(): Timestamp? {
     return this?.let { Timestamp(this.time) }
 }
 
 /**
- *  TODO 获得当前年份
+ *   获得当前年份
  */
 fun getNowYear(): String {
     val sdf = SimpleDateFormat(YYYY, Locale.getDefault())
@@ -152,7 +154,7 @@ fun getNowYear(): String {
 }
 
 /**
- *  TODO 获得当前月份
+ *   获得当前月份
  */
 fun getNowMonth(): String {
     val sdf = SimpleDateFormat(MM, Locale.getDefault())
@@ -160,7 +162,7 @@ fun getNowMonth(): String {
 }
 
 /**
- *  TODO 获得当前日期
+ *   获得当前日期
  */
 fun getNowDay(): String {
     val sdf = SimpleDateFormat(DD, Locale.getDefault())
@@ -168,7 +170,7 @@ fun getNowDay(): String {
 }
 
 /**
- *  TODO 获得当前年月日
+ *   获得当前年月日
  */
 fun getNowYearMonthDay(): String {
     val sdf = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
@@ -176,7 +178,7 @@ fun getNowYearMonthDay(): String {
 }
 
 /**
- *  TODO Long时间转换为年月日
+ *   Long时间转换为年月日
  */
 fun Long?.getNowYearMonthDay(): String? {
     val sdf = SimpleDateFormat(YYYY_MM_DD, Locale.getDefault())
@@ -185,14 +187,14 @@ fun Long?.getNowYearMonthDay(): String? {
 
 
 /**
- * TODO 天数
+ *  天数
  */
 fun Long.days(): Long {
     return this / (24 * 60 * 60 * 1000L)
 }
 
 /**
- * TODO 十天内
+ *  十天内
  */
 fun getTenStartTime(): Long {
     val c = Calendar.getInstance()
@@ -204,7 +206,7 @@ fun getTenStartTime(): Long {
 }
 
 /**
- * TODO 15天内
+ *  15天内
  */
 fun getFifteenStartTime(): Long {
     val c = Calendar.getInstance()
@@ -215,7 +217,7 @@ fun getFifteenStartTime(): Long {
 }
 
 /**
- * TODO 三十天内
+ *  三十天内
  */
 fun getThirtyStartTime(): Long {
     val c = Calendar.getInstance()
@@ -226,7 +228,7 @@ fun getThirtyStartTime(): Long {
 }
 
 /**
- * TODO 近一年
+ *  近一年
  */
 fun getNearYearStartTime(): Calendar? {
     val c = Calendar.getInstance()
@@ -237,7 +239,7 @@ fun getNearYearStartTime(): Calendar? {
 }
 
 /**
- * TODO 半月
+ *  半月
  */
 fun getHalfMonthStartTime(): Long {
     val ca = Calendar.getInstance()
@@ -250,7 +252,7 @@ fun getHalfMonthStartTime(): Long {
 }
 
 /**
- * TODO 本日
+ *  本日
  */
 fun getFirstTimeOfDay(): Long {
     val ca = Calendar.getInstance()
@@ -262,7 +264,7 @@ fun getFirstTimeOfDay(): Long {
 }
 
 /**
- * TODO 本日截至时间
+ *  本日截至时间
  */
 fun getEndTimeOfDay(): Long {
     val ca = Calendar.getInstance()
@@ -275,7 +277,7 @@ fun getEndTimeOfDay(): Long {
 }
 
 /**
- * TODO 时间范围内首天
+ *  时间范围内首天
  */
 fun Long.rangeStart(): Calendar? {
     val ca = Calendar.getInstance()
@@ -289,7 +291,7 @@ fun Long.rangeStart(): Calendar? {
 }
 
 /**
- * TODO 时间
+ *  时间
  */
 fun Long.calendarOfTime(): Calendar? {
     val ca = Calendar.getInstance()
@@ -298,14 +300,14 @@ fun Long.calendarOfTime(): Calendar? {
 }
 
 /**
- *TODO  获取本周时间
+ *  获取本周时间
  */
 fun getTimeOfWeekRange(): Long {
     return 7 * 24 * 60 * 60 * 1000L
 }
 
 /**
- * TODO 本周
+ *  本周
  */
 fun getTimeOfWeekStart(): Long {
     val ca = Calendar.getInstance()
@@ -319,7 +321,7 @@ fun getTimeOfWeekStart(): Long {
 }
 
 /**
- *TODO  获取本月时间
+ *  获取本月时间
  */
 fun getTimeOfMonthRange(): Long {
     val ca = Calendar.getInstance()
@@ -327,7 +329,7 @@ fun getTimeOfMonthRange(): Long {
 }
 
 /**
- * TODO 本月
+ *  本月
  */
 fun getTimeOfMonthStart(): Long {
     val ca = Calendar.getInstance()
@@ -340,7 +342,7 @@ fun getTimeOfMonthStart(): Long {
 }
 
 /**
- * TODO 获取本年时间
+ *  获取本年时间
  */
 fun getTimeOfYearRange(): Long {
     val ca = Calendar.getInstance()
@@ -348,7 +350,7 @@ fun getTimeOfYearRange(): Long {
 }
 
 /**
- * TODO 本年
+ *  本年
  */
 fun getTimeOfYearStart(): Long {
     val ca = Calendar.getInstance()
@@ -361,7 +363,7 @@ fun getTimeOfYearStart(): Long {
 }
 
 /**
- * TODO 获取本季时间
+ *  获取本季时间
  */
 fun getTimeOfSeasonRange(): Long {
     val c = Calendar.getInstance()
@@ -376,6 +378,7 @@ fun getTimeOfSeasonRange(): Long {
             c[Calendar.MONTH] = 2
             days += c.getActualMaximum(Calendar.DAY_OF_MONTH)
         }
+
         month <= 6 -> {
             c[Calendar.MONTH] = 3
             days += c.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -384,6 +387,7 @@ fun getTimeOfSeasonRange(): Long {
             c[Calendar.MONTH] = 5
             days += c.getActualMaximum(Calendar.DAY_OF_MONTH)
         }
+
         month <= 9 -> {
             c[Calendar.MONTH] = 6
             days += c.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -392,6 +396,7 @@ fun getTimeOfSeasonRange(): Long {
             c[Calendar.MONTH] = 8
             days += c.getActualMaximum(Calendar.DAY_OF_MONTH)
         }
+
         else -> {
             c[Calendar.MONTH] = 9
             days += c.getActualMaximum(Calendar.DAY_OF_MONTH)
@@ -405,7 +410,7 @@ fun getTimeOfSeasonRange(): Long {
 }
 
 /**
- *TODO  本季
+ *  本季
  */
 fun getTimeOfSeasonStart(): Long {
     return getCurrQuarter(getQuarter())
@@ -413,7 +418,7 @@ fun getTimeOfSeasonStart(): Long {
 
 
 /**
- * TODO 获取当前季度
+ *  获取当前季度
  */
 private fun getQuarter(): Int {
     val c = Calendar.getInstance()
@@ -422,12 +427,15 @@ private fun getQuarter(): Int {
         month <= 3 -> {
             1
         }
+
         month <= 6 -> {
             2
         }
+
         month <= 9 -> {
             3
         }
+
         else -> {
             4
         }
@@ -435,7 +443,7 @@ private fun getQuarter(): Int {
 }
 
 /**
- *TODO  获取某季度的第一天
+ *  获取某季度的第一天
  *
  * @param num 第几季度
  */
@@ -447,18 +455,22 @@ fun getCurrQuarter(num: Int): Long {
             quarterCalendar[quarterCalendar[Calendar.YEAR], 0] = 1
             return quarterCalendar.timeInMillis
         }
+
         2 -> {
             quarterCalendar[quarterCalendar[Calendar.YEAR], 3] = 1
             return quarterCalendar.timeInMillis
         }
+
         3 -> {
             quarterCalendar[quarterCalendar[Calendar.YEAR], 6] = 1
             return quarterCalendar.timeInMillis
         }
+
         4 -> {
             quarterCalendar[quarterCalendar[Calendar.YEAR], 9] = 1
             return quarterCalendar.timeInMillis
         }
+
         else -> {
         }
     }
@@ -466,7 +478,7 @@ fun getCurrQuarter(num: Int): Long {
 }
 
 /**
- * TODO 根据起始时间和时间范围获取截止时间
+ *  根据起始时间和时间范围获取截止时间
  */
 fun getRangeTime(time: Long, range: Long): Calendar? {
     val ca = Calendar.getInstance()
@@ -475,7 +487,7 @@ fun getRangeTime(time: Long, range: Long): Calendar? {
 }
 
 /**
- *TODO 以指定的格式格式化日期字符串
+ * 以指定的格式格式化日期字符串
  *
  * @param pattern     字符串的格式
  * @param currentDate 被格式化日期
@@ -491,7 +503,7 @@ fun formatDate(currentDate: Date?, pattern: String?): String? {
 }
 
 /**
- * TODO 获取-农历年月日
+ *  获取-农历年月日
  */
 fun getLunarYearMonthDay(SY: Int, SM: Int, SD: Int): String {
     TimeZone.setDefault(TimeZone.getTimeZone("GMT+08"))
@@ -745,4 +757,148 @@ private fun getDay(): Int {
 private fun getYearCyl(): Int {
     return yearCyl
 }
+
+/**
+ * 格式化为：yyyy-MM-dd HH:mm:ss
+ */
+fun Long?.toYyMmDdHhMmSs(): String {
+    return this?.let {
+        SimpleDateFormat(
+            "yyyy-MM-dd HH:mm:ss", Locale.getDefault()
+        ).format(this)
+    } ?: "-:-:-"
+}
+
+/**
+ * 格式化为：yyyy_MM_dd_HH_mm_ss
+ */
+fun Long?.toYyMmDdHhMmSsUnder(): String {
+    return this?.let {
+        SimpleDateFormat(
+            "yyyy_MM_dd_HH_mm_ss", Locale.getDefault()
+        ).format(this)
+    } ?: "-"
+}
+
+/**
+ * 格式化为：IOS8601 2017-06-14T00:00:00.000+08:00
+ */
+fun Long?.toIOS8601(): String {
+    return this?.let {
+        SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", Locale.getDefault()
+        ).format(this).dropLast(2) + ":00"
+    } ?: "-"
+}
+
+/**
+ * 格式化为：IOS8601 2017-06-14T00:00:00.000+08:00
+ */
+fun String?.fromIOS8601(): Long {
+    return this?.removeSuffix(":00").plus("00").let {
+        SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm:ss.SSSZZ", Locale.getDefault()
+        ).parse(it)?.time ?: System.currentTimeMillis()
+    }
+}
+
+/**
+ * 格式化为：yyyy-MM
+ */
+fun Long?.toYyMm(): String {
+    return this?.let {
+        SimpleDateFormat(
+            "yyyy-MM", Locale.getDefault()
+        ).format(this)
+    } ?: "--"
+}
+
+/**
+ * 格式化为：yyyy-MM-dd
+ */
+fun Long?.toYyMmDd(): String {
+    return this?.let {
+        SimpleDateFormat(
+            "yyyy-MM-dd", Locale.getDefault()
+        ).format(this)
+    } ?: "--"
+}
+
+/**
+ * 格式化为：HH:mm:ss
+ */
+fun Long?.toHhMmSs(): String {
+    return this?.let {
+        SimpleDateFormat(
+            "HH:mm:ss", Locale.getDefault()
+        ).format(this)
+    } ?: "--"
+}
+
+/**
+ *  十天内
+ */
+fun beforeTenDays(): Long {
+    val c = Calendar.getInstance()
+    c.time = Date()
+    c.add(Calendar.DATE, -10)
+    c.set(Calendar.HOUR_OF_DAY, 0)
+    c.set(Calendar.MINUTE, 0)
+    c.set(Calendar.SECOND, 0)
+    val d = c.time
+    return d.time
+}
+
+/**
+ *  三个月前
+ */
+fun beforeThreeMonths(): Long {
+    val c = Calendar.getInstance()
+    c.time = Date()
+    c.add(Calendar.MONTH, -2)
+    c.add(Calendar.DATE, 0)
+    c.set(Calendar.HOUR_OF_DAY, 0)
+    c.set(Calendar.MINUTE, 0)
+    c.set(Calendar.SECOND, 0)
+    val d = c.time
+    return d.time
+}
+
+/**
+ *  格式化为：yyyy-MM-dd HH
+ */
+fun Date.yyyyMmDdHh(): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH", Locale.getDefault())
+    return sdf.format(this)
+}
+
+/**
+ *  格式化为：yyyy-MM-dd HH
+ */
+fun Long?.yyyyMmDdHh(): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH", Locale.getDefault())
+    return sdf.format(this)
+}
+
+fun String?.yyMMDDStart(): Long {
+    val ca = Calendar.getInstance()
+    ca.time = Date().apply { time = yyyyMmDd() ?: System.currentTimeMillis() }
+    ca[Calendar.HOUR_OF_DAY] = 0
+    ca.clear(Calendar.MINUTE)
+    ca.clear(Calendar.SECOND)
+    ca.clear(Calendar.MILLISECOND)
+    return ca.timeInMillis
+}
+
+fun String?.yyMMDDEnd(): Long {
+    val ca = Calendar.getInstance()
+    ca.time = Date().apply { time = yyyyMmDd() ?: System.currentTimeMillis() }
+    ca[Calendar.HOUR_OF_DAY] = 0
+    ca.set(Calendar.HOUR_OF_DAY, 23)
+    ca.set(Calendar.MINUTE, 59)
+    ca.set(Calendar.SECOND, 59)
+    ca.set(Calendar.MILLISECOND, 999)
+    return ca.timeInMillis
+}
+
 

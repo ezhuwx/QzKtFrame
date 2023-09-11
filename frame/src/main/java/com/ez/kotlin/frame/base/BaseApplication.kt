@@ -21,11 +21,8 @@ import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
-import kotlin.system.exitProcess
-import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.utils.DayNightMode
 import com.ez.kotlin.frame.utils.MMKVUtil
-import com.ez.kotlin.frame.utils.switchDayNightMode
 
 abstract class BaseApplication : Application() {
     //activity集合
@@ -99,7 +96,7 @@ abstract class BaseApplication : Application() {
         )
         //保存的深色模式设置
         dayNightMode = DayNightMode.valueOf(
-            MMKVUtil.mmkv.getString(
+            MMKVUtil.mmkv.decodeString(
                 DayNightMode::class.simpleName,
                 DayNightMode.SYSTEM.name
             )!!

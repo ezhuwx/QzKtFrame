@@ -74,7 +74,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    override fun onRequestStart(it: Boolean) {
+    override fun onRequestStart(requestCode: String, it: Boolean) {
         isErrorToastShowed = false
         stateLoading()
     }
@@ -82,27 +82,27 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    override fun onRequestSuccess(it: Boolean) {
+    override fun onRequestSuccess(requestCode: String, it: Boolean) {
         stateMain()
     }
 
     /**
      *  接口请求完毕，子类可以重写此方法做一些操作
      *  */
-    override fun onRequestFinally(it: Int?) {
+    override fun onRequestFinally(requestCode: String, it: Int?) {
     }
 
     /**
      *  接口请求出错，子类可以重写此方法做一些操作
      *  */
-    override fun onRequestError(it: Exception?) {
+    override fun onRequestError(requestCode: String, it: Exception?) {
         //处理一些已知异常
         it?.run {
             if (NetWorkUtil.isNoProxyConnected(this@BaseStateActivity)) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {
-                        onServiceError(it.code, it.message)
+                        onServiceError(requestCode, it.code, it.message)
                     }
                     //正常错误显示
                     is ResponseException -> {
@@ -124,7 +124,7 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
      * 服务器特殊错误处理
      * ‘登录超时’等
      * */
-    override fun onServiceError(code: Int, message: String?) {
+    override fun onServiceError(requestCode: String, code: Int, message: String?) {
 
     }
 
@@ -163,8 +163,8 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
                     viewNetError = parent.findViewById(R.id.view_net_error)
                     //错误重试事件
                     parent.findViewById<View>(R.id.view_net_error_tv)
-                        .setOnClickListener { v: View? ->
-                            if (!isInvalidClick(v!!)) {
+                        .setOnClickListener { v ->
+                            if (!isInvalidClick(v)) {
                                 onErrorOrEmptyRetry(true)
                             }
                         }
@@ -220,8 +220,8 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
                     }
                     //错误重试事件
                     parent.findViewById<View>(R.id.view_unknown_error_tv)
-                        .setOnClickListener { v: View? ->
-                            if (!isInvalidClick(v!!)) {
+                        .setOnClickListener { v ->
+                            if (!isInvalidClick(v)) {
                                 onErrorOrEmptyRetry(true)
                             }
                         }
@@ -278,8 +278,8 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
                     }
                     //无数据重新获取事件
                     parent.findViewById<View>(R.id.view_empty_tv)
-                        .setOnClickListener { v: View? ->
-                            if (!isInvalidClick(v!!)) {
+                        .setOnClickListener { v ->
+                            if (!isInvalidClick(v)) {
                                 onErrorOrEmptyRetry(false)
                             }
                         }

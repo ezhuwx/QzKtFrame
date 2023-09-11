@@ -1,13 +1,19 @@
 package com.ez.kotlin.frame.utils
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
+import android.widget.ImageView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.MemoryCategory
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication
+import me.jessyan.autosize.utils.AutoSizeUtils
 import java.lang.IllegalArgumentException
 import java.util.*
 
@@ -35,15 +41,23 @@ private fun isValidContext(context: AppCompatActivity?): Boolean {
     return context != null && !context.isDestroyed && !context.isFinishing
 }
 
-fun glideWith(context: AppCompatActivity?): RequestManager {
+fun glideWith(
+    context: AppCompatActivity,
+    radius: Int? = null,
+    @DrawableRes errorResId: Int = R.drawable.image_error,
+    skipMemoryCache: Boolean = false,
+    diskCacheStrategy: DiskCacheStrategy = DiskCacheStrategy.DATA
+): RequestManager {
     try {
         if (isValidContext(context)) {
-            return Glide.with(context!!)
+            return Glide.with(context)
                 .setDefaultRequestOptions(
                     RequestOptions()
+                        .transform(RoundedCorners(radius.pxDp(context) ?: 1))
                         .placeholder(randomColorHolder())
-                        .error(R.drawable.image_error)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(skipMemoryCache)
+                        .error(errorResId)
+                        .diskCacheStrategy(diskCacheStrategy)
                 )
         }
     } catch (e: IllegalArgumentException) {
@@ -52,11 +66,70 @@ fun glideWith(context: AppCompatActivity?): RequestManager {
     return glideWith(BaseApplication.mContext)
 }
 
-fun glideWith(context: Context?): RequestManager {
-    return Glide.with(context!!).setDefaultRequestOptions(
+fun glideWith(
+    context: Context,
+    radius: Int? = null,
+    @DrawableRes errorResId: Int = R.drawable.image_error,
+    skipMemoryCache: Boolean = false,
+    diskCacheStrategy: DiskCacheStrategy = DiskCacheStrategy.DATA
+): RequestManager {
+    return Glide.with(context).setDefaultRequestOptions(
         RequestOptions()
+            .transform(RoundedCorners(radius.pxDp(context) ?: 1))
             .placeholder(randomColorHolder())
-            .error(R.drawable.image_error)
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .skipMemoryCache(skipMemoryCache)
+            .error(errorResId)
+            .diskCacheStrategy(diskCacheStrategy)
     )
 }
+
+/**
+ * 通用加载
+ */
+fun ImageView.glideLoad(
+    path: String?, radius: Int? = null,
+    skipMemoryCache: Boolean = false,
+    diskCacheStrategy: DiskCacheStrategy = DiskCacheStrategy.DATA
+) {
+    if (path.isVideo()) loadVideoCover(path)
+    else glideWith(
+        context,
+        radius,
+        skipMemoryCache = skipMemoryCache,
+        diskCacheStrategy = diskCacheStrategy
+    ).load(path).into(this)
+}
+
+/**
+ * 封面加载
+ */
+fun ImageView.loadVideoCover(
+    url: String?,
+    radius: Int? = null,
+    skipMemoryCache: Boolean = false,
+    diskCacheStrategy: DiskCacheStrategy = DiskCacheStrategy.DATA
+) {
+    if (url != null) {
+        val retriever = MediaMetadataRetriever()
+        if (url.startsWith("http")) {
+            //setDataSource(String uri,  Map<String, String> headers) 是获取视频链接
+            retriever.setDataSource(url, emptyMap())
+        } else {
+            //setDataSource(String path)是获取视频文件
+            retriever.setDataSource(url)
+        }
+        //获得第1帧图片，这里的第一个参数以微秒为单位
+        val bitmap =
+            retriever.getFrameAtTime(1 * 1000 * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        retriever.release()
+        //加载
+        glideWith(
+            context,
+            radius,
+            skipMemoryCache = skipMemoryCache,
+            diskCacheStrategy = diskCacheStrategy
+        ).load(bitmap).into(this)
+    }
+}
+
+

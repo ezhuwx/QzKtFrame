@@ -20,6 +20,7 @@ import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.interfaces.MotionAnimListener
 import com.ez.kotlin.frame.utils.INTERNAL_TIME
 import com.ez.kotlin.frame.utils.addRedStar
+import com.ez.kotlin.frame.utils.glideLoad
 import com.ez.kotlin.frame.utils.glideWith
 import com.ez.kotlin.frame.utils.isInvalidClick
 import com.google.android.material.tabs.TabLayout
@@ -407,20 +408,34 @@ object CommonBinder {
      * @param view
      */
     @BindingAdapter(
-        value = ["invalidClick", "clickDuration"],
+        value = ["validClick", "clickDuration"],
         requireAll = false
     )
     @JvmStatic
     fun setInvalidClick(
         view: View,
-        invalidClick: View.OnClickListener,
+        validClick: View.OnClickListener,
         duration: Long?
     ) {
         view.setOnClickListener {
             if (!isInvalidClick(view, duration ?: INTERNAL_TIME)) {
-                invalidClick.onClick(it)
+                validClick.onClick(it)
             }
         }
+    }
+
+    /**
+     * TODO glide load 方法适配
+     *
+     */
+    @BindingAdapter(value = ["load","loadRadius"], requireAll = false)
+    @JvmStatic
+    fun path(
+        view: ImageView,
+        pathUrl: String?,
+        loadRadius:Int?,
+    ) {
+        pathUrl?.let { view.glideLoad(pathUrl,loadRadius) }
     }
 
 }

@@ -12,7 +12,6 @@ import com.ez.kotlin.frame.net.NetDialog
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
-import com.gyf.immersionbar.ImmersionBar
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
@@ -58,7 +57,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *
      */
     fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
-        val vm = ViewModelProvider(this).get(clazz)
+        val vm = ViewModelProvider(this)[clazz]
         lifecycle.addObserver(vm)
         return vm
     }
@@ -69,7 +68,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     override fun initViewModel() {
         getBindingVMClass().let {
-            viewModel = ViewModelProvider(this).get(it)
+            viewModel = ViewModelProvider(this)[it]
             lifecycle.addObserver(viewModel)
         }
     }
@@ -92,10 +91,12 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
                     //关闭夜间模式
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 }
+
                 Configuration.UI_MODE_NIGHT_YES -> {
                     //打开夜间模式
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 }
+
                 else -> {}
             }
         }
@@ -155,19 +156,19 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         viewModel.run {
             start().observe(this@BaseActivity) {
                 //开始
-                onRequestStart(it)
+                onRequestStart(it.first,it.second)
             }
             success().observe(this@BaseActivity) {
                 //成功
-                onRequestSuccess(it)
+                onRequestSuccess(it.first,it.second)
             }
             error().observe(this@BaseActivity) {
                 //报错
-                onRequestError(it)
+                onRequestError(it.first,it.second)
             }
             finally().observe(this@BaseActivity) {
                 //结束
-                onRequestFinally(it)
+                onRequestFinally(it.first,it.second)
             }
         }
     }
@@ -176,43 +177,43 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestStart(it: Boolean) {
+    open fun onRequestStart(requestCode: String, it: Boolean) {
         stateDialogLoading()
     }
 
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestSuccess(it: Boolean) {
+    open fun onRequestSuccess(requestCode: String, it: Boolean) {
 
     }
 
     /**
      *  接口请求完毕，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestFinally(it: Int?) {
+    open fun onRequestFinally(requestCode: String, it: Int?) {
         stateDialogDismiss()
     }
 
     /**
      *  接口请求出错，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestError(it: Exception?) {
+    open fun onRequestError(requestCode: String, it: Exception?) {
         //处理一些已知异常
-        showErrorTip(it)
+        showErrorTip(requestCode,it)
     }
 
     /**
      * 处理一些已知异常
      */
-    open fun showErrorTip(it: Exception?) {
+    open fun showErrorTip(requestCode: String,it: Exception?) {
         //处理一些已知异常
         it?.run {
             if (NetWorkUtil.isNoProxyConnected(this@BaseActivity)) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {
-                        onServiceError(it.code, it.message)
+                        onServiceError(requestCode,it.code, it.message)
                     }
                     //正常错误显示
                     is ResponseException -> {
@@ -234,7 +235,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * 服务器特殊错误处理
      * ‘登录超时’等
      * */
-    open fun onServiceError(code: Int, message: String?) {
+    open fun onServiceError(requestCode: String, code: Int, message: String?) {
 
     }
 }

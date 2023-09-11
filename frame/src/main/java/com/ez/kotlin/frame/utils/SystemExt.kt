@@ -9,8 +9,8 @@ import android.net.*
 import android.os.Build
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
-import com.ez.kotlin.frame.BuildConfig
 import com.ez.kotlin.frame.base.BaseApplication
+import me.jessyan.autosize.utils.AutoSizeUtils
 
 /**
  * @author : ezhuwx
@@ -117,7 +117,7 @@ fun goSoftMarket(packageName: String) {
  */
 fun switchDayNightMode(listener: OnDayNightChange) {
     val userSet = DayNightMode.valueOf(
-        MMKVUtil.mmkv.getString(
+        MMKVUtil.mmkv.decodeString(
             DayNightMode::class.simpleName,
             DayNightMode.SYSTEM.name
         )!!
@@ -126,7 +126,7 @@ fun switchDayNightMode(listener: OnDayNightChange) {
         DayNightMode.SYSTEM -> {
             //打开深色模式
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            MMKVUtil.mmkv.putString(
+            MMKVUtil.mmkv.encode(
                 DayNightMode::class.simpleName,
                 DayNightMode.NIGHT.name
             )
@@ -136,7 +136,7 @@ fun switchDayNightMode(listener: OnDayNightChange) {
         DayNightMode.NIGHT -> {
             //打开浅色模式
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            MMKVUtil.mmkv.putString(
+            MMKVUtil.mmkv.encode(
                 DayNightMode::class.simpleName,
                 DayNightMode.LIGHT.name
             )
@@ -146,7 +146,7 @@ fun switchDayNightMode(listener: OnDayNightChange) {
         DayNightMode.LIGHT -> {
             //跟随系统
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            MMKVUtil.mmkv.putString(
+            MMKVUtil.mmkv.decodeString(
                 DayNightMode::class.simpleName,
                 DayNightMode.SYSTEM.name
             )
@@ -191,4 +191,8 @@ fun interface OnDayNightChange {
     fun onChange(mode: DayNightMode)
 }
 
-
+fun Int?.pxDp(context: Context): Int? {
+    return this?.let {
+        AutoSizeUtils.dp2px(context, this.toFloat())
+    }
+}

@@ -8,6 +8,7 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import java.util.regex.Pattern
 
 /**
@@ -183,4 +184,15 @@ fun String?.startSafe(start: Int): String {
 ///安全截取
 fun String?.endSafe(end: Int): String {
     return if (empty().length > end) empty().substring(0, end) else empty()
+}
+
+fun String?.colorSpan(@ColorInt color: Int, start: Int, end: Int): SpannableString {
+    return SpannableString(this).apply {
+        setSpan(
+            ForegroundColorSpan(color),
+            start,
+            end,
+            android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+        )
+    }
 }

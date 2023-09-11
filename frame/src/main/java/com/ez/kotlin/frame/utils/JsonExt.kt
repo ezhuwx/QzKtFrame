@@ -10,7 +10,7 @@ import java.lang.reflect.Type
 
 /**
  * @author : ezhuwx
- * Describe :
+ * Describe :json拓展
  * Designed on 2023/1/18
  * E-mail : ezhuwx@163.com
  * Update on 11:25 by ezhuwx
@@ -34,26 +34,10 @@ fun Any?.json(): String {
     return Gson().toJson(this)
 }
 
-/**
- * 把一个json字符串变成对象
- */
-fun <T> String?.jsonToObject(cls: Class<T>?): T? {
-    val t: T = try {
-        Gson().fromJson(this, cls)
-    } catch (e: Exception) {
-        MainScope().launch {
-            BaseApplication.instance.getString(R.string.data_decode_failed).shortShow()
-            logE("Gson Error", e.message)
-        }
-        return null
-    }
-    return t
-}
-
-fun <T> String?.jsonObject(type: Type): T? {
+inline fun <reified T> String?.parseJson(): T? {
     var t: T? = null
     try {
-        t = Gson().fromJson(this, type)
+        t = Gson().fromJson(this, object : TypeToken<T>() {}.type)
         logE(t.toString())
     } catch (e: Exception) {
         MainScope().launch {
@@ -63,6 +47,8 @@ fun <T> String?.jsonObject(type: Type): T? {
     }
     return t
 }
+
+fun String?.jsonDefault(): String = if (empty().trim().isEmpty()) "{}" else this ?: "{}"
 
 /**
  * 把json字符串变成map

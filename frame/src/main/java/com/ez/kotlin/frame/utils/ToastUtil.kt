@@ -27,7 +27,7 @@ open class ToastUtil {
     init {
         toast = Toast(BaseApplication.mContext)
         val view: View = LayoutInflater.from(BaseApplication.mContext).inflate(R.layout.view_content_toast, null)
-        toast!!.setView(view)
+        toast!!.view = view
         toastCv = view.findViewById(R.id.toast_cv)
         toastTv = view.findViewById(R.id.toast_tv)
         toast!!.setGravity(Gravity.CENTER, 0, 0)

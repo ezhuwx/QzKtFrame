@@ -7,6 +7,7 @@ import com.ez.kotlin.frame.net.*
 import com.ez.kotlin.frame.utils.SingleLiveEvent
 import com.ez.kotlin.frame.utils.logE
 import kotlinx.coroutines.*
+import java.util.UUID
 
 /**
  * @author : ezhuwx
@@ -16,29 +17,40 @@ import kotlinx.coroutines.*
  * Update on 10:23 by ezhuwx
  */
 typealias CoroutineBlock = suspend CoroutineScope.() -> Unit
+typealias onRequestStart = () -> Unit
+typealias onRequestError = (Exception) -> Unit
 
 open class BaseViewModel : ViewModel(), LifecycleObserver {
-    protected val start by lazy { SingleLiveEvent<Boolean>() }
-    protected val error by lazy { SingleLiveEvent<Exception>() }
-    protected val success by lazy { SingleLiveEvent<Boolean>() }
-    protected val finally by lazy { SingleLiveEvent<Int>() }
+    protected val start by lazy { SingleLiveEvent<Pair<String, Boolean>>() }
+    protected val error by lazy { SingleLiveEvent<Pair<String, Exception>>() }
+    protected val success by lazy { SingleLiveEvent<Pair<String, Boolean>>() }
+    protected val finally by lazy { SingleLiveEvent<Pair<String, Int>>() }
 
     /**
      * TODO 标准UI线程协程
      */
-    fun launchUI(block: CoroutineBlock) = MainScope().launch {
+    fun launchUI(
+        requestCode: String = UUID.randomUUID().toString(),
+        onStart: onRequestStart? = null,
+        onError: onRequestError? = null,
+        block: CoroutineBlock
+    ) = MainScope().launch {
         try {
-            start.value = true
+            onStart?.invoke()
+            start.value = Pair(requestCode, true)
             withTimeout(BaseRetrofitClient.TIME_OUT) {
                 block()
-                success.value = true
+                success.value = Pair(requestCode, true)
             }
         } catch (e: Exception) {
             //此处接收到BaseRepository里的request抛出的异常，处理后赋值给error
             logE("${block.javaClass.name}\nError：$e")
-            error.value = ExceptionHandler.parseException(e)
+            //异常格式化
+            val finalException = ExceptionHandler.parseException(e)
+            onError?.invoke(finalException)
+            error.value = Pair(requestCode, finalException)
         } finally {
-            finally.value = if (error.value != null) -1 else 200
+            finally.value = Pair(requestCode, if (error.value != null) -1 else 200)
         }
     }
 
@@ -57,20 +69,20 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
     /**
      * TODO 请求开始
      */
-    fun start(): LiveData<Boolean> = start
+    fun start(): LiveData<Pair<String, Boolean>> = start
 
     /**
      *TODO 请求失败，出现异常
      */
-    fun error(): LiveData<Exception> = error
+    fun error(): LiveData<Pair<String, Exception>> = error
 
     /**
      * TODO 请求开始
      */
-    fun success(): LiveData<Boolean> = success
+    fun success(): LiveData<Pair<String, Boolean>> = success
 
     /**
      *TODO 请求完成，在此处做一些关闭操作
      */
-    fun finally(): LiveData<Int> = finally
+    fun finally(): LiveData<Pair<String, Int>> = finally
 }
