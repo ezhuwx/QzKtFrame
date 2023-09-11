@@ -25,6 +25,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import okhttp3.Call;
 import okhttp3.OkHttpClient;
 
 /**
@@ -50,7 +51,8 @@ public final class BaseGlideModule extends AppGlideModule {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 // .sslSocketFactory(overLockCard().getSocketFactory())
                 .hostnameVerifier((hostname, session) -> true);
-        registry.append(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(builder));
+        OkHttpUrlLoader.Factory factory = new OkHttpUrlLoader.Factory((Call.Factory) builder.build());
+        registry.append(GlideUrl.class, InputStream.class, factory);
     }
 
     /**
