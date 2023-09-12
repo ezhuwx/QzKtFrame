@@ -23,6 +23,8 @@ import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
 import com.ez.kotlin.frame.utils.DayNightMode
 import com.ez.kotlin.frame.utils.MMKVUtil
+import com.scwang.smart.refresh.header.MaterialHeader
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 abstract class BaseApplication : Application() {
     //activity集合

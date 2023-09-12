@@ -28,6 +28,46 @@ import java.nio.charset.StandardCharsets
  * E-mail : ezhuwx@163.com
  * Update on 15:54 by ezhuwx
  */
+@Throws(IOException::class)
+fun fileFromUri(context: Context, uri: Uri?): File? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        uriToFileApiQ(context, uri)
+    } else {
+        getRealFilePath(context, uri)?.let { File(it) }
+    }
+}
+
+private fun getRealFilePath(context: Context, uri: Uri?): String? {
+    if (null == uri) {
+        return null
+    }
+    val scheme = uri.scheme
+    var data: String? = null
+    if (scheme == null) {
+        data = uri.path
+    } else if (ContentResolver.SCHEME_FILE == scheme) {
+        data = uri.path
+    } else if (ContentResolver.SCHEME_CONTENT == scheme) {
+        val cursor = context.contentResolver.query(
+            uri,
+            arrayOf(MediaStore.Images.ImageColumns.DATA),
+            null,
+            null,
+            null
+        )
+        if (null != cursor) {
+            if (cursor.moveToFirst()) {
+                val index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+                if (index > -1) {
+                    data = cursor.getString(index)
+                }
+            }
+            cursor.close()
+        }
+    }
+    return data
+}
+
 @RequiresApi(Build.VERSION_CODES.Q)
 @Throws(IOException::class, NoSuchMethodError::class)
 private fun uriToFileApiQ(context: Context, uri: Uri?): File? {
