@@ -1,8 +1,8 @@
 # KOTLIN-FRAME
 
 #### 介绍
-**kotlin MVVM 框架**
-**设计模式**-MVVM
+**kotlin MVVM 框架**  
+**设计模式**-MVVM  
 **框架设计参考**-[KunMinX MVVM设计最佳实践](https://github.com/KunMinX/Jetpack-MVVM-Best-Practice)
 、[DataBinding严格模式](https://github.com/kunminx/strict-databinding/)  
 **第三方依赖：**  
