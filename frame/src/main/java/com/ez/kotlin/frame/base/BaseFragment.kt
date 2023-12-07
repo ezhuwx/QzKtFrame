@@ -28,9 +28,9 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     private val mNetDialog by lazy { NetDialog(activity as AppCompatActivity) }
 
     /**
-     * 跳过监听
+     * 跳过网络监听
      */
-    var isObserveViewModel = false
+    open var isObserveViewModelRequest = true
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -141,7 +141,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *
      */
     private fun startObserve() {
-        if (isObserveViewModel) viewModel.run {
+        if (isObserveViewModelRequest) viewModel.run {
             start().observe(this@BaseFragment.viewLifecycleOwner) {
                 //开始
                 onRequestStart(it.first, it.second)

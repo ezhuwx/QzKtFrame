@@ -31,9 +31,9 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     private val mNetDialog by lazy { NetDialog(this) }
 
     /**
-     * 跳过监听
+     * 跳过网络监听
      */
-    var isObserveViewModel = false
+    open var isObserveViewModelRequest = true
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,7 +154,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *
      */
     private fun startObserve() {
-        if (isObserveViewModel) viewModel.run {
+        if (isObserveViewModelRequest) viewModel.run {
             start().observe(this@BaseActivity) {
                 //开始
                 onRequestStart(it.first, it.second)
