@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModelProvider
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.net.ApiException
@@ -14,7 +13,6 @@ import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.DayNightMode
 import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
-import com.gyf.immersionbar.ImmersionBar
 import com.gyf.immersionbar.ktx.immersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
 
@@ -28,6 +26,11 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      * Loading
      * */
     private val mNetDialog by lazy { NetDialog(activity as AppCompatActivity) }
+
+    /**
+     * 跳过监听
+     */
+    var isObserveViewModel = false
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,7 +52,6 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     override fun initViewModel() {
         getBindingVMClass()?.let {
             viewModel = ViewModelProvider(this)[it]
-            lifecycle.addObserver(viewModel)
         }
     }
 
@@ -57,16 +59,18 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *  添加ViewModel
      *
      */
-    fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
-        val vm = ViewModelProvider(this)[clazz]
-        lifecycle.addObserver(vm)
-        return vm
+    open fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
+        return ViewModelProvider(this)[clazz]
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (this::viewModel.isInitialized)
-            lifecycle.removeObserver(viewModel)
+    override fun onDestroyView() {
+        viewModel.run {
+            start().removeObservers(this@BaseFragment.viewLifecycleOwner)
+            success().removeObservers(this@BaseFragment.viewLifecycleOwner)
+            error().removeObservers(this@BaseFragment.viewLifecycleOwner)
+            finally().removeObservers(this@BaseFragment.viewLifecycleOwner)
+        }
+        super.onDestroyView()
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -137,20 +141,20 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *
      */
     private fun startObserve() {
-        viewModel.run {
-            start().observe(requireActivity()) {
+        if (isObserveViewModel) viewModel.run {
+            start().observe(this@BaseFragment.viewLifecycleOwner) {
                 //开始
                 onRequestStart(it.first, it.second)
             }
-            success().observe(requireActivity()) {
+            success().observe(this@BaseFragment.viewLifecycleOwner) {
                 //成功
                 onRequestSuccess(it.first, it.second)
             }
-            error().observe(requireActivity()) {
+            error().observe(this@BaseFragment.viewLifecycleOwner) {
                 //报错
                 onRequestError(it.first, it.second)
             }
-            finally().observe(requireActivity()) {
+            finally().observe(this@BaseFragment.viewLifecycleOwner) {
                 //结束
                 onRequestFinally(it.first, it.second)
             }

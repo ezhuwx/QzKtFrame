@@ -2,6 +2,7 @@ package com.ez.kotlin.frame.base
 
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ez.kotlin.frame.net.*
 import com.ez.kotlin.frame.utils.SingleLiveEvent
@@ -20,11 +21,11 @@ typealias CoroutineBlock = suspend CoroutineScope.() -> Unit
 typealias onRequestStart = () -> Unit
 typealias onRequestError = (Exception) -> Unit
 
-open class BaseViewModel : ViewModel(), LifecycleObserver {
-    protected val start by lazy { SingleLiveEvent<Pair<String, Boolean>>() }
-    protected val error by lazy { SingleLiveEvent<Pair<String, Exception>>() }
-    protected val success by lazy { SingleLiveEvent<Pair<String, Boolean>>() }
-    protected val finally by lazy { SingleLiveEvent<Pair<String, Int>>() }
+open class BaseViewModel : ViewModel() {
+    protected val start by lazy { MutableLiveData<Pair<String, Boolean>>() }
+    protected val error by lazy { MutableLiveData<Pair<String, Exception>>() }
+    protected val success by lazy { MutableLiveData<Pair<String, Boolean>>() }
+    protected val finally by lazy { MutableLiveData<Pair<String, Int>>() }
 
     /**
      * TODO 标准UI线程协程
@@ -69,20 +70,20 @@ open class BaseViewModel : ViewModel(), LifecycleObserver {
     /**
      * TODO 请求开始
      */
-    fun start(): LiveData<Pair<String, Boolean>> = start
+    fun start(): MutableLiveData<Pair<String, Boolean>> = start
 
     /**
      *TODO 请求失败，出现异常
      */
-    fun error(): LiveData<Pair<String, Exception>> = error
+    fun error(): MutableLiveData<Pair<String, Exception>> = error
 
     /**
      * TODO 请求开始
      */
-    fun success(): LiveData<Pair<String, Boolean>> = success
+    fun success(): MutableLiveData<Pair<String, Boolean>> = success
 
     /**
      *TODO 请求完成，在此处做一些关闭操作
      */
-    fun finally(): LiveData<Pair<String, Int>> = finally
+    fun finally(): MutableLiveData<Pair<String, Int>> = finally
 }

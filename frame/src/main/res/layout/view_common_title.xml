@@ -27,7 +27,7 @@
             android:visibility="@{titleModel.backVisible}">
 
             <ImageView
-                android:id="@+id/iv_common_back"
+                android:id="@+id/back_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

@@ -30,6 +30,10 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * */
     private val mNetDialog by lazy { NetDialog(this) }
 
+    /**
+     * 跳过监听
+     */
+    var isObserveViewModel = false
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,10 +60,8 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *  添加ViewModel
      *
      */
-    fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
-        val vm = ViewModelProvider(this)[clazz]
-        lifecycle.addObserver(vm)
-        return vm
+    open fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
+        return ViewModelProvider(this)[clazz]
     }
 
     /**
@@ -69,7 +71,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     override fun initViewModel() {
         getBindingVMClass().let {
             viewModel = ViewModelProvider(this)[it]
-            lifecycle.addObserver(viewModel)
         }
     }
 
@@ -153,26 +154,25 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *
      */
     private fun startObserve() {
-        viewModel.run {
+        if (isObserveViewModel) viewModel.run {
             start().observe(this@BaseActivity) {
                 //开始
-                onRequestStart(it.first,it.second)
+                onRequestStart(it.first, it.second)
             }
             success().observe(this@BaseActivity) {
                 //成功
-                onRequestSuccess(it.first,it.second)
+                onRequestSuccess(it.first, it.second)
             }
             error().observe(this@BaseActivity) {
                 //报错
-                onRequestError(it.first,it.second)
+                onRequestError(it.first, it.second)
             }
             finally().observe(this@BaseActivity) {
                 //结束
-                onRequestFinally(it.first,it.second)
+                onRequestFinally(it.first, it.second)
             }
         }
     }
-
 
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
@@ -200,20 +200,20 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *  */
     open fun onRequestError(requestCode: String, it: Exception?) {
         //处理一些已知异常
-        showErrorTip(requestCode,it)
+        showErrorTip(requestCode, it)
     }
 
     /**
      * 处理一些已知异常
      */
-    open fun showErrorTip(requestCode: String,it: Exception?) {
+    open fun showErrorTip(requestCode: String, it: Exception?) {
         //处理一些已知异常
         it?.run {
             if (NetWorkUtil.isNoProxyConnected(this@BaseActivity)) {
                 when (it) {
                     //服务器特殊错误处理
                     is ApiException -> {
-                        onServiceError(requestCode,it.code, it.message)
+                        onServiceError(requestCode, it.code, it.message)
                     }
                     //正常错误显示
                     is ResponseException -> {

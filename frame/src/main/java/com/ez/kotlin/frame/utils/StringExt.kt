@@ -169,9 +169,8 @@ fun String?.subSafe(start: Int? = null, end: Int? = null): String {
     if (start != null && end == null) return startSafe(start)
     if (end != null && start == null) return endSafe(end)
     if (start != null && end != null) {
-        assert(end > start)
         val endNew = end.coerceAtMost(empty().length)
-        return empty().substring(start, endNew)
+        return if (end > start) empty().substring(start, endNew) else empty()
     }
     return empty()
 }

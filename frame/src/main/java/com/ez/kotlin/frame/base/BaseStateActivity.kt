@@ -45,10 +45,6 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     private var isEmptyViewAdded = false
     private var isErrorToastShowed = false
     private var onStateChangeListener: OnStateChangeListener? = null
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycle.removeObserver(viewModel)
-    }
 
     /**
      * TODO 初始化页面
