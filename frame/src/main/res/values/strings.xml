@@ -21,5 +21,7 @@
     <string name="confirm">确定</string>
     <string name="default_hint">请输入搜索内容~</string>
     <string name="data_decode_failed">数据解析错误~</string>
+    <string name="error_view_main_null">The subclass of RootActivity must contain a View named \'view_main\'.</string>
+    <string name="error_view_main_parent_not_view_group">view_main\'s ParentView should be a ViewGroup.</string>
 
 </resources>

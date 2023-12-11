@@ -6,9 +6,11 @@ import android.text.InputFilter
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.util.Base64
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import java.net.URLEncoder
 import java.util.regex.Pattern
 
 /**
@@ -194,4 +196,11 @@ fun String?.colorSpan(@ColorInt color: Int, start: Int, end: Int): SpannableStri
             android.text.Spanned.SPAN_INCLUSIVE_EXCLUSIVE
         )
     }
+}
+fun ByteArray?.string(flags: Int = Base64.DEFAULT): String {
+    return if (this == null) "" else Base64.encodeToString(this, flags)
+}
+
+fun String?.urlSafe(): String {
+    return URLEncoder.encode(empty())
 }

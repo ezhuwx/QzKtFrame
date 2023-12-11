@@ -7,7 +7,7 @@ package com.ez.kotlin.frame.interfaces
  * E-mail : ezhuwx@163.com
  * Update on 13:14 by ezhuwx
  */
-interface OnStateChangeListener {
+interface OnRefreshStateChangeListener {
 
     /**
      * 错误状态

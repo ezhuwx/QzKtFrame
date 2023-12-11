@@ -1,7 +1,7 @@
 package com.ez.kotlin.frame.model
 
 import com.ez.kotlin.frame.base.*
-import com.ez.kotlin.frame.interfaces.OnStateChangeListener
+import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.utils.SingleLiveEvent
 import com.ez.kotlin.frame.utils.shortShow
 import com.scwang.smart.refresh.layout.api.RefreshLayout
@@ -106,7 +106,7 @@ class RefreshModel : BaseViewModel() {
     /**
      * 刷新加载
      * */
-    fun <E, V : BaseStateFragment<E>> observeRefreshLoadMore(
+    fun <E, V : BaseFragment<E>> observeRefreshLoadMore(
         view: V,
         call: () -> Unit,
     ) where E : BaseViewModel {
@@ -177,7 +177,7 @@ class RefreshModel : BaseViewModel() {
         this.dataSize.value = -1
     }
 
-    inner class StateListener : OnStateChangeListener {
+    inner class StateListener : OnRefreshStateChangeListener {
         override fun stateError(errorMsg: String): Boolean {
             if (isLoadMore) {
                 loadError()

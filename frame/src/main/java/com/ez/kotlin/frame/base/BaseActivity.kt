@@ -6,15 +6,11 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
-import com.ez.kotlin.frame.R
-import com.ez.kotlin.frame.net.ApiException
 import com.ez.kotlin.frame.net.NetDialog
-import com.ez.kotlin.frame.net.ResponseException
-import com.ez.kotlin.frame.utils.NetWorkUtil
-import com.ez.kotlin.frame.utils.ToastUtil
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
+import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
 
@@ -26,14 +22,19 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     protected lateinit var viewModel: VM
 
     /**
-     * Loading
-     * */
-    private val mNetDialog by lazy { NetDialog(this) }
-
-    /**
      * 跳过网络监听
      */
     open var isObserveViewModelRequest = true
+
+    /**
+     * 页面状态管理
+     */
+    open lateinit var pageStateManager: PageStateManager
+
+    /**
+     * Loading
+     * */
+    private val mNetDialog by lazy { NetDialog(this) }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,10 +47,15 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
             transparentNavigationBar()
             statusBarColor(BaseApplication.instance.statusBarColorId)
         }
+        //页面状态管理
+        pageStateManager = PageStateManager(
+            this,
+            this,
+            viewModel,
+            isObserveViewModelRequest
+        )
         //activity管理
         BaseApplication.instance.addActivity(this)
-        //请求状态监听
-        startObserve()
         //view绑定方法
         initBindView()
         //数据初始化方法
@@ -80,8 +86,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     override fun onDestroy() {
         super.onDestroy()
         BaseApplication.instance.removeActivity(this)
-        stateDialogDismiss()
-        // 必须调用该方法，防止内存泄漏
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -103,28 +107,8 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         }
     }
 
-    /**
-     *  DialogLoading 显示
-     *
-     */
-    open fun stateDialogLoading() {
-        if (!mNetDialog.isShowing) {
-            mNetDialog.show()
-        }
-    }
-
-    open fun stateDialogDismiss() {
-        if (mNetDialog.isShowing) {
-            mNetDialog.dismiss()
-        }
-    }
-
-    open fun stateDialogLoading(isCancel: Boolean, loading: String?) {
-        if (!mNetDialog.isShowing) {
-            mNetDialog.setCancelable(isCancel)
-            mNetDialog.showLoadingText(loading)
-            mNetDialog.show()
-        }
+    open fun addStateChangeListener(listener: OnRefreshStateChangeListener) {
+        pageStateManager.onRefreshStateChangeListener = listener
     }
 
     /**
@@ -147,95 +131,8 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     /**
      * 点击事件
      */
-    abstract fun onClick(v: View)
-
-    /**
-     * TODO 请求监听
-     *
-     */
-    private fun startObserve() {
-        if (isObserveViewModelRequest) viewModel.run {
-            start().observe(this@BaseActivity) {
-                //开始
-                onRequestStart(it.first, it.second)
-            }
-            success().observe(this@BaseActivity) {
-                //成功
-                onRequestSuccess(it.first, it.second)
-            }
-            error().observe(this@BaseActivity) {
-                //报错
-                onRequestError(it.first, it.second)
-            }
-            finally().observe(this@BaseActivity) {
-                //结束
-                onRequestFinally(it.first, it.second)
-            }
-        }
-    }
-
-    /**
-     *  接口请求开始，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestStart(requestCode: String, it: Boolean) {
-        stateDialogLoading()
-    }
-
-    /**
-     *  接口请求成功，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestSuccess(requestCode: String, it: Boolean) {
+    open fun onClick(v: View) {
 
     }
 
-    /**
-     *  接口请求完毕，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestFinally(requestCode: String, it: Int?) {
-        stateDialogDismiss()
-    }
-
-    /**
-     *  接口请求出错，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestError(requestCode: String, it: Exception?) {
-        //处理一些已知异常
-        showErrorTip(requestCode, it)
-    }
-
-    /**
-     * 处理一些已知异常
-     */
-    open fun showErrorTip(requestCode: String, it: Exception?) {
-        //处理一些已知异常
-        it?.run {
-            if (NetWorkUtil.isNoProxyConnected(this@BaseActivity)) {
-                when (it) {
-                    //服务器特殊错误处理
-                    is ApiException -> {
-                        onServiceError(requestCode, it.code, it.message)
-                    }
-                    //正常错误显示
-                    is ResponseException -> {
-                        ToastUtil().longShow("(${it.code})${it.message}")
-                    }
-                    //无提示信息错误显示
-                    else -> {
-                        ToastUtil().longShow(R.string.unknown_error)
-                    }
-                }
-            } else {
-                //无网络提示
-                ToastUtil().longShow(R.string.network_error_content)
-            }
-        }
-    }
-
-    /**
-     * 服务器特殊错误处理
-     * ‘登录超时’等
-     * */
-    open fun onServiceError(requestCode: String, code: Int, message: String?) {
-
-    }
 }

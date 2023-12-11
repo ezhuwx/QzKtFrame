@@ -424,18 +424,21 @@ object CommonBinder {
         }
     }
 
+
     /**
      *  glide load 方法适配
      *
      */
-    @BindingAdapter(value = ["load","loadRadius"], requireAll = false)
+    @BindingAdapter(value = ["path", "radius"], requireAll = false)
     @JvmStatic
     fun path(
         view: ImageView,
-        pathUrl: String?,
-        loadRadius:Int?,
+        path: String?,
+        radius: Int?
     ) {
-        pathUrl?.let { view.glideLoad(pathUrl,loadRadius) }
+        if (!path.isNullOrEmpty()) {
+            view.glideLoad(path, radius)
+        }
     }
 
 }

@@ -3,16 +3,10 @@ package com.ez.kotlin.frame.base
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
-import com.ez.kotlin.frame.R
-import com.ez.kotlin.frame.net.ApiException
-import com.ez.kotlin.frame.net.NetDialog
-import com.ez.kotlin.frame.net.ResponseException
+import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.utils.DayNightMode
-import com.ez.kotlin.frame.utils.NetWorkUtil
-import com.ez.kotlin.frame.utils.ToastUtil
 import com.gyf.immersionbar.ktx.immersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
 
@@ -23,14 +17,14 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     protected lateinit var viewModel: VM
 
     /**
-     * Loading
-     * */
-    private val mNetDialog by lazy { NetDialog(activity as AppCompatActivity) }
-
-    /**
      * 跳过网络监听
      */
     open var isObserveViewModelRequest = true
+
+    /**
+     * 页面状态管理
+     */
+    open lateinit var pageStateManager: PageStateManager
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,8 +34,16 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
             transparentNavigationBar()
             statusBarColor(BaseApplication.instance.statusBarColorId)
         }
-        startObserve()
+        //页面状态管理
+        pageStateManager = PageStateManager(
+            requireActivity(),
+            viewLifecycleOwner,
+            viewModel,
+            isObserveViewModelRequest
+        )
+        //view绑定方法
         initBindView(view)
+        //数据初始化方法
         initData()
     }
 
@@ -64,12 +66,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     }
 
     override fun onDestroyView() {
-        viewModel.run {
-            start().removeObservers(this@BaseFragment.viewLifecycleOwner)
-            success().removeObservers(this@BaseFragment.viewLifecycleOwner)
-            error().removeObservers(this@BaseFragment.viewLifecycleOwner)
-            finally().removeObservers(this@BaseFragment.viewLifecycleOwner)
-        }
+        pageStateManager.onClearNetObservers()
         super.onDestroyView()
     }
 
@@ -92,28 +89,8 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         }
     }
 
-    /**
-     *  DialogLoading 显示
-     *
-     */
-    open fun stateDialogLoading() {
-        if (!mNetDialog.isShowing) {
-            mNetDialog.show()
-        }
-    }
-
-    open fun stateDialogDismiss() {
-        if (mNetDialog.isShowing) {
-            mNetDialog.dismiss()
-        }
-    }
-
-    open fun stateDialogLoading(isCancel: Boolean, loading: String?) {
-        if (!mNetDialog.isShowing) {
-            mNetDialog.setCancelable(isCancel)
-            mNetDialog.showLoadingText(loading)
-            mNetDialog.show()
-        }
+    open fun addStateChangeListener(listener: OnRefreshStateChangeListener) {
+        pageStateManager.onRefreshStateChangeListener = listener
     }
 
     /**
@@ -134,94 +111,6 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     /**
      * 点击事件
      */
-    abstract fun onClick(v: View)
+    open fun onClick(v: View) {}
 
-    /**
-     * TODO 请求监听
-     *
-     */
-    private fun startObserve() {
-        if (isObserveViewModelRequest) viewModel.run {
-            start().observe(this@BaseFragment.viewLifecycleOwner) {
-                //开始
-                onRequestStart(it.first, it.second)
-            }
-            success().observe(this@BaseFragment.viewLifecycleOwner) {
-                //成功
-                onRequestSuccess(it.first, it.second)
-            }
-            error().observe(this@BaseFragment.viewLifecycleOwner) {
-                //报错
-                onRequestError(it.first, it.second)
-            }
-            finally().observe(this@BaseFragment.viewLifecycleOwner) {
-                //结束
-                onRequestFinally(it.first, it.second)
-            }
-        }
-    }
-
-    /**
-     *  接口请求开始，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestStart(requestCode: String, it: Boolean) {
-        stateDialogLoading()
-    }
-
-    /**
-     *  接口请求成功，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestSuccess(requestCode: String, it: Boolean) {
-    }
-
-    /**
-     * 接口请求完毕，子类可以重写此方法做一些操作
-     * */
-    open fun onRequestFinally(requestCode: String, it: Int?) {
-        stateDialogDismiss()
-    }
-
-    /**
-     *  接口请求出错，子类可以重写此方法做一些操作
-     *  */
-    open fun onRequestError(requestCode: String, it: Exception?) {
-        //处理一些已知异常
-        showErrorTip(requestCode, it)
-    }
-
-    /**
-     * 处理一些已知异常
-     */
-    open fun showErrorTip(requestCode: String, it: Exception?) {
-        //处理一些已知异常
-        it?.run {
-            if (NetWorkUtil.isNoProxyConnected(requireContext())) {
-                when (it) {
-                    //服务器特殊错误处理
-                    is ApiException -> {
-                        onServiceError(requestCode, it.code, it.message)
-                    }
-                    //正常错误显示
-                    is ResponseException -> {
-                        ToastUtil().longShow("(${it.code})${it.message}")
-                    }
-                    //无提示信息错误显示
-                    else -> {
-                        ToastUtil().longShow(R.string.unknown_error)
-                    }
-                }
-            } else {
-                //无网络提示
-                ToastUtil().longShow(R.string.network_error_content)
-            }
-        }
-    }
-
-    /**
-     * 服务器特殊错误处理
-     * ‘登录超时’等
-     * */
-    open fun onServiceError(requestCode: String, code: Int, message: String?) {
-
-    }
 }
