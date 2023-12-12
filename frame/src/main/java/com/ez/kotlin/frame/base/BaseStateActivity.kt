@@ -1,26 +1,41 @@
 package com.ez.kotlin.frame.base
 
 import androidx.annotation.CallSuper
-
+/**
+ * Activity 状态页基类
+ */
 
 abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
 
     @CallSuper
     override fun initBindView() {
-        pageStateManager.onInitStatePage(binding.root)
-        pageStateManager.onPageStateChangeListener = object : OnPageStateChangeListener {
+       pageStateManager.onInitStatePage(binding.root)
+       pageStateManager.onPageStateChangeListener = object : OnPageStateChangeListener {
             override fun onErrorOrEmptyRetry(isError: Boolean) {
                 this@BaseStateActivity.onErrorOrEmptyRetry(isError)
             }
         }
     }
 
+
     fun stateMain() {
-        pageStateManager.stateMain()
+       pageStateManager.stateMain()
+    }
+
+    fun stateLoading() {
+       pageStateManager.stateLoading()
     }
 
     fun stateEmpty() {
-        pageStateManager.stateEmpty()
+       pageStateManager.stateEmpty()
+    }
+
+    fun stateNetError() {
+       pageStateManager.stateNetError()
+    }
+
+    fun stateUnknownError() {
+       pageStateManager.stateUnknownError()
     }
 
     /**

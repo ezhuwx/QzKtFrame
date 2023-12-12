@@ -14,6 +14,9 @@ import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
 
+/**
+ * Activity 基类
+ */
 
 abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     /**

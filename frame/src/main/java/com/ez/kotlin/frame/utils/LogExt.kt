@@ -13,7 +13,7 @@ import com.orhanobut.logger.Logger;
  */
 fun logD(message: String?, vararg args: Any?) {
     if (BaseApplication.instance.isDebug) {
-        Logger.d(message!!, *args)
+        Logger.d(message.empty(), *args)
     }
 }
 
@@ -25,34 +25,34 @@ fun logD(`object`: Any?) {
 
 fun logE(message: String?, vararg args: Any?) {
     if (BaseApplication.instance.isDebug) {
-        Logger.e(Throwable(), message!!, *args)
+        Logger.e(Throwable(), message.empty(), *args)
     }
 }
 
 fun logE(throwable: Throwable?, message: String?, vararg args: Any?) {
     if (BaseApplication.instance.isDebug) {
-        Logger.e(throwable, message!!, *args)
+        Logger.e(throwable, message.empty(), *args)
     }
 }
 
 fun logI(message: String?, vararg args: Any?) {
     if (BaseApplication.instance.isDebug) {
-        Logger.i(message!!, *args)
+        Logger.i(message.empty(), *args)
     }
 }
 
 fun logV(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) Logger.v(message!!, *args)
+    if (BaseApplication.instance.isDebug) Logger.v(message.empty(), *args)
 }
 
 fun logW(message: String?, vararg args: Any?) {
     if (BaseApplication.instance.isDebug) {
-        Logger.w(message!!, *args)
+        Logger.w(message.empty(), *args)
     }
 }
 
 fun logWtf(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) Logger.wtf(message!!, *args)
+    if (BaseApplication.instance.isDebug) Logger.wtf(message.empty(), *args)
 }
 
 /**

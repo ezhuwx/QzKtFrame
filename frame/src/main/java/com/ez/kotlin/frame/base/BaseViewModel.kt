@@ -3,10 +3,8 @@ package com.ez.kotlin.frame.base
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ez.kotlin.frame.net.*
-import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.logE
 import kotlinx.coroutines.*
-import java.util.UUID
 
 /**
  * @author : ezhuwx
@@ -20,73 +18,81 @@ typealias onRequestStart = () -> Unit
 typealias onRequestError = (Exception) -> Unit
 
 open class BaseViewModel : ViewModel() {
-    /**
-     * 页面状态管理
-     */
-    var pageStateManager: PageStateManager? = null
 
     /**
      * 请求开始
      */
-    protected val start by lazy { MutableLiveData<Pair<String, Boolean>>() }
+    val start by lazy { MutableLiveData<StateCallbackData>() }
 
     /**
      * 请求错误
      */
-    protected val error by lazy { MutableLiveData<Pair<String, Exception>>() }
+    val error by lazy { MutableLiveData<StateCallbackData>() }
 
     /**
      * 请求成功
      */
-    protected val success by lazy { MutableLiveData<Pair<String, Boolean>>() }
+    val success by lazy { MutableLiveData<StateCallbackData>() }
 
     /**
      * 请求完成
      */
-    protected val finally by lazy { MutableLiveData<Pair<String, Int>>() }
+    val finally by lazy { MutableLiveData<StateCallbackData>() }
 
     /**
      * TODO 标准UI线程协程
      */
     fun launchUI(
-        customCode: String? = null,
+        requestCode: String? = null,
+        manager: PageStateManager? = null,
         onStart: onRequestStart? = null,
         onError: onRequestError? = null,
-        block: CoroutineBlock,
         isSkipPageLoading: Boolean = false,
         isSkipAllLoading: Boolean = false,
         isSkipPageError: Boolean = false,
         isSkipAllError: Boolean = false,
+        isSkipMainState: Boolean = false,
+        block: CoroutineBlock,
     ) = MainScope().launch {
-        //自定义请求码
-        if (!customCode.isNullOrEmpty()) pageStateManager?.isCustomCode = true
-        //最终请求码
-        val requestCode =
-            customCode ?: pageStateManager?.requestCodeInPage ?: UUID.randomUUID().toString()
+        //页面状态管理设置
+        onSetPageState(
+            manager, isSkipPageLoading, isSkipAllLoading,
+            isSkipPageError, isSkipAllError
+        )
         try {
-            //页面状态管理设置
-            onSetPageState(isSkipPageLoading, isSkipAllLoading, isSkipPageError, isSkipAllError)
-            //请求开始前准备
+            //执行请求开始前准备
             onStart?.invoke()
             //请求开始
-            start.value = Pair(requestCode, true)
+            start.value = StateCallbackData(requestCode, manager?.pageManageCode)
             withTimeout(BaseRetrofitClient.TIME_OUT) {
                 //请求方法
                 block()
                 //请求成功
-                success.value = Pair(requestCode, true)
+                success.value = StateCallbackData(
+                    requestCode,
+                    manager?.pageManageCode,
+                    isSkipMainState = isSkipMainState
+                )
             }
         } catch (e: Exception) {
-            //此处接收到BaseRepository里的request抛出的异常，处理后赋值给error
-            logE("${block.javaClass.name}\nError：$e")
             //异常格式化
             val finalException = ExceptionHandler.parseException(e)
+            //执行异常回调
             onError?.invoke(finalException)
             //请求异常
-            error.value = Pair(requestCode, finalException)
+            error.value = StateCallbackData(
+                requestCode,
+                manager?.pageManageCode,
+                exception = finalException
+            )
         } finally {
             //请求结束
-            finally.value = Pair(requestCode, if (error.value != null) -1 else 200)
+            finally.value = StateCallbackData(
+                requestCode,
+                manager?.pageManageCode,
+                exception = error.value?.exception,
+                isSuccess = error.value == null
+            )
         }
     }
 
@@ -103,38 +109,46 @@ open class BaseViewModel : ViewModel() {
         DownloadClient.download(call, outputFile, onError, onProcess, onSuccess)
     }
 
-    /**
-     *  请求开始
-     */
-    fun start(): MutableLiveData<Pair<String, Boolean>> = start
-
-    /**
-     * 请求失败，出现异常
-     */
-    fun error(): MutableLiveData<Pair<String, Exception>> = error
-
-    /**
-     *  请求开始
-     */
-    fun success(): MutableLiveData<Pair<String, Boolean>> = success
-
-    /**
-     * 请求完成，在此处做一些关闭操作
-     */
-    fun finally(): MutableLiveData<Pair<String, Int>> = finally
 
     /**
      * 页面状态设置
      */
     private fun onSetPageState(
+        pageStateManager: PageStateManager?,
         skipPageLoading: Boolean,
         skipAllLoading: Boolean,
         skipPageError: Boolean,
         skipErrorAll: Boolean
     ) {
-        pageStateManager?.isSkipPageLoading = skipPageLoading
-        pageStateManager?.isSkipAllLoading = skipAllLoading
-        pageStateManager?.isSkipPageError = skipPageError
-        pageStateManager?.isSkipAllError = skipErrorAll
+        pageStateManager?.isSkipPageLoading?.set(skipPageLoading)
+        pageStateManager?.isSkipAllLoading?.set(skipAllLoading)
+        pageStateManager?.isSkipPageError?.set(skipPageError)
+        pageStateManager?.isSkipAllError?.set(skipErrorAll)
     }
+
+    /**
+     * 请求状态回调数据
+     */
+    data class StateCallbackData(
+        /**
+         * 请求编码
+         */
+        var requestCode: String? = null,
+        /**
+         * 调用页面管理编码
+         */
+        var pageManagerCode: String? = null,
+        /**
+         * 异常
+         */
+        var exception: Exception? = null,
+        /**
+         * 是否成功
+         */
+        var isSuccess: Boolean? = null,
+        /**
+         * 是否跳过主界面显示
+         */
+        var isSkipMainState: Boolean? = null,
+    )
 }

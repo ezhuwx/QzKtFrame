@@ -2,7 +2,6 @@ package com.ez.kotlin.frame.base
 
 import android.view.View
 import androidx.annotation.CallSuper
-import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.utils.*
 
 abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
@@ -21,9 +20,22 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
         pageStateManager.stateMain()
     }
 
+    fun stateLoading() {
+        pageStateManager.stateLoading()
+    }
+
     fun stateEmpty() {
         pageStateManager.stateEmpty()
     }
+
+    fun stateNetError() {
+        pageStateManager.stateNetError()
+    }
+
+    fun stateUnknownError() {
+        pageStateManager.stateUnknownError()
+    }
+
 
     /**
      * 失败点击重试
