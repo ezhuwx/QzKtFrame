@@ -18,6 +18,7 @@ import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
 import com.ez.kotlin.frame.utils.logE
+import com.ez.kotlin.frame.utils.longShow
 import com.ez.kotlin.frame.utils.shortShow
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
@@ -163,15 +164,35 @@ open class PageStateManager(
     /**
      * 初始化状态布局
      */
+    open fun onInitStatePage() {
+        //Activity主界面
+        viewMain = context.findViewById(R.id.view_main)
+        //初始化
+        onInitView()
+    }
+
+    /**
+     * 初始化状态布局
+     */
     open fun onInitStatePage(view: View) {
-        //状态页
-        isStatePage = true
-        //主界面
+        //Fragment主界面
         viewMain = view.findViewById(R.id.view_main)
+        //初始化
+        onInitView()
+    }
+
+    /**
+     * 初始化
+     */
+    open fun onInitView() {
         //view_main 父布局检查
         check(viewMain.parent is ViewGroup) { context.getString(R.string.error_view_main_parent_not_view_group) }
         //父布局
         parent = viewMain.parent as ViewGroup
+        //状态页
+        isStatePage = true
+        //默认显示加载页面
+        stateLoading()
     }
 
     /**
@@ -250,10 +271,14 @@ open class PageStateManager(
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
     open fun onRequestStart(requestCode: String?) {
-        if (isStatePage) {
-            isErrorToastShowed = false
-            stateLoading()
-        } else stateDialogLoading()
+        when {
+            isStatePage -> {
+                isErrorToastShowed = false
+                stateLoading()
+            }
+
+            isSkipAllLoading.compareAndSet(false, false) -> stateDialogLoading()
+        }
     }
 
     /**
@@ -285,28 +310,32 @@ open class PageStateManager(
         //异常打印
         logE("request error：$it")
         //处理一些已知异常
-        it?.run {
-            if (NetWorkUtil.isNoProxyConnected(context)) {
-                when (it) {
-                    //服务器特殊错误处理
-                    is ApiException -> {
-                        onPageStateChangeListener?.onServiceError(requestCode, it.code, it.message)
-                    }
-                    //正常错误显示
-                    is ResponseException -> {
-                        if (isStatePage) stateUnknownError("(${it.code})${it.message}")
-                        else ToastUtil().longShow("(${it.code})${it.message}")
-                    }
-                    //无提示信息错误显示
-                    else -> {
-                        if (isStatePage) stateUnknownError()
-                        else ToastUtil().longShow(R.string.unknown_error)
+        if (NetWorkUtil.isNoProxyConnected(context)) {
+            when (it) {
+                //服务器特殊错误处理
+                is ApiException -> onPageStateChangeListener?.onServiceError(
+                    requestCode, it.code, it.message
+                )
+                //正常错误显示
+                is ResponseException -> when {
+                    isStatePage -> stateUnknownError("(${it.code})${it.message}")
+                    isSkipAllError.compareAndSet(false, false) -> {
+                        "(${it.code})${it.message}".longShow()
                     }
                 }
-            } else {
-                //无网络提示
-                if (isStatePage) stateNetError()
-                ToastUtil().longShow(R.string.network_error_content)
+                //无提示信息错误显示
+                else -> when {
+                    isStatePage -> stateUnknownError()
+                    isSkipAllError.compareAndSet(false, false) -> {
+                        context.getString(R.string.unknown_error).longShow()
+                    }
+                }
+            }
+            //无网络提示
+        } else when {
+            isStatePage -> stateNetError()
+            isSkipAllError.compareAndSet(false, false) -> {
+                context.getString(R.string.network_error_content).longShow()
             }
         }
     }

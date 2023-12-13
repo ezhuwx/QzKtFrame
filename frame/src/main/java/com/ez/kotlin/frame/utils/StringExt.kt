@@ -158,6 +158,10 @@ fun String?.shortShow() {
     ToastUtil().shortShow(empty())
 }
 
+fun String?.longShow() {
+    ToastUtil().longShow(empty())
+}
+
 fun String?.subSafe10() = endSafe(10)
 
 fun String?.fileName() =
@@ -197,6 +201,7 @@ fun String?.colorSpan(@ColorInt color: Int, start: Int, end: Int): SpannableStri
         )
     }
 }
+
 fun ByteArray?.string(flags: Int = Base64.DEFAULT): String {
     return if (this == null) "" else Base64.encodeToString(this, flags)
 }
