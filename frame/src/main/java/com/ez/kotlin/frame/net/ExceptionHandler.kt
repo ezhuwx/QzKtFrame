@@ -34,7 +34,7 @@ class ExceptionHandler {
         private const val NETWORK_ERROR = 1002
         private const val HTTP_ERROR = 1003
         private const val SSL_ERROR = 1005
-        fun parseException(e: Throwable): ResponseException {
+        fun parseException(e: Throwable, apiErrorCode: ArrayList<Int>? = null): ResponseException {
             var ex = ResponseException(e, HTTP_ERROR)
             when (e) {
                 is HttpException -> {
@@ -43,10 +43,12 @@ class ExceptionHandler {
                         GATEWAY_TIMEOUT -> {
                             ex.message = BaseApplication.mContext.getString(R.string.net_error)
                         }
+
                         SYSTEM_TIME_ERROR -> {
                             ex.message =
                                 BaseApplication.mContext.getString(R.string.system_time_error_tip)
                         }
+
                         UNAUTHORIZED -> ex.message =
                             BaseApplication.mContext.getString(R.string.request_unauthorized)
 
@@ -67,30 +69,34 @@ class ExceptionHandler {
 
                     }
                 }
-                is ServerException -> {
-                    ex = ResponseException(e, e.code)
-                    ex.message = BaseApplication.mContext.getString(R.string.server_error)
-                }
+
                 is JsonParseException, is JSONException, is ParseException -> {
                     ex = ResponseException(e, PARSE_ERROR)
                     ex.message = BaseApplication.mContext.getString(R.string.parse_error)
                 }
+
                 is ConnectException -> {
                     ex = ResponseException(e, NETWORK_ERROR)
                     ex.message = BaseApplication.mContext.getString(R.string.net_error)
                 }
+
                 is SSLHandshakeException -> {
                     ex = ResponseException(e, SSL_ERROR)
                     ex.message = BaseApplication.mContext.getString(R.string.ssl_error)
                 }
+
                 is TimeoutCancellationException -> {
                     ex = ResponseException(e, REQUEST_TIMEOUT)
                     ex.message = BaseApplication.mContext.getString(R.string.request_time_out)
                 }
+
                 is ResponseException -> {
-                    ex.code = e.code
-                    return ex
+                    //自定义请求码
+                    return if (apiErrorCode?.contains(e.code) == true) ApiException(e, e.code)
+                    //其它api请求错误
+                    else return e
                 }
+
                 else -> {
                     ex = ResponseException(e, UNKNOWN)
                     ex.message = BaseApplication.mContext.getString(R.string.unknown_error)
@@ -99,10 +105,16 @@ class ExceptionHandler {
             return ex
         }
     }
-
-
-    /**
-     * ServerException发生后，将自动转换为ResponseException返回
-     */
-    class ServerException(override var message: String, var code: Int) : RuntimeException()
 }
+
+/**
+ * @author : ezhuwx
+ * Describe :Api错误
+ * @param code 错误码
+ * @param message 错误信息
+ * Designed on 2021/11/4
+ * E-mail : ezhuwx@163.com
+ * Update on 13:22 by ezhuwx
+ */
+class ApiException(throwable: Throwable?, override var code: Int) :
+    ResponseException(throwable, code)

@@ -11,7 +11,7 @@
             type="com.ez.kotlin.frame.model.TitleIncludeModel" />
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/colorPrimary"
@@ -24,7 +24,10 @@
             android:layout_centerVertical="true"
             android:onClick="@{()->titleModel.backClickListener.onClick()}"
             android:orientation="horizontal"
-            android:visibility="@{titleModel.backVisible}">
+            android:visibility="@{titleModel.backVisible}"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintStart_toStartOf="parent"
+            bind:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/back_iv"
@@ -38,13 +41,16 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:layout_toStartOf="@id/right_tv"
-            android:layout_toEndOf="@+id/back_ll"
-            android:background="@drawable/search_top_bg">
+            android:background="@drawable/search_top_bg"
+            bind:layout_constraintBottom_toBottomOf="parent"
+            bind:layout_constraintEnd_toStartOf="@+id/right_tv"
+            bind:layout_constraintStart_toEndOf="@+id/back_ll"
+            bind:layout_constraintTop_toTopOf="parent"
+            bind:layout_goneMarginEnd="20dp">
 
             <ImageView
                 android:layout_width="20dp"
@@ -67,7 +73,9 @@
                 android:text="@={titleModel.inputStr}"
                 android:textColor="@color/black_in_light_bg"
                 android:textColorHint="#757575"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                bind:onAction="@{id->titleModel.inputActionListener.onAction(id)}"
+                bind:onActionSearch="@{()->titleModel.inputSearchActionListener.onSearchAction()}" />
         </LinearLayout>
 
 
@@ -75,15 +83,15 @@
             android:id="@+id/right_tv"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
             android:gravity="center"
             android:onClick="@{()->titleModel.rightClickListener.onClick()}"
             android:paddingStart="10dp"
             android:paddingEnd="10dp"
-            android:text="@string/look_for"
+            android:text="@{titleModel.right}"
             android:textColor="@{titleModel.rightColor,default= @color/white_in_deep_bg}"
             android:textSize="16sp"
-            android:visibility="@{titleModel.rightVisible}" />
+            android:visibility="@{titleModel.rightVisible}"
+            bind:layout_constraintEnd_toEndOf="parent" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

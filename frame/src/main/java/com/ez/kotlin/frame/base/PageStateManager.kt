@@ -12,6 +12,7 @@ import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.PageState.*
 import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.net.ApiException
+import com.ez.kotlin.frame.net.ExceptionHandler
 import com.ez.kotlin.frame.net.NetDialog
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.NetWorkUtil
@@ -218,10 +219,12 @@ open class PageStateManager(
                 }
             }
             error.observe(owner) {
+                //异常打印
+                logE("request error：${it.originalError}")
                 //报错
                 if (isCustomOrPageRequest(it)) {
-                    onRequestError(it.requestCode, it.exception)
-                    onPageStateChangeListener?.onRequestError(it.requestCode, it.exception)
+                    onRequestError(it.requestCode, it.error)
+                    onPageStateChangeListener?.onRequestError(it.requestCode, it.error)
                 }
             }
             finally.observe(owner) {
@@ -298,29 +301,27 @@ open class PageStateManager(
     /**
      *  接口请求出错，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestError(requestCode: String?, it: Exception?) {
+    open fun onRequestError(requestCode: String?, error: Exception?) {
         //处理一些已知异常
-        showErrorTip(requestCode, it)
+        showErrorTip(requestCode, error)
     }
 
     /**
      * 处理一些已知异常
      */
-    open fun showErrorTip(requestCode: String?, it: Exception?) {
-        //异常打印
-        logE("request error：$it")
+    open fun showErrorTip(requestCode: String?, error: Exception?) {
         //处理一些已知异常
         if (NetWorkUtil.isNoProxyConnected(context)) {
-            when (it) {
+            when (error) {
                 //服务器特殊错误处理
                 is ApiException -> onPageStateChangeListener?.onServiceError(
-                    requestCode, it.code, it.message
+                    requestCode, error.code, error.message
                 )
                 //正常错误显示
                 is ResponseException -> when {
-                    isStatePage -> stateUnknownError("(${it.code})${it.message}")
+                    isStatePage -> stateUnknownError("(${error.code})${error.message}")
                     isSkipAllError.compareAndSet(false, false) -> {
-                        "(${it.code})${it.message}".longShow()
+                        "(${error.code})${error.message}".longShow()
                     }
                 }
                 //无提示信息错误显示

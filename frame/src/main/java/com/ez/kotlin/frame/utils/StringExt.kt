@@ -1,5 +1,6 @@
 package com.ez.kotlin.frame.utils
 
+import android.content.Context
 import android.graphics.Color
 import android.text.Editable
 import android.text.InputFilter
@@ -10,6 +11,8 @@ import android.util.Base64
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
+import com.ez.kotlin.frame.base.BaseApplication
 import java.net.URLEncoder
 import java.util.regex.Pattern
 
@@ -143,7 +146,7 @@ fun String?.safeToD(): Double {
 
 fun String?.safeToInt(): Int {
     try {
-        return (this ?: "0").toDouble().toInt()
+        return (this ?: "0").toInt()
     } catch (_: Exception) {
 
     }
@@ -208,4 +211,22 @@ fun ByteArray?.string(flags: Int = Base64.DEFAULT): String {
 
 fun String?.urlSafe(): String {
     return URLEncoder.encode(empty())
+}
+
+fun String?.emptyNull(): String? {
+    return if (isNullOrEmpty()) null
+    else this
+}
+
+fun String?.ifEmptyValue(emptyValue: String?): String? {
+    return if (isNullOrEmpty()) emptyValue else this
+}
+
+fun String?.ifEmptyValue(value: String?, emptyValue: String?): String? {
+    return if (isNullOrEmpty()) emptyValue else value
+}
+
+fun @receiver:StringRes Int.resString(context: Context = BaseApplication.instance.applicationContext)
+        : String {
+    return context.resources.getString(this)
 }

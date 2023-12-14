@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.animation.Animation
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -18,6 +19,8 @@ import androidx.databinding.*
 import androidx.viewpager.widget.ViewPager
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.interfaces.MotionAnimListener
+import com.ez.kotlin.frame.interfaces.OnEditorActionListener
+import com.ez.kotlin.frame.interfaces.OnEditorSearchActionListener
 import com.ez.kotlin.frame.utils.INTERNAL_TIME
 import com.ez.kotlin.frame.utils.addRedStar
 import com.ez.kotlin.frame.utils.glideLoad
@@ -438,6 +441,32 @@ object CommonBinder {
     ) {
         if (!path.isNullOrEmpty()) {
             view.glideLoad(path, radius)
+        }
+    }
+
+    /**
+     *  EditorAction 方法适配
+     *
+     */
+    @BindingAdapter(value = ["onAction", "onActionSearch"], requireAll = false)
+    @JvmStatic
+    fun editActionClick(
+        view: EditText,
+        onAction: OnEditorActionListener?,
+        onActionSearch: OnEditorSearchActionListener?,
+    ) {
+        view.setOnEditorActionListener { _, actionId, _ ->
+            when {
+                onAction != null -> {
+                    return@setOnEditorActionListener onAction.onAction(actionId)
+                }
+
+                actionId == EditorInfo.IME_ACTION_SEARCH && onActionSearch != null -> {
+                    return@setOnEditorActionListener onActionSearch.onSearchAction()
+                }
+
+                else -> return@setOnEditorActionListener false
+            }
         }
     }
 

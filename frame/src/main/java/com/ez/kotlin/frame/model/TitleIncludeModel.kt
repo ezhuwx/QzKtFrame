@@ -8,6 +8,8 @@ import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.BaseApplication
 import com.ez.kotlin.frame.base.BaseViewModel
 import com.ez.kotlin.frame.binder.CommonBinder
+import com.ez.kotlin.frame.interfaces.OnEditorActionListener
+import com.ez.kotlin.frame.interfaces.OnEditorSearchActionListener
 import com.ez.kotlin.frame.utils.SingleLiveEvent
 
 /**
@@ -41,7 +43,14 @@ class TitleIncludeModel : BaseViewModel() {
     val inputHint = SingleLiveEvent<String>().apply {
         value = BaseApplication.mContext.getString(R.string.default_hint)
     }
-
+    /**
+     * 键盘事件
+     */
+    val inputActionListener = SingleLiveEvent<OnEditorActionListener>()
+    /**
+     * 键盘搜索事件
+     */
+    val inputSearchActionListener = SingleLiveEvent<OnEditorSearchActionListener>()
     /**
      * 返回按钮显示
      */
@@ -117,4 +126,6 @@ class TitleIncludeModel : BaseViewModel() {
     fun interface OnRightClick {
         fun onClick()
     }
+
+
 }

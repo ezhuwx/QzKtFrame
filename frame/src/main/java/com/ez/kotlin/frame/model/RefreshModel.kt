@@ -134,10 +134,33 @@ class RefreshModel : BaseViewModel() {
     /**
      * 刷新加载
      * */
-    fun <E> observeRefreshLoadMore(
-        call: () -> Unit,
-    ) where E : BaseViewModel {
+    fun observeRefreshLoadMore(call: () -> Unit) {
         this.call = call
+        refreshListener = object : OnRefreshLoadMoreListener {
+            override fun onRefresh(refreshLayout: RefreshLayout) {
+                isRefresh = true
+                isLoadMore = false
+                //重置页码
+                page = PAGE_FIRST_INDEX
+                //请求
+                call()
+            }
+
+            override fun onLoadMore(refreshLayout: RefreshLayout) {
+                isRefresh = false
+                isLoadMore = true
+                //请求
+                call()
+            }
+        }
+    }
+
+    /**
+     * 刷新加载
+     * */
+    fun observeRefreshLoadMore(manager: PageStateManager, call: () -> Unit) {
+        this.call = call
+        manager.onRefreshStateChangeListener = StateListener()
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isRefresh = true

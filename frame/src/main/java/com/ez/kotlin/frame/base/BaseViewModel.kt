@@ -15,9 +15,13 @@ import kotlinx.coroutines.*
  */
 typealias CoroutineBlock = suspend CoroutineScope.() -> Unit
 typealias onRequestStart = () -> Unit
-typealias onRequestError = (Exception) -> Unit
+typealias onRequestError = (Exception, ResponseException) -> Unit
 
 open class BaseViewModel : ViewModel() {
+    /**
+     * 自定义异常码
+     */
+    open val apiErrorCode = arrayListOf<Int>()
 
     /**
      * 请求开始
@@ -76,21 +80,23 @@ open class BaseViewModel : ViewModel() {
             }
         } catch (e: Exception) {
             //异常格式化
-            val finalException = ExceptionHandler.parseException(e)
+            val finalException = ExceptionHandler.parseException(e, apiErrorCode)
             //执行异常回调
-            onError?.invoke(finalException)
+            onError?.invoke(e, finalException)
             //请求异常
             error.value = StateCallbackData(
                 requestCode,
                 manager?.pageManageCode,
-                exception = finalException
+                originalError = e,
+                error = finalException
             )
         } finally {
             //请求结束
             finally.value = StateCallbackData(
                 requestCode,
                 manager?.pageManageCode,
-                exception = error.value?.exception,
+                originalError = error.value?.originalError,
+                error = error.value?.error,
                 isSuccess = error.value == null
             )
         }
@@ -141,7 +147,11 @@ open class BaseViewModel : ViewModel() {
         /**
          * 异常
          */
-        var exception: Exception? = null,
+        var originalError: Exception? = null,
+        /**
+         * 异常
+         */
+        var error: ResponseException? = null,
         /**
          * 是否成功
          */
