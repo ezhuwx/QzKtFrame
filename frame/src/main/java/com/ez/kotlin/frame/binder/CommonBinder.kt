@@ -445,6 +445,24 @@ object CommonBinder {
     }
 
     /**
+     *  glide load 方法适配
+     *
+     */
+    @BindingAdapter(value = ["bitmap", "radius"], requireAll = false)
+    @JvmStatic
+    fun bitmap(
+        view: ImageView,
+        bitmap: Bitmap?,
+        radius: Int?
+    ) {
+        if (bitmap != null) {
+            glideWith(view.context, radius)
+                .load(bitmap)
+                .into(view)
+        }
+    }
+
+    /**
      *  EditorAction 方法适配
      *
      */
@@ -457,12 +475,12 @@ object CommonBinder {
     ) {
         view.setOnEditorActionListener { _, actionId, _ ->
             when {
-                onAction != null -> {
-                    return@setOnEditorActionListener onAction.onAction(actionId)
-                }
-
                 actionId == EditorInfo.IME_ACTION_SEARCH && onActionSearch != null -> {
                     return@setOnEditorActionListener onActionSearch.onSearchAction()
+                }
+
+                onAction != null -> {
+                    return@setOnEditorActionListener onAction.onAction(actionId)
                 }
 
                 else -> return@setOnEditorActionListener false

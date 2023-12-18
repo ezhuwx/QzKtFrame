@@ -38,7 +38,6 @@ inline fun <reified T> String?.parseJson(): T? {
     var t: T? = null
     try {
         t = Gson().fromJson(this, object : TypeToken<T>() {}.type)
-        logE(t.toString())
     } catch (e: Exception) {
         MainScope().launch {
             BaseApplication.instance.getString(R.string.data_decode_failed).shortShow()

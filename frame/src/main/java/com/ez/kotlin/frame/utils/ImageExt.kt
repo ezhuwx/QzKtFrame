@@ -1,12 +1,21 @@
 package com.ez.kotlin.frame.utils
 
+import android.content.ContentValues
+import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.ez.kotlin.frame.R
+import com.ez.kotlin.frame.base.BaseApplication
 import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.OutputStream
 
 /**
  * @author : ezhuwx
@@ -52,15 +61,15 @@ fun View.cacheBitmap(): Bitmap? = try {
  * @param bitmap
  * @return
  */
-fun Bitmap?.base64():ByteArray? {
+fun Bitmap?.base64(): ByteArray? {
     var result: ByteArray? = null
     var byteOS: ByteArrayOutputStream? = null
     try {
-            byteOS = ByteArrayOutputStream()
-            this?.compress(Bitmap.CompressFormat.JPEG, 100, byteOS)
-            byteOS.flush()
-            byteOS.close()
-            result = byteOS.toByteArray()
+        byteOS = ByteArrayOutputStream()
+        this?.compress(Bitmap.CompressFormat.JPEG, 100, byteOS)
+        byteOS.flush()
+        byteOS.close()
+        result = byteOS.toByteArray()
     } catch (e: IOException) {
         e.printStackTrace()
     } finally {
@@ -84,4 +93,54 @@ private fun setNoScroll(view: View) {
             setNoScroll(view.getChildAt(index))
         }
     }
+}
+
+/**
+ * 获取图片URI
+ */
+fun String?.pathUri(context: Context, filePath: String? = null): Uri? {
+    //文件地址
+    val filePathDefault =
+        "${Environment.DIRECTORY_PICTURES}/${BaseApplication.instance.resources.getString(R.string.app_name)}"
+    //ContentValues
+    val contentValues = ContentValues()
+    contentValues.put(
+        MediaStore.Images.ImageColumns.DISPLAY_NAME,
+        this ?: System.currentTimeMillis().toString()
+    )
+    contentValues.put(MediaStore.Images.ImageColumns.MIME_TYPE, "image/png")
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, filePath ?: filePathDefault)
+    }
+    var uri: Uri? = null
+    try {
+        uri = context.contentResolver.insert(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        )
+    } catch (_: Exception) {
+    }
+    return uri
+}
+
+/**
+ * 保存图片
+ */
+fun Bitmap?.saveToGallery(
+    context: Context,
+    fileName: String? = null,
+    filePath: String? = null
+): Boolean {
+    if (this != null) {
+        val uri = (fileName ?: System.currentTimeMillis().toString()).pathUri(context, filePath)
+        if (uri != null) {
+            val outputStream: OutputStream? = context.contentResolver.openOutputStream(uri)
+            if (outputStream != null) {
+                compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                outputStream.close()
+                return true
+            }
+        }
+    }
+    return false
 }
