@@ -177,7 +177,7 @@ fun String?.ext() =
 fun String?.subSafe(start: Int? = null, end: Int? = null): String {
     if (start != null && end == null) return startSafe(start)
     if (end != null && start == null) return endSafe(end)
-    if (start != null && end != null) {
+    if (start != null && end != null && start >= 0 && end >= 0) {
         val endNew = end.coerceAtMost(empty().length)
         return if (end > start) empty().substring(start, endNew) else empty()
     }
@@ -186,12 +186,12 @@ fun String?.subSafe(start: Int? = null, end: Int? = null): String {
 
 ///安全截取
 fun String?.startSafe(start: Int): String {
-    return if (empty().length > start) empty().substring(start) else empty()
+    return if (empty().length > start && start >= 0) empty().substring(start) else empty()
 }
 
 ///安全截取
 fun String?.endSafe(end: Int): String {
-    return if (empty().length > end) empty().substring(0, end) else empty()
+    return if (empty().length > end && end > 0) empty().substring(0, end) else empty()
 }
 
 fun String?.colorSpan(@ColorInt color: Int, start: Int, end: Int): SpannableString {

@@ -43,14 +43,30 @@ open class BaseViewModel : ViewModel() {
      */
     val finally by lazy { MutableLiveData<StateCallbackData>() }
 
+
     /**
-     * TODO 标准UI线程协程
+     *  标准UI线程协程
+     *  @param  requestCode 请求码
+     *  @param  manager 页面管理
+     *  @param  onStart 请求前回调
+     *  @param  onError 请异常回调
+     *  @param  onSuccess 请成功回调
+     *  @param  onFinally 请完成回调,
+     *  @param  isSkipPageLoading 跳过页面加载
+     *  @param  isSkipAllLoading 跳过所有加载
+     *  @param  isSkipPageError 跳过页内错误提示
+     *  @param  isSkipAllError 跳过所有错误提示
+     *  @param  isSkipMainState 跳过主界面显示
+     *  @param  block 请求方法
+     *
      */
     fun launchUI(
         requestCode: String? = null,
         manager: PageStateManager? = null,
         onStart: onRequestStart? = null,
         onError: onRequestError? = null,
+        onSuccess: (() -> Unit)? = null,
+        onFinally: (() -> Unit)? = null,
         isSkipPageLoading: Boolean = false,
         isSkipAllLoading: Boolean = false,
         isSkipPageError: Boolean = false,
@@ -72,6 +88,7 @@ open class BaseViewModel : ViewModel() {
                 //请求方法
                 block()
                 //请求成功
+                onSuccess?.invoke()
                 success.value = StateCallbackData(
                     requestCode,
                     manager?.pageManageCode,
@@ -92,6 +109,7 @@ open class BaseViewModel : ViewModel() {
             )
         } finally {
             //请求结束
+            onFinally?.invoke()
             finally.value = StateCallbackData(
                 requestCode,
                 manager?.pageManageCode,

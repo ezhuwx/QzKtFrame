@@ -1,6 +1,5 @@
 package com.ez.kotlin.frame.base
 
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -12,7 +11,6 @@ import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.base.PageState.*
 import com.ez.kotlin.frame.interfaces.OnRefreshStateChangeListener
 import com.ez.kotlin.frame.net.ApiException
-import com.ez.kotlin.frame.net.ExceptionHandler
 import com.ez.kotlin.frame.net.NetDialog
 import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.NetWorkUtil
@@ -113,9 +111,14 @@ open class PageStateManager(
     var unknownErrorLayoutId: Int = StatePageLayout.UNKNOWN_ERROR_LAYOUT_ID
 
     /**
+     * 加载提示
+     */
+    var loadingMsg: String? = context.getString(R.string.app_name)
+
+    /**
      * 空数据提示
      */
-    var emptyResourceIdMsg: String? = null
+    var emptyResourceMsg: String? = context.getString(R.string.none_data)
 
     /**
      * 未知错误提示
@@ -360,7 +363,7 @@ open class PageStateManager(
             ToastUtil().shortShow(R.string.net_error)
         }
         //显示错误页面
-        if (isSkipPageError.compareAndSet(false, false)) {
+        else if (isSkipPageError.compareAndSet(false, false)) {
             //布局
             viewNetError = onInflateView(STATE_NET_ERROR)
             //错误重试事件
@@ -403,12 +406,12 @@ open class PageStateManager(
             unknownResourceMsg.shortShow()
         }
         //显示错误页面
-        if (isSkipPageError.compareAndSet(false, false)) {
+        else if (isSkipPageError.compareAndSet(false, false)) {
             //布局
             viewUnknownError = onInflateView(STATE_UNKNOWN_ERROR)
             //未知错误提示文字
             viewUnknownError?.findViewById<TextView>(R.id.view_unknown_error_content_tv)?.run {
-                if (!unknownResourceMsg.isNullOrEmpty()) text = unknownResourceMsg
+                text = unknownResourceMsg
             }
             //错误重试事件
             viewUnknownError?.findViewById<View>(R.id.view_unknown_error_tv)
@@ -431,6 +434,9 @@ open class PageStateManager(
         ) return
         //布局
         viewLoading = onInflateView(STATE_LOADING)
+        viewLoading?.findViewById<TextView>(R.id.loading_tv)?.run {
+            text = loadingMsg
+        }
         //是否显示弹窗Loading
         if (isSkipPageLoading.compareAndSet(true, false)) stateDialogLoading()
         //状态切换
@@ -450,7 +456,7 @@ open class PageStateManager(
         //无数据提示文字
         viewEmpty?.findViewById<TextView>(R.id.view_empty_content_tv)?.run {
             //自定义值
-            if (!emptyResourceIdMsg.isNullOrEmpty()) text = emptyResourceIdMsg
+            text = emptyResourceMsg
         }
         //无数据重新获取事件
         viewEmpty?.findViewById<View>(R.id.view_empty_tv)?.setOnClickListener { v ->
