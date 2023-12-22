@@ -97,4 +97,4 @@ ext {
     PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
     PUBLISH_VERSION = version
 }
-apply from: "${rootProject.projectDir}/publish-mavencentral.gradle"
+apply from: "${rootProject.projectDir}/publish-maven.gradle"
