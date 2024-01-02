@@ -22,7 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:gravity="center"
+        android:maxLines="5"
+        android:ellipsize="end"
         android:lineSpacingMultiplier="1.4"
+        android:layout_marginHorizontal="30dp"
         android:text="@string/unknown_error"
         android:textColor="@color/tip_text_color"
         android:textSize="14sp" />

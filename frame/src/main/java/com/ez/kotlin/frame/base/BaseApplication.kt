@@ -28,7 +28,7 @@ import com.scwang.smart.refresh.layout.SmartRefreshLayout
 
 abstract class BaseApplication : Application() {
     //activity集合
-    private var allActivities = mutableSetOf<AppCompatActivity>()
+    var allActivities = mutableSetOf<AppCompatActivity>()
 
     //是否屏蔽系统字体大小
     var isExcludeFontScale = false
@@ -215,5 +215,14 @@ abstract class BaseApplication : Application() {
             it.finish()
         }
         allActivities.clear()
+    }
+
+    /**
+     * 退出程序
+     */
+    open fun loginOut() {
+        allActivities.filterIndexed { index, _ -> index != allActivities.size - 1 }.forEach {
+            it.finish()
+        }
     }
 }
