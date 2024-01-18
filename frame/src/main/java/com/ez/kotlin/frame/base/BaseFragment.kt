@@ -22,6 +22,11 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     open var isObserveViewModelRequest = true
 
     /**
+     * 状态栏颜色
+     */
+    open var statusBarColor: Int? = BaseApplication.instance.statusBarColorId
+
+    /**
      * 页面状态管理
      */
     open lateinit var pageStateManager: PageStateManager
@@ -29,10 +34,10 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        immersionBar {
+        if (statusBarColor != null) immersionBar {
             fitsSystemWindows(true)
             transparentNavigationBar()
-            statusBarColor(BaseApplication.instance.statusBarColorId)
+            statusBarColor(statusBarColor!!)
         }
         //页面状态管理
         pageStateManager = PageStateManager(

@@ -35,6 +35,11 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     open lateinit var pageStateManager: PageStateManager
 
     /**
+     * 状态栏颜色
+     */
+    open var statusBarColor = BaseApplication.instance.statusBarColorId
+
+    /**
      * Loading
      * */
     private val mNetDialog by lazy { NetDialog(this) }
@@ -48,7 +53,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         immersionBar {
             fitsSystemWindows(true)
             transparentNavigationBar()
-            statusBarColor(BaseApplication.instance.statusBarColorId)
+            statusBarColor(statusBarColor)
         }
         //页面状态管理
         pageStateManager = PageStateManager(

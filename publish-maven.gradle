@@ -118,11 +118,12 @@ publishing {
                 password ossrhPassword
             }
         }
+        def localPath = mavenLocal()
         maven {
             // 推送至本地存储库，本机测试的时候可以用
             allowInsecureProtocol = false
             name = PUBLISH_ARTIFACT_ID + '-Local'
-            url = uri('D:\\Develop\\Maven\\repository')
+            url = localPath.getUrl()
         }
     }
 }
