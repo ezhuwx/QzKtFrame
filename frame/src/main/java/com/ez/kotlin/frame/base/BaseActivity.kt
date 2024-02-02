@@ -37,7 +37,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     /**
      * 状态栏颜色
      */
-    open var statusBarColor = BaseApplication.instance.statusBarColorId
+    open var statusBarColor: Int? = BaseApplication.instance.statusBarColorId
 
     /**
      * Loading
@@ -50,10 +50,10 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         //锁定竖屏
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         //状态栏适配
-        immersionBar {
+        if (statusBarColor != null) immersionBar {
             fitsSystemWindows(true)
             transparentNavigationBar()
-            statusBarColor(statusBarColor)
+            statusBarColor(statusBarColor!!)
         }
         //页面状态管理
         pageStateManager = PageStateManager(
