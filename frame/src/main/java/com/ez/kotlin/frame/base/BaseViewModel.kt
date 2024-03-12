@@ -3,7 +3,6 @@ package com.ez.kotlin.frame.base
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ez.kotlin.frame.net.*
-import com.ez.kotlin.frame.utils.logE
 import kotlinx.coroutines.*
 
 /**
@@ -77,7 +76,7 @@ open class BaseViewModel : ViewModel() {
         //页面状态管理设置
         onSetPageState(
             manager, isSkipPageLoading, isSkipAllLoading,
-            isSkipPageError, isSkipAllError
+            isSkipPageError, isSkipAllError, isSkipMainState
         )
         try {
             //执行请求开始前准备
@@ -92,7 +91,6 @@ open class BaseViewModel : ViewModel() {
                 success.value = StateCallbackData(
                     requestCode,
                     manager?.pageManageCode,
-                    isSkipMainState = isSkipMainState
                 )
             }
         } catch (e: Exception) {
@@ -122,7 +120,7 @@ open class BaseViewModel : ViewModel() {
 
 
     /**
-     * TODO 下载协程
+     * 下载协程
      */
     fun downloadLaunch(
         call: DownloadService, outputFile: String,
@@ -142,12 +140,14 @@ open class BaseViewModel : ViewModel() {
         skipPageLoading: Boolean,
         skipAllLoading: Boolean,
         skipPageError: Boolean,
-        skipErrorAll: Boolean
+        skipErrorAll: Boolean,
+        isSkipMainState: Boolean
     ) {
         pageStateManager?.isSkipPageLoading?.set(skipPageLoading)
         pageStateManager?.isSkipAllLoading?.set(skipAllLoading)
         pageStateManager?.isSkipPageError?.set(skipPageError)
         pageStateManager?.isSkipAllError?.set(skipErrorAll)
+        pageStateManager?.isSkipMainState?.set(isSkipMainState)
     }
 
     /**
@@ -174,9 +174,6 @@ open class BaseViewModel : ViewModel() {
          * 是否成功
          */
         var isSuccess: Boolean? = null,
-        /**
-         * 是否跳过主界面显示
-         */
-        var isSkipMainState: Boolean? = null,
-    )
+
+        )
 }

@@ -146,6 +146,11 @@ open class PageStateManager(
     var isSkipPageError = AtomicBoolean(false)
 
     /**
+     * 跳过主页面加载
+     */
+    var isSkipMainState = AtomicBoolean(false)
+
+    /**
      * 页面管理编码
      */
     var pageManageCode = UUID.randomUUID().toString()
@@ -215,10 +220,8 @@ open class PageStateManager(
             success.observe(owner) {
                 //成功
                 if (isCustomOrPageRequest(it)) {
-                    onRequestSuccess(it.requestCode, it.isSkipMainState == true)
-                    onPageStateChangeListener?.onRequestSuccess(
-                        it.requestCode, it.isSkipMainState == true
-                    )
+                    onRequestSuccess(it.requestCode)
+                    onPageStateChangeListener?.onRequestSuccess(it.requestCode)
                 }
             }
             error.observe(owner) {
@@ -290,8 +293,11 @@ open class PageStateManager(
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestSuccess(requestCode: String?, isSkipMainState: Boolean) {
-        if (isStatePage && !isSkipMainState) stateMain()
+    open fun onRequestSuccess(requestCode: String?) {
+        if (isStatePage && isSkipMainState.compareAndSet(false, false)) {
+            if (onPageStateChangeListener?.stateEmptyCondition() == true) stateEmpty()
+            else stateMain()
+        }
     }
 
     /**
@@ -468,7 +474,7 @@ open class PageStateManager(
     }
 
     /**
-     * 主视图
+     * 显示主视图
      */
     open fun stateMain() {
         stateDialogDismiss()
@@ -541,7 +547,6 @@ open class PageStateManager(
         }
     }
 
-
 }
 
 /**
@@ -557,7 +562,7 @@ interface OnPageStateChangeListener {
     /**
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
-    fun onRequestSuccess(requestCode: String?, isSkipMainState: Boolean) {
+    fun onRequestSuccess(requestCode: String?) {
 
     }
 
@@ -581,8 +586,18 @@ interface OnPageStateChangeListener {
 
     }
 
+    /**
+     * 异常或空数据重试
+     */
     fun onErrorOrEmptyRetry(isError: Boolean) {
 
+    }
+
+    /**
+     * 提供状态为空的判断依据
+     */
+    fun stateEmptyCondition(): Boolean {
+        return false
     }
 }
 
