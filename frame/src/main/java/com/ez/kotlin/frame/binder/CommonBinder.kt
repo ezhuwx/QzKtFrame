@@ -16,7 +16,10 @@ import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.databinding.*
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.ez.kotlin.frame.R
 import com.ez.kotlin.frame.interfaces.MotionAnimListener
 import com.ez.kotlin.frame.interfaces.OnEditorActionListener
@@ -26,6 +29,8 @@ import com.ez.kotlin.frame.utils.addRedStar
 import com.ez.kotlin.frame.utils.glideLoad
 import com.ez.kotlin.frame.utils.glideWith
 import com.ez.kotlin.frame.utils.isInvalidClick
+import com.ez.kotlin.frame.utils.setupWithViewPager2
+import com.ez.kotlin.frame.widget.FragmentPager2Adapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
@@ -356,6 +361,29 @@ object CommonBinder {
         //viewPager
         val viewPager = (view.rootView as View).findViewById<ViewPager>(id)
         view.setupWithViewPager(viewPager)
+    }
+
+    /**
+     *  绑定ViewPager
+     *
+     * @param view
+     */
+    @BindingAdapter(
+        value = ["tabLayoutId", "fragmentAdapter"],
+        requireAll = true
+    )
+    @JvmStatic
+    fun bindViewPager2(
+        view: ViewPager2,
+        tabLayoutId: String,
+        fragmentAdapter: FragmentPager2Adapter
+    ) {
+        //tabLayoutId获取
+        val id: Int = view.resources.getIdentifier(tabLayoutId, "id", view.context.packageName)
+        //adapter
+        view.adapter = fragmentAdapter
+        //viewPager
+        view.setupWithViewPager2((view.rootView as View).findViewById(id))
     }
 
     /**
