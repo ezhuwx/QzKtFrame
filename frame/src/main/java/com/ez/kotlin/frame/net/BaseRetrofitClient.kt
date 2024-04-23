@@ -24,7 +24,7 @@ import java.net.Proxy
  */
 abstract class BaseRetrofitClient<Api> {
     companion object {
-        var TIME_OUT = 30 * 1000L
+        const val TIME_OUT = 60 * 1000L
     }
 
     /**
@@ -86,7 +86,6 @@ abstract class BaseRetrofitClient<Api> {
                 .client(getOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-            TIME_OUT = getTimeOut()
         }
         return retrofit!!
     }
@@ -157,10 +156,10 @@ abstract class BaseRetrofitClient<Api> {
             //日志
             addInterceptor(loggingInterceptor)
             //超时时间设置
-            connectTimeout(TIME_OUT, TimeUnit.SECONDS)
-            readTimeout(TIME_OUT, TimeUnit.SECONDS)
-            writeTimeout(TIME_OUT, TimeUnit.SECONDS)
-            callTimeout(TIME_OUT, TimeUnit.SECONDS)
+            connectTimeout(requestTimeOut, TimeUnit.MILLISECONDS)
+            readTimeout(requestTimeOut, TimeUnit.MILLISECONDS)
+            writeTimeout(requestTimeOut, TimeUnit.MILLISECONDS)
+            callTimeout(requestTimeOut, TimeUnit.MILLISECONDS)
             //错误重连
             retryOnConnectionFailure(true)
             //证书忽略
@@ -220,5 +219,5 @@ abstract class BaseRetrofitClient<Api> {
     /**
      *  超时时间
      * */
-    open fun getTimeOut(): Long = 30 * 1000
+    open fun getTimeOut(): Long = TIME_OUT
 }

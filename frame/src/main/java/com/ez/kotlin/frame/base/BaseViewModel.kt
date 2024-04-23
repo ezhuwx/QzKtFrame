@@ -1,9 +1,12 @@
 package com.ez.kotlin.frame.base
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ez.kotlin.frame.net.*
+import com.ez.kotlin.frame.utils.logD
 import kotlinx.coroutines.*
+import kotlin.math.log
 
 /**
  * @author : ezhuwx
@@ -83,17 +86,18 @@ open class BaseViewModel : ViewModel() {
             onStart?.invoke()
             //请求开始
             start.value = StateCallbackData(requestCode, manager?.pageManageCode)
-            withTimeout(BaseRetrofitClient.TIME_OUT) {
-                //请求方法
-                block()
-                //请求成功
-                onSuccess?.invoke()
-                success.value = StateCallbackData(
-                    requestCode,
-                    manager?.pageManageCode,
-                )
-            }
+            //请求方法
+            block()
+            //请求成功
+            onSuccess?.invoke()
+            success.value = StateCallbackData(
+                requestCode,
+                manager?.pageManageCode,
+            )
         } catch (e: Exception) {
+            if (BaseApplication.instance.isDebug) {
+                Log.e("ViewModel", "ERROR:  【$e\n】")
+            }
             //异常格式化
             val finalException = ExceptionHandler.parseException(e, apiErrorCode)
             //执行异常回调

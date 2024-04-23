@@ -16,7 +16,6 @@ import com.ez.kotlin.frame.net.ResponseException
 import com.ez.kotlin.frame.utils.NetWorkUtil
 import com.ez.kotlin.frame.utils.ToastUtil
 import com.ez.kotlin.frame.utils.isInvalidClick
-import com.ez.kotlin.frame.utils.logE
 import com.ez.kotlin.frame.utils.longShow
 import com.ez.kotlin.frame.utils.shortShow
 import java.util.UUID
@@ -225,8 +224,6 @@ open class PageStateManager(
                 }
             }
             error.observe(owner) {
-                //异常打印
-                logE("request error：${it.originalError}")
                 //报错
                 if (isCustomOrPageRequest(it)) {
                     onRequestError(it.requestCode, it.error)
