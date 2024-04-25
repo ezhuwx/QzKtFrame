@@ -9,5 +9,5 @@ dependencyResolutionManagement {
         maven { url "https://dl.bintray.com/bfears/maven" }
     }
 }
-rootProject.name = "KOTLIN-FRAME"
+rootProject.name = "QzKtFrame"
 include ':frame'
