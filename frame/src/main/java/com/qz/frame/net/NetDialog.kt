@@ -7,7 +7,7 @@ import android.view.Window
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.qz.kotlin.frame.R
+import com.qz.frame.R
 import me.jessyan.autosize.AutoSizeCompat
 
 /**

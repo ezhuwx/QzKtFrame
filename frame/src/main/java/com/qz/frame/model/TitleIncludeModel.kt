@@ -2,12 +2,12 @@ package com.qz.frame.model
 
 import android.view.View
 import androidx.core.content.ContextCompat
+import com.qz.frame.R
 import com.qz.frame.base.BaseApplication
 import com.qz.frame.base.BaseViewModel
 import com.qz.frame.interfaces.OnEditorActionListener
 import com.qz.frame.interfaces.OnEditorSearchActionListener
 import com.qz.frame.utils.SingleLiveEvent
-import com.qz.kotlin.frame.R
 
 /**
  * @author : ezhuwx

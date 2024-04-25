@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import com.qz.frame.R
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.ApiException
 import com.qz.frame.net.NetDialog
@@ -16,7 +17,6 @@ import com.qz.frame.utils.ToastUtil
 import com.qz.frame.utils.isInvalidClick
 import com.qz.frame.utils.longShow
 import com.qz.frame.utils.shortShow
-import com.qz.kotlin.frame.R
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 

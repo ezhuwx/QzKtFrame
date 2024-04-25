@@ -10,8 +10,8 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import androidx.annotation.RequiresApi
+import com.qz.frame.R
 import com.qz.frame.base.BaseApplication
-import com.qz.kotlin.frame.R
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody

@@ -2,8 +2,8 @@ package com.qz.frame.net
 
 import android.net.ParseException
 import com.qz.frame.base.BaseApplication
-import com.qz.kotlin.frame.R
 import com.google.gson.JsonParseException
+import com.qz.frame.R
 import kotlinx.coroutines.TimeoutCancellationException
 import org.json.JSONException
 import retrofit2.HttpException

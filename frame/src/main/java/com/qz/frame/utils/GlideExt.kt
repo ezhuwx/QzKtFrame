@@ -10,8 +10,8 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
+import com.qz.frame.R
 import com.qz.frame.base.BaseApplication
-import com.qz.kotlin.frame.R
 import java.util.*
 
 /**

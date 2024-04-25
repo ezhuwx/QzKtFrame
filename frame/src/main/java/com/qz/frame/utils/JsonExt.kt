@@ -1,9 +1,9 @@
 package com.qz.frame.utils
 
 import com.qz.frame.base.BaseApplication
-import com.qz.kotlin.frame.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.qz.frame.R
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.lang.reflect.Type

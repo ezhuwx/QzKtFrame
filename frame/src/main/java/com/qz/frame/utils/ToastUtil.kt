@@ -8,8 +8,8 @@ import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.cardview.widget.CardView
+import com.qz.frame.R
 import com.qz.frame.base.BaseApplication
-import com.qz.kotlin.frame.R
 
 /**
  * @author : ezhuwx

@@ -28,9 +28,9 @@ import com.qz.frame.utils.glideWith
 import com.qz.frame.utils.isInvalidClick
 import com.qz.frame.utils.setupWithViewPager2
 import com.qz.frame.widget.FragmentPager2Adapter
-import com.qz.kotlin.frame.R
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.textfield.TextInputLayout
+import com.qz.frame.R
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshLoadMoreListener
 

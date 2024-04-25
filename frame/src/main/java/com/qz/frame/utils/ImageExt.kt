@@ -10,8 +10,8 @@ import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import com.qz.frame.R
 import com.qz.frame.base.BaseApplication
-import com.qz.kotlin.frame.R
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.OutputStream
