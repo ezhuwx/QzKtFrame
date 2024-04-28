@@ -3,17 +3,18 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id "com.vanniktech.maven.publish.base"
 }
 
-def version = "1.2.2.34"
+def version = "2.0.0.34"
 
 android {
     compileSdk 31
-
+    namespace "com.qz.frame"
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 12234
+        versionCode 20034
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -93,8 +94,8 @@ dependencies {
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 }
 ext {
-    PUBLISH_GROUP_ID = "io.github.ezhuwx"
-    PUBLISH_ARTIFACT_ID = 'KOTLIN-FRAME'
+    PUBLISH_GROUP_ID = "io.gitee.ezhuwx"
+    PUBLISH_ARTIFACT_ID = 'QzKtFrame'
     PUBLISH_VERSION = version
 }
 apply from: "${rootProject.projectDir}/publish-maven.gradle"

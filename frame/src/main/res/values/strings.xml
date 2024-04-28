@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">KOTLIN-FRAME</string>
+    <string name="app_name">QzKtFrame</string>
     <string name="cancel_request">接口请求取消</string>
     <string name="request_time_out">请求超时，请稍后再试~</string>
     <string name="login_time_out">登陆超时，请重新登录~</string>

@@ -8,7 +8,7 @@
 
         <variable
             name="titleModel"
-            type="com.qz.kotlin.frame.model.TitleIncludeModel" />
+            type="com.qz.frame.model.TitleIncludeModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

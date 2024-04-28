@@ -1,6 +1,4 @@
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-
+apply plugin: 'com.vanniktech.maven.publish'
 // 生成文档注释
 tasks.register('androidJavadocs', Javadoc) {
     // 设置源码所在的位置
@@ -26,108 +24,38 @@ artifacts {
     archives androidJavadocsJar //将注释打包进aar
 }
 
-ext["signing.keyId"] = ''
-ext["signing.password"] = ''
-ext["signing.secretKeyRingFile"] = ''
-ext["ossrhUsername"] = ''
-ext["ossrhPassword"] = ''
+mavenPublishing {
+    coordinates(PUBLISH_GROUP_ID, PUBLISH_ARTIFACT_ID, PUBLISH_VERSION)
 
-File secretPropsFile = project.rootProject.file('./local.properties')
-if (secretPropsFile.exists()) {
-    println "Found secret props file, loading props"
-    Properties p = new Properties()
-    p.load(new FileInputStream(secretPropsFile))
-    p.each { name, value ->
-        ext[name] = value
-    }
-} else {
-    println "No props file, loading env vars"
-}
-publishing {
-    publications {
-        release(MavenPublication) {
-            // The coordinates of the library, being set from variables that
-            // we'll set up in a moment
-            groupId PUBLISH_GROUP_ID
-            artifactId PUBLISH_ARTIFACT_ID
-            version PUBLISH_VERSION
-
-            // Two artifacts, the `aar` and the sources
-            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-            artifact androidSourcesJar
-
-            // Self-explanatory metadata for the most part
-            pom {
-                name = PUBLISH_ARTIFACT_ID
-                description = 'Kotlin MVVM Frame'
-                // If your project has a dedicated site, use its URL here
-                url = 'https://github.com/ezhuwx/KOTLIN-FRAME.git'
-                licenses {
-                    license {
-                        //协议类型，一般默认Apache License2.0的话不用改：
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'ezhuwx'
-                        name = 'ezhuhwx'
-                        email = 'ezhuwx@163.com'
-                    }
-                }
-                // Version control info, if you're using GitHub, follow the format as seen here
-                scm {
-                    //修改成你的Git地址：
-                    connection = 'https://github.com/ezhuwx/KOTLIN-FRAME.git'
-                    developerConnection = 'https://github.com/ezhuwx/KOTLIN-FRAME.git'
-                    //分支地址：
-                    url = 'https://github.com/ezhuwx/KOTLIN-FRAME/master'
-                }
-                // A slightly hacky fix so that your POM will include any transitive dependencies
-                // that your library builds upon
-                withXml {
-                    def dependenciesNode = asNode().appendNode('dependencies')
-
-                    project.configurations.implementation.allDependencies.each {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
+    pom {
+        name = PUBLISH_ARTIFACT_ID
+        description = "Kotlin MVVM Frame"
+        inceptionYear = "2022"
+        url = "https://gitee.com/ezhuwx/QzKtFrame"
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
             }
         }
-    }
-    repositories {
-        // The repository to publish to, Sonatype/MavenCentral
-        maven {
-            // This is an arbitrary name, you may also use "mavencentral" or
-            // any other name that's descriptive for you
-            name = PUBLISH_ARTIFACT_ID
-
-            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            // You only need this if you want to publish snapshots, otherwise just set the URL
-            // to the release repo directly
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-
-            // The username and password we've fetched earlier
-            credentials {
-                username ossrhUsername
-                password ossrhPassword
+        developers {
+            developer {
+                id = 'ezhuwx'
+                name = 'ezhuhwx'
+                email = 'ezhuwx@163.com'
             }
         }
-        def localPath = mavenLocal()
-        maven {
-            // 推送至本地存储库，本机测试的时候可以用
-            allowInsecureProtocol = false
-            name = PUBLISH_ARTIFACT_ID + '-Local'
-            url = localPath.getUrl()
+        scm {
+            url = 'https://gitee.com/ezhuwx/QzKtFrame'
+            connection = 'https://gitee.com/ezhuwx/QzKtFrame.git'
+            developerConnection = 'https://gitee.com/ezhuwx/QzKtFrame.git'
         }
+        //发布到Maven中央仓库
+        publishToMavenCentral(SonatypeHostMavenCentral)
+        //发布到本地
+        publishToMavenLocal
+        //签名
+        signAllPublications()
     }
 }
-signing {
-    sign publishing.publications
-}
-
