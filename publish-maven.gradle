@@ -26,7 +26,6 @@ artifacts {
 
 mavenPublishing {
     coordinates(PUBLISH_GROUP_ID, PUBLISH_ARTIFACT_ID, PUBLISH_VERSION)
-
     pom {
         name = PUBLISH_ARTIFACT_ID
         description = "Kotlin MVVM Frame"
@@ -52,7 +51,7 @@ mavenPublishing {
             developerConnection = 'https://gitee.com/ezhuwx/QzKtFrame.git'
         }
         //发布到Maven中央仓库
-        publishToMavenCentral(SonatypeHostMavenCentral)
+        publishToMavenCentral(SonatypeHostMavenCentral,true)
         //发布到本地
         publishToMavenLocal
         //签名

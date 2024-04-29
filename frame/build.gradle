@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
@@ -6,7 +8,7 @@ plugins {
     id "com.vanniktech.maven.publish.base"
 }
 
-def version = "2.0.0.34"
+def version = "2.0.0.50"
 
 android {
     compileSdk 31
@@ -14,11 +16,18 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 20034
+        versionCode 20043
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    // 自定义输出配置
+    libraryVariants.configureEach { variant ->
+        variant.outputs.configureEach {
+            Date nowTime = new Date()
+            SimpleDateFormat time = new SimpleDateFormat("YYYYMMdd")
+            outputFileName = "QzKtFrame_v${version}_${time.format(nowTime)}.aar"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -39,59 +48,59 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.10.1'
+    api 'androidx.core:core-ktx:1.10.1'
     testImplementation 'junit:junit:4.13.2'
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.3.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    api 'androidx.cardview:cardview:1.0.0'
+    api 'androidx.recyclerview:recyclerview:1.3.0'
+    api 'androidx.appcompat:appcompat:1.6.1'
+    api 'com.google.android.material:material:1.8.0'
+    api 'androidx.constraintlayout:constraintlayout:2.1.4'
+    api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     // ViewModel
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
+    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     // LiveData
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
+    api 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.1'
     // Saved state module for ViewModel
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1'
+    api 'androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1'
     //fragment快速实现（可选）
-    implementation 'com.geyifeng.immersionbar:immersionbar:3.2.2'
+    api 'com.geyifeng.immersionbar:immersionbar:3.2.2'
     // kotlin扩展（可选）
-    implementation 'com.geyifeng.immersionbar:immersionbar-ktx:3.2.2'
+    api 'com.geyifeng.immersionbar:immersionbar-ktx:3.2.2'
     //retrofit + okHttp3
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    api 'com.squareup.retrofit2:converter-gson:2.9.0'
+    api 'com.squareup.okhttp3:logging-interceptor:4.10.0'
     //dex分包,解决方法数超限(65535)
-    implementation 'com.android.support:multidex:1.0.3'
+    api 'com.android.support:multidex:1.0.3'
     //腾讯mmkv
-    implementation 'com.tencent:mmkv-static:1.3.1'
+    api 'com.tencent:mmkv-static:1.3.1'
     //导航栏
-    implementation 'com.ashokvarma.android:bottom-navigation-bar:2.2.0'
+    api 'com.ashokvarma.android:bottom-navigation-bar:2.2.0'
     //基于LiveData的事件总线
-    implementation 'io.github.jeremyliao:live-event-bus-x:1.8.0'
+    api 'io.github.jeremyliao:live-event-bus-x:1.8.0'
     //RecyclerViewAdapter
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.11'
+    api 'com.github.CymChad:BaseRecyclerViewAdapterHelper:3.0.11'
     //glide
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    api 'com.github.bumptech.glide:glide:4.16.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     api 'com.github.bumptech.glide:okhttp3-integration:4.16.0'
     api 'jp.wasabeef:glide-transformations:4.0.0'
     //下拉刷新
-    implementation 'io.github.scwang90:refresh-layout-kernel:2.0.6'
-    implementation 'io.github.scwang90:refresh-header-material:2.0.6'
-    implementation 'io.github.scwang90:refresh-footer-classics:2.0.6'
+    api 'io.github.scwang90:refresh-layout-kernel:2.0.6'
+    api 'io.github.scwang90:refresh-header-material:2.0.6'
+    api 'io.github.scwang90:refresh-footer-classics:2.0.6'
     //屏幕适配
-    implementation 'me.jessyan:autosize:1.2.1'
+    api 'me.jessyan:autosize:1.2.1'
     //日志
-    implementation 'com.orhanobut:logger:2.2.0'
+    api 'com.orhanobut:logger:2.2.0'
     //权限处理
-    implementation 'com.guolindev.permissionx:permissionx:1.7.1'
+    api 'com.guolindev.permissionx:permissionx:1.7.1'
     //dataBinding严格模式
     api 'com.kunminx.arch:strict-databinding:5.6.0'
     //shimmer动画
-    implementation 'com.facebook.shimmer:shimmer:0.5.0'
+    api 'com.facebook.shimmer:shimmer:0.5.0'
 }
 ext {
     PUBLISH_GROUP_ID = "io.gitee.ezhuwx"
