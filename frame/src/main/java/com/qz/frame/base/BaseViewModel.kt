@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.qz.frame.net.*
 import kotlinx.coroutines.*
+import java.util.UUID
 
 /**
  * @author : ezhuwx
@@ -61,7 +62,7 @@ open class BaseViewModel : ViewModel() {
      *
      */
     fun launchUI(
-        requestCode: String? = null,
+        code: String? = null,
         manager: PageStateManager? = null,
         onStart: onRequestStart? = null,
         onError: onRequestError? = null,
@@ -74,9 +75,10 @@ open class BaseViewModel : ViewModel() {
         isSkipMainState: Boolean = false,
         block: CoroutineBlock,
     ) = MainScope().launch {
+        val requestCode = code ?: UUID.randomUUID().toString()
         //页面状态管理设置
         onSetPageState(
-            manager, isSkipPageLoading, isSkipAllLoading,
+            requestCode, manager, isSkipPageLoading, isSkipAllLoading,
             isSkipPageError, isSkipAllError, isSkipMainState
         )
         try {
@@ -138,6 +140,7 @@ open class BaseViewModel : ViewModel() {
      * 页面状态设置
      */
     private fun onSetPageState(
+        requestCode: String,
         pageStateManager: PageStateManager?,
         skipPageLoading: Boolean,
         skipAllLoading: Boolean,
@@ -145,11 +148,11 @@ open class BaseViewModel : ViewModel() {
         skipErrorAll: Boolean,
         isSkipMainState: Boolean
     ) {
-        pageStateManager?.isSkipPageLoading?.set(skipPageLoading)
-        pageStateManager?.isSkipAllLoading?.set(skipAllLoading)
-        pageStateManager?.isSkipPageError?.set(skipPageError)
-        pageStateManager?.isSkipAllError?.set(skipErrorAll)
-        pageStateManager?.isSkipMainState?.set(isSkipMainState)
+        pageStateManager?.isSkipPageLoading?.put(requestCode,skipPageLoading)
+        pageStateManager?.isSkipAllLoading?.put(requestCode,skipAllLoading)
+        pageStateManager?.isSkipPageError?.put(requestCode,skipPageError)
+        pageStateManager?.isSkipAllError?.put(requestCode,skipErrorAll)
+        pageStateManager?.isSkipMainState?.put(requestCode,isSkipMainState)
     }
 
     /**

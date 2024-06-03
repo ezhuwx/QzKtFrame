@@ -126,27 +126,27 @@ open class PageStateManager(
     /**
      * 跳过加载状态页
      */
-    var isSkipPageLoading = AtomicBoolean(false)
+    var isSkipPageLoading = mutableMapOf<String, Boolean>()
 
     /**
      * 跳过加载状态页，及Loading弹窗
      */
-    var isSkipAllLoading = AtomicBoolean(false)
+    var isSkipAllLoading = mutableMapOf<String, Boolean>()
 
     /**
      * 跳过错误状态页
      */
-    var isSkipAllError = AtomicBoolean(false)
+    var isSkipAllError = mutableMapOf<String, Boolean>()
 
     /**
      * 跳过错误状态页，及Toast错误提示
      */
-    var isSkipPageError = AtomicBoolean(false)
+    var isSkipPageError = mutableMapOf<String, Boolean>()
 
     /**
      * 跳过主页面加载
      */
-    var isSkipMainState = AtomicBoolean(false)
+    var isSkipMainState = mutableMapOf<String, Boolean>()
 
     /**
      * 页面管理编码
@@ -279,10 +279,10 @@ open class PageStateManager(
         when {
             isStatePage -> {
                 isErrorToastShowed = false
-                stateLoading()
+                stateLoading(requestCode)
             }
 
-            isSkipAllLoading.compareAndSet(false, false) -> stateDialogLoading()
+            isSkipAllLoading[requestCode] != true -> stateDialogLoading()
         }
     }
 
@@ -290,7 +290,7 @@ open class PageStateManager(
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
     open fun onRequestSuccess(requestCode: String?) {
-        if (isStatePage && isSkipMainState.compareAndSet(false, false)) {
+        if (isStatePage && isSkipMainState[requestCode] != true) {
             if (onPageStateChangeListener?.stateEmptyCondition() == true) stateEmpty()
             else stateMain()
         }
@@ -324,23 +324,23 @@ open class PageStateManager(
                 )
                 //正常错误显示
                 is ResponseException -> when {
-                    isStatePage -> stateUnknownError("(${error.code})${error.message}")
-                    isSkipAllError.compareAndSet(false, false) -> {
+                    isStatePage -> stateUnknownError(requestCode, "(${error.code})${error.message}")
+                    isSkipAllError[requestCode] != true -> {
                         "(${error.code})${error.message}".longShow()
                     }
                 }
                 //无提示信息错误显示
                 else -> when {
-                    isStatePage -> stateUnknownError()
-                    isSkipAllError.compareAndSet(false, false) -> {
+                    isStatePage -> stateUnknownError(requestCode)
+                    isSkipAllError[requestCode] != true -> {
                         context.getString(R.string.unknown_error).longShow()
                     }
                 }
             }
             //无网络提示
         } else when {
-            isStatePage -> stateNetError()
-            isSkipAllError.compareAndSet(false, false) -> {
+            isStatePage -> stateNetError(requestCode)
+            isSkipAllError[requestCode] != true -> {
                 context.getString(R.string.network_error_content).longShow()
             }
         }
@@ -349,23 +349,23 @@ open class PageStateManager(
     /**
      * 网络错误
      */
-    open fun stateNetError() {
+    open fun stateNetError(requestCode: String? = null) {
         //分页加载跳过
         val isLoadSkip =
             onRefreshStateChangeListener?.stateError(context.getString(R.string.net_error)) == true
         //跳过
         if (isLoadSkip || currentState == PageState.STATE_NET_ERROR
-            || isSkipAllError.compareAndSet(true, false)
+            || isSkipAllError[requestCode] == true
         ) return
         //加载框消失
         stateDialogDismiss()
         //显示错误提示
-        if (isSkipPageError.compareAndSet(true, false) && !isErrorToastShowed) {
+        if (isSkipPageError[requestCode] == true && !isErrorToastShowed) {
             isErrorToastShowed = true
             ToastUtil().shortShow(R.string.net_error)
         }
         //显示错误页面
-        else if (isSkipPageError.compareAndSet(false, false)) {
+        else if (isSkipPageError[requestCode] != true) {
             //布局
             viewNetError = onInflateView(PageState.STATE_NET_ERROR)
             //错误重试事件
@@ -383,32 +383,32 @@ open class PageStateManager(
      *
      * @param errorMsg 错误提示文字
      */
-    open fun stateUnknownError(errorMsg: String) {
+    open fun stateUnknownError(requestCode: String?, errorMsg: String) {
         this.unknownResourceMsg = errorMsg
-        stateUnknownError()
+        stateUnknownError(requestCode)
     }
 
     /**
      * 未知错误状态
      */
-    open fun stateUnknownError() {
+    open fun stateUnknownError(requestCode: String? = null) {
         //分页加载跳过
         val isLoadSkip = onRefreshStateChangeListener?.stateError(
             unknownResourceMsg ?: context.getString(R.string.unknown_error)
         ) == true
         //跳过
         if (isLoadSkip || currentState == PageState.STATE_UNKNOWN_ERROR
-            || isSkipAllError.compareAndSet(true, false)
+            || isSkipAllError[requestCode] == true
         ) return
         //加载框消失
         stateDialogDismiss()
         //显示错误提示
-        if (isSkipPageError.compareAndSet(true, false) && !isErrorToastShowed) {
+        if (isSkipPageError[requestCode] == true && !isErrorToastShowed) {
             isErrorToastShowed = true
             unknownResourceMsg.shortShow()
         }
         //显示错误页面
-        else if (isSkipPageError.compareAndSet(false, false)) {
+        else if (isSkipPageError[requestCode] != true) {
             //布局
             viewUnknownError = onInflateView(PageState.STATE_UNKNOWN_ERROR)
             //未知错误提示文字
@@ -428,11 +428,11 @@ open class PageStateManager(
     /**
      * 加载状态
      * */
-    open fun stateLoading() {
+    open fun stateLoading(requestCode: String? = null) {
         //跳过
         if (onRefreshStateChangeListener?.stateLoading() == true
             || currentState == PageState.STATE_LOADING
-            || isSkipAllLoading.compareAndSet(true, false)
+            || isSkipAllLoading[requestCode] == true
         ) return
         //布局
         viewLoading = onInflateView(PageState.STATE_LOADING)
@@ -440,7 +440,7 @@ open class PageStateManager(
             text = loadingMsg
         }
         //是否显示弹窗Loading
-        if (isSkipPageLoading.compareAndSet(true, false)) stateDialogLoading()
+        if (isSkipPageLoading[requestCode] == true) stateDialogLoading()
         //状态切换
         else onChangeState(PageState.STATE_LOADING)
     }
