@@ -73,13 +73,14 @@ open class BaseViewModel : ViewModel() {
         isSkipPageError: Boolean = false,
         isSkipAllError: Boolean = false,
         isSkipMainState: Boolean = false,
+        isSkipPageState: Boolean = false,
         block: CoroutineBlock,
     ) = MainScope().launch {
         val requestCode = code ?: UUID.randomUUID().toString()
         //页面状态管理设置
         onSetPageState(
             requestCode, manager, isSkipPageLoading, isSkipAllLoading,
-            isSkipPageError, isSkipAllError, isSkipMainState
+            isSkipPageError, isSkipAllError, isSkipMainState, isSkipPageState
         )
         try {
             //执行请求开始前准备
@@ -146,13 +147,14 @@ open class BaseViewModel : ViewModel() {
         skipAllLoading: Boolean,
         skipPageError: Boolean,
         skipErrorAll: Boolean,
-        isSkipMainState: Boolean
+        isSkipMainState: Boolean,
+        isSkipPageState: Boolean
     ) {
-        pageStateManager?.isSkipPageLoading?.put(requestCode,skipPageLoading)
-        pageStateManager?.isSkipAllLoading?.put(requestCode,skipAllLoading)
-        pageStateManager?.isSkipPageError?.put(requestCode,skipPageError)
-        pageStateManager?.isSkipAllError?.put(requestCode,skipErrorAll)
-        pageStateManager?.isSkipMainState?.put(requestCode,isSkipMainState)
+        pageStateManager?.isSkipPageLoading?.put(requestCode, isSkipPageState || skipPageLoading)
+        pageStateManager?.isSkipAllLoading?.put(requestCode, skipAllLoading)
+        pageStateManager?.isSkipPageError?.put(requestCode, isSkipPageState || skipPageError)
+        pageStateManager?.isSkipAllError?.put(requestCode, skipErrorAll)
+        pageStateManager?.isSkipMainState?.put(requestCode, isSkipPageState || isSkipMainState)
     }
 
     /**
