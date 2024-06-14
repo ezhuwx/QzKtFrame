@@ -76,15 +76,14 @@ object DownloadClient {
                 //异常回调
                 emit(DownloadListener.failure(e))
             }
-        }.flowOn(Dispatchers.IO)
-            .collect {
-                it.fold(onFailure = { e ->
-                    e?.let { it1 -> onError(it1) }
-                }, onSuccess = { file ->
-                    onSuccess(file)
-                }, onLoading = { progress ->
-                    onProcess(progress.currentLength, progress.length, progress.process)
-                })
-            }
+        }.flowOn(Dispatchers.IO).collect {
+            it.fold(onFailure = { e ->
+                e?.let { it1 -> onError(it1) }
+            }, onSuccess = { file ->
+                onSuccess(file)
+            }, onLoading = { progress ->
+                onProcess(progress.currentLength, progress.length, progress.process)
+            })
+        }
     }
 }

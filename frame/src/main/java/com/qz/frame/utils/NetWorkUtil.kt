@@ -46,11 +46,11 @@ object NetWorkUtil {
      * @param context
      * @return
      */
-    fun isNoProxyConnected(context: Context): Boolean {
+    fun isConnectedNoProxy(context: Context, allowProxy: Boolean): Boolean {
         val manager =
             context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val info = manager.activeNetworkInfo
-        return !(null == info || !info.isConnected || isVpnOrProxy())
+        return !(null == info || !info.isConnected || (!allowProxy && isVpnOrProxy()))
     }
 
     /**

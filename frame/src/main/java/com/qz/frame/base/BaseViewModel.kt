@@ -1,8 +1,10 @@
 package com.qz.frame.base
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.qz.frame.net.*
 import kotlinx.coroutines.*
 import java.util.UUID
@@ -47,7 +49,7 @@ open class BaseViewModel : ViewModel() {
 
     /**
      *  标准UI线程协程
-     *  @param  requestCode 请求码
+     *  @param  code 请求码
      *  @param  manager 页面管理
      *  @param  onStart 请求前回调
      *  @param  onError 请异常回调
@@ -75,7 +77,7 @@ open class BaseViewModel : ViewModel() {
         isSkipMainState: Boolean = false,
         isSkipPageState: Boolean = false,
         block: CoroutineBlock,
-    ) = MainScope().launch {
+    ) = viewModelScope.launch {
         val requestCode = code ?: UUID.randomUUID().toString()
         //页面状态管理设置
         onSetPageState(
@@ -132,7 +134,7 @@ open class BaseViewModel : ViewModel() {
         onError: Error = {},
         onProcess: Process = { _, _, _ -> },
         onSuccess: Success = { }
-    ) = MainScope().launch {
+    ) = viewModelScope.launch {
         DownloadClient.download(call, outputFile, onError, onProcess, onSuccess)
     }
 
@@ -183,4 +185,11 @@ open class BaseViewModel : ViewModel() {
         var isSuccess: Boolean? = null,
 
         )
+}
+
+/**
+ * 返回只读状态数据
+ */
+fun <T> MutableLiveData<T>.readOnly(): LiveData<T> {
+    return this
 }

@@ -19,20 +19,20 @@ import javax.net.ssl.SSLHandshakeException
  */
 class ExceptionHandler {
     companion object {
-        private const val UNAUTHORIZED = 401
-        private const val FORBIDDEN = 403
-        private const val NOT_FOUND = 404
-        private const val REQUEST_TIMEOUT = 408
-        private const val INTERNAL_SERVER_ERROR = 500
-        private const val BAD_GATEWAY = 502
-        private const val SERVICE_UNAVAILABLE = 503
-        private const val GATEWAY_TIMEOUT = 504
-        private const val SYSTEM_TIME_ERROR = 9999
-        private const val UNKNOWN = 1000
-        private const val PARSE_ERROR = 1001
-        private const val NETWORK_ERROR = 1002
-        private const val HTTP_ERROR = 1003
-        private const val SSL_ERROR = 1005
+        const val UNAUTHORIZED = 401
+        const val FORBIDDEN = 403
+        const val NOT_FOUND = 404
+        const val REQUEST_TIMEOUT = 408
+        const val INTERNAL_SERVER_ERROR = 500
+        const val BAD_GATEWAY = 502
+        const val SERVICE_UNAVAILABLE = 503
+        const val GATEWAY_TIMEOUT = 504
+        const val SYSTEM_TIME_ERROR = 9999
+        const val UNKNOWN = 1000
+        const val PARSE_ERROR = 1001
+        const val NETWORK_ERROR = 1002
+        const val HTTP_ERROR = 1003
+        const val SSL_ERROR = 1005
         fun parseException(e: Throwable, apiErrorCode: ArrayList<Int>? = null): ResponseException {
             var ex = ResponseException(e, HTTP_ERROR)
             when (e) {

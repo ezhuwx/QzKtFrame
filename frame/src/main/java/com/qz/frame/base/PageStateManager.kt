@@ -10,6 +10,8 @@ import androidx.lifecycle.LifecycleOwner
 import com.qz.frame.R
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.ApiException
+import com.qz.frame.net.BaseRetrofitClient
+import com.qz.frame.net.ExceptionHandler
 import com.qz.frame.net.NetDialog
 import com.qz.frame.net.ResponseException
 import com.qz.frame.utils.NetWorkUtil
@@ -18,7 +20,6 @@ import com.qz.frame.utils.isInvalidClick
 import com.qz.frame.utils.longShow
 import com.qz.frame.utils.shortShow
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * @author : ezhuwx
@@ -315,33 +316,29 @@ open class PageStateManager(
      * 处理一些已知异常
      */
     open fun showErrorTip(requestCode: String?, error: Exception?) {
-        //处理一些已知异常
-        if (NetWorkUtil.isNoProxyConnected(context)) {
-            when (error) {
-                //服务器特殊错误处理
-                is ApiException -> onPageStateChangeListener?.onServiceError(
-                    requestCode, error.code, error.message
-                )
-                //正常错误显示
-                is ResponseException -> when {
-                    isStatePage -> stateUnknownError(requestCode, "(${error.code})${error.message}")
-                    isSkipAllError[requestCode] != true -> {
-                        "(${error.code})${error.message}".longShow()
-                    }
-                }
-                //无提示信息错误显示
-                else -> when {
-                    isStatePage -> stateUnknownError(requestCode)
-                    isSkipAllError[requestCode] != true -> {
-                        context.getString(R.string.unknown_error).longShow()
-                    }
+        when (error) {
+            //服务器特殊错误处理
+            is ApiException -> onPageStateChangeListener?.onServiceError(
+                requestCode, error.code, error.message
+            )
+            //正常错误显示
+            is ResponseException -> when {
+                isStatePage -> if (error.code == ExceptionHandler.NETWORK_ERROR) {
+                    //无网络提示
+                    stateNetError(requestCode)
+                    //其它异常提示
+                } else stateUnknownError(requestCode, "(${error.code})${error.message}")
+
+                isSkipAllError[requestCode] != true -> {
+                    "(${error.code})${error.message}".longShow()
                 }
             }
-            //无网络提示
-        } else when {
-            isStatePage -> stateNetError(requestCode)
-            isSkipAllError[requestCode] != true -> {
-                context.getString(R.string.network_error_content).longShow()
+            //无提示信息错误显示
+            else -> when {
+                isStatePage -> stateUnknownError(requestCode)
+                isSkipAllError[requestCode] != true -> {
+                    context.getString(R.string.unknown_error).longShow()
+                }
             }
         }
     }

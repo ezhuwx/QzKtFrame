@@ -3,15 +3,13 @@ package com.qz.frame.net
 import com.qz.frame.base.BaseApplication
 import com.qz.frame.utils.NetWorkUtil
 import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
+import java.net.Proxy
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
-import java.net.Proxy
 
 
 /**
@@ -23,7 +21,7 @@ import java.net.Proxy
  */
 abstract class BaseRetrofitClient<Api> {
     companion object {
-        const val TIME_OUT = 60 * 1000L
+        const val TIME_OUT = 2 * 60 * 1000L
     }
 
     /**
@@ -96,54 +94,40 @@ abstract class BaseRetrofitClient<Api> {
         //缓存
         val cacheInterceptor = Interceptor { chain: Interceptor.Chain ->
             var request = chain.request()
-            request = if (!NetWorkUtil.isNoProxyConnected(BaseApplication.mContext)) {
-                request.newBuilder()
-                    .cacheControl(CacheControl.FORCE_CACHE)
-                    .build()
-            } else {
-                request.newBuilder().apply {
-                    val headers = getHeaders()
-                    for (header in headers) {
-                        addHeader(header.key, header.value)
-                    }
-                }.build()
-            }
-            var response = chain.proceed(request)
-            val responseBuilder: Response.Builder = response.newBuilder()
-            response = if (NetWorkUtil.isNoProxyConnected(BaseApplication.mContext)) {
+            request = request.newBuilder().apply {
+                if (!NetWorkUtil.isConnectedNoProxy(BaseApplication.mContext, isAllowProxy())) {
+                    cacheControl(CacheControl.FORCE_CACHE)
+                } else getHeaders().forEach { header -> addHeader(header.key, header.value) }
+            }.build()
+            val response = chain.proceed(request)
+            val responseBuilder = response.newBuilder()
+            //代理及时间限制
+            if (NetWorkUtil.isConnectedNoProxy(BaseApplication.mContext, isAllowProxy())) {
                 //设置服务器时间
                 val responseTime: Long = getHeaderTime(response.header("Date"))
+                //时间差
+                val timeDif = responseTime - System.currentTimeMillis()
                 //服务器时间与系统时间应当不超过超时间
-                if (maxAllowTimeDiff >= 0
-                    && abs(responseTime - System.currentTimeMillis()) > maxAllowTimeDiff
-                ) {
+                if (maxAllowTimeDiff >= 0 && abs(timeDif) > maxAllowTimeDiff) {
                     //服务器时间与系统时间超过超时间，提示更新至最新时间
-                    responseBuilder.code(9999)
+                    responseBuilder.code(ExceptionHandler.SYSTEM_TIME_ERROR)
                 }
                 // 有网络时, 不缓存, 最大保存时长为0
                 val maxAge = 0
                 responseBuilder.header("Cache-Control", "public, max-age=$maxAge")
-                    .removeHeader("Pragma")
-                    .build()
             } else {
                 // 无网络时，设置超时为4周
                 val maxStale = 60 * 60 * 24 * 28
-                responseBuilder
-                    .header("Cache-Control", "public, only-if-cached, max-stale=$maxStale")
-                    .removeHeader("Pragma")
-                    .build()
+                responseBuilder.header(
+                    "Cache-Control",
+                    "public, only-if-cached, max-stale=$maxStale"
+                )
+                responseBuilder.code(ExceptionHandler.NETWORK_ERROR)
             }
-            response
+            responseBuilder.removeHeader("Pragma").build()
         }
-        //Log
-        val loggingInterceptor: HttpLoggingInterceptor
-        if (BaseApplication.instance.isDebug) {
-            loggingInterceptor = HttpLoggingInterceptor()
-            loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-        } else loggingInterceptor = HttpLoggingInterceptor()
         //builder
-        val builder = OkHttpClient().newBuilder().proxy(Proxy.NO_PROXY)
-        builder.run {
+        return OkHttpClient().newBuilder().proxy(Proxy.NO_PROXY).apply {
             //添加自定义拦截器
             val customInterceptors = getInterceptors()
             for (interceptor in customInterceptors) {
@@ -153,7 +137,9 @@ abstract class BaseRetrofitClient<Api> {
             addNetworkInterceptor(cacheInterceptor)
             addInterceptor(cacheInterceptor)
             //日志
-            addInterceptor(loggingInterceptor)
+            if (BaseApplication.instance.isDebug) addInterceptor(HttpLoggerInterceptor().apply {
+                setLevel(HttpLoggerInterceptor.Level.BODY)
+            })
             //超时时间设置
             connectTimeout(requestTimeOut, TimeUnit.MILLISECONDS)
             readTimeout(requestTimeOut, TimeUnit.MILLISECONDS)
@@ -168,8 +154,7 @@ abstract class BaseRetrofitClient<Api> {
                 )
                 hostnameVerifier(SSLSocketClient.hostnameVerifier)
             }
-        }
-        return builder.build()
+        }.build()
     }
 
     /**
@@ -206,6 +191,11 @@ abstract class BaseRetrofitClient<Api> {
     abstract fun getSSLIgnore(): Boolean
 
     /**
+     * 屏蔽代理
+     */
+    open fun isAllowProxy(): Boolean = false
+
+    /**
      *  添加请求头
      * */
     open fun getHeaders(): MutableMap<String, String> = mutableMapOf()
@@ -219,4 +209,16 @@ abstract class BaseRetrofitClient<Api> {
      *  超时时间
      * */
     open fun getTimeOut(): Long = TIME_OUT
+
+    /**
+     * 注解判定
+     */
+    fun isAnnotationPresent(annotations: Array<Annotation?>, cls: Class<out Annotation?>): Boolean {
+        for (annotation in annotations) {
+            if (cls.isInstance(annotation)) {
+                return true
+            }
+        }
+        return false
+    }
 }

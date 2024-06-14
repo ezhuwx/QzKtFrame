@@ -49,7 +49,7 @@ class PreciseTimerUtil {
                     jobName?.let { TimeThreadFactory(it) } ?: TimeThreadFactory())
             }
         }
-        threadPoolExecutor?.scheduleAtFixedRate({
+        threadPoolExecutor?.scheduleWithFixedDelay({
             val message = Message()
             message.what = TimeHandler.TYPE_TIME
             handler.sendMessage(message)
@@ -97,7 +97,7 @@ class PreciseTimerUtil {
                     jobName?.let { TimeThreadFactory(it) } ?: TimeThreadFactory())
             }
         }
-        return threadPoolExecutor?.scheduleAtFixedRate({
+        return threadPoolExecutor?.scheduleWithFixedDelay({
             val message = Message()
             message.what = TimeHandler.TYPE_TIME
             handler.sendMessage(message)
