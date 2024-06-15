@@ -23,5 +23,8 @@
     <string name="data_decode_failed">数据解析错误~</string>
     <string name="error_view_main_null">The subclass of RootActivity must contain a View named \'view_main\'.</string>
     <string name="error_view_main_parent_not_view_group">view_main\'s ParentView should be a ViewGroup.</string>
+    <string name="other_notice">其它通知</string>
+    <string name="other_type_notice">其它类型的通知</string>
+    <string name="other_channel">other_channel</string>
 
 </resources>

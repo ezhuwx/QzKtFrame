@@ -9,10 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.work.Data
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.NetDialog
 import com.qz.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
+import com.qz.frame.utils.CommonWorker
+import com.qz.frame.utils.createOneTimeWork
 
 /**
  * Activity 基类

@@ -8,7 +8,7 @@ plugins {
     id "com.vanniktech.maven.publish.base"
 }
 
-def version = "2.0.1.10"
+def version = "2.0.1.15"
 
 android {
     compileSdk 31
@@ -16,7 +16,7 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 20080
+        versionCode 20115
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
