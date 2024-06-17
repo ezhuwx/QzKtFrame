@@ -26,5 +26,8 @@
     <string name="other_notice">其它通知</string>
     <string name="other_type_notice">其它类型的通知</string>
     <string name="other_channel">other_channel</string>
+    <string name="upgrade_channel">upgrade_channel</string>
+    <string name="upgrade_channel_name">版本更新</string>
+    <string name="upgrade_channel_des">下载最新版本的应用</string>
 
 </resources>
