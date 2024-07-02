@@ -9,19 +9,25 @@ import androidx.lifecycle.ViewModelProvider
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.work.Data
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.NetDialog
 import com.qz.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
-import com.qz.frame.utils.CommonWorker
-import com.qz.frame.utils.createOneTimeWork
+import com.qz.frame.R
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Activity 基类
  */
 
 abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
+    /**
+     * 是否已经初始化
+     */
+    private val isResumed = AtomicBoolean(false)
+
     /**
      * ViewModel 实例
      */
@@ -53,10 +59,12 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         //锁定竖屏
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         //状态栏适配
-        if (statusBarColor != null) immersionBar {
-            fitsSystemWindows(true)
-            transparentNavigationBar()
-            statusBarColor(statusBarColor!!)
+        statusBarColor?.let {
+            immersionBar {
+                fitsSystemWindows(true)
+                statusBarColor(it)
+                navigationBarColor(R.color.white)
+            }
         }
         //页面状态管理
         pageStateManager = PageStateManager(
@@ -69,26 +77,38 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         BaseApplication.instance.addActivity(this)
         //view绑定方法
         initBindView()
-        //数据初始化方法
-        initData()
     }
 
-    /**
-     *  添加ViewModel
-     *
-     */
-    open fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
-        return ViewModelProvider(this)[clazz]
+    override fun onResume() {
+        super.onResume()
+        if (isResumed.compareAndSet(false, true)) {
+            //数据初始化方法
+            initData()
+        }
     }
+
 
     /**
      *  初始化ViewModel
      *
      */
     override fun initViewModel() {
-        getBindingVMClass().let {
-            viewModel = ViewModelProvider(this)[it]
-        }
+        viewModel = getBindingVMClass().vm()
+    }
+
+    /**
+     *  添加ViewModel
+     *
+     */
+    open fun <T : BaseViewModel> getViewModel(
+        clazz: Class<T>,
+        owner: ViewModelStoreOwner = this@BaseActivity
+    ): T {
+        return ViewModelProvider(owner)[clazz]
+    }
+
+    open fun <T : BaseViewModel> Class<T>.vm(owner: ViewModelStoreOwner = this@BaseActivity): T {
+        return getViewModel(this, owner)
     }
 
     /**

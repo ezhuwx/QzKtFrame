@@ -5,12 +5,20 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
+import com.qz.frame.R
+import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
+    /**
+     * 是否已经初始化
+     */
+    private val isResumed = AtomicBoolean(false)
+
     /**
      * ViewModel 实例
      */
@@ -34,10 +42,12 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (statusBarColor != null) immersionBar {
-            fitsSystemWindows(true)
-            transparentNavigationBar()
-            statusBarColor(statusBarColor!!)
+        statusBarColor?.let {
+            immersionBar {
+                fitsSystemWindows(true)
+                statusBarColor(it)
+                navigationBarColor(R.color.white)
+            }
         }
         //页面状态管理
         pageStateManager = PageStateManager(
@@ -48,8 +58,14 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         )
         //view绑定方法
         initBindView(view)
-        //数据初始化方法
-        initData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isResumed.compareAndSet(false, true)) {
+            //数据初始化方法
+            initData()
+        }
     }
 
     /**
@@ -57,17 +73,22 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *
      */
     override fun initViewModel() {
-        getBindingVMClass()?.let {
-            viewModel = ViewModelProvider(this)[it]
-        }
+        viewModel = getBindingVMClass().vm()
     }
 
     /**
      *  添加ViewModel
      *
      */
-    open fun <T : BaseViewModel> getViewModel(clazz: Class<T>): T {
-        return ViewModelProvider(this)[clazz]
+    open fun <T : BaseViewModel> getViewModel(
+        clazz: Class<T>,
+        owner: ViewModelStoreOwner = this@BaseFragment
+    ): T {
+        return ViewModelProvider(owner)[clazz]
+    }
+
+    open fun <T : BaseViewModel> Class<T>.vm(owner: ViewModelStoreOwner = this@BaseFragment): T {
+        return getViewModel(this, owner)
     }
 
     override fun onDestroyView() {
@@ -101,7 +122,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     /**
      *  viewModel实例
      *  */
-    abstract fun getBindingVMClass(): Class<VM>?
+    abstract fun getBindingVMClass(): Class<VM>
 
     /**
      * 初始化 View
