@@ -180,6 +180,7 @@ open class PageStateManager(
         //Activity主界面
         try {
             viewMain = context.findViewById(R.id.view_main)
+            isStatePage = true
         } catch (_: Exception) {
             isStatePage = false
         }
