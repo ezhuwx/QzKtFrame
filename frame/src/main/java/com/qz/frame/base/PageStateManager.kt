@@ -176,14 +176,11 @@ open class PageStateManager(
     /**
      * 初始化状态布局
      */
-    open fun onInitStatePage() {
+    open fun onInitStatePage(view: View? = null) {
         //Activity主界面
-        try {
-            viewMain = context.findViewById(R.id.view_main)
-            isStatePage = true
-        } catch (_: Exception) {
-            isStatePage = false
-        }
+        viewMain = if (view != null) view.findViewById(R.id.view_main)
+        else context.findViewById(R.id.view_main)
+        isStatePage = viewMain != null
         //初始化
         onInitView()
     }
@@ -348,9 +345,11 @@ open class PageStateManager(
             || isSkipAllError[requestCode] == true
         ) return
         //显示错误提示
-        if ((!isStatePage || isSkipPageError[requestCode] == true) && !isErrorToastShowed) {
-            isErrorToastShowed = true
-            context.resources.getString(R.string.net_error).shortShow()
+        if ((!isStatePage || isSkipPageError[requestCode] == true)) {
+            if (!isErrorToastShowed) {
+                isErrorToastShowed = true
+                context.resources.getString(R.string.net_error).shortShow()
+            }
         }
         //显示错误页面
         else if (isSkipPageError[requestCode] != true) {
@@ -391,9 +390,11 @@ open class PageStateManager(
             || isSkipAllError[requestCode] == true
         ) return
         //显示错误提示
-        if ((!isStatePage || isSkipPageError[requestCode] == true) && !isErrorToastShowed) {
-            isErrorToastShowed = true
-            unknownResourceMsg.shortShow()
+        if ((!isStatePage || isSkipPageError[requestCode] == true)) {
+            if (!isErrorToastShowed) {
+                isErrorToastShowed = true
+                unknownResourceMsg.shortShow()
+            }
         }
         //显示错误页面
         else if (isSkipPageError[requestCode] != true) {
@@ -505,18 +506,20 @@ open class PageStateManager(
                 PageState.STATE_NET_ERROR -> netErrorLayoutId
                 PageState.STATE_UNKNOWN_ERROR -> unknownErrorLayoutId
             }
-            //布局载入
-            View.inflate(context, layoutResId, parent)
-            //实例View
-            parent!!.findViewById(
-                when (state) {
-                    PageState.STATE_MAIN -> R.id.view_main
-                    PageState.STATE_LOADING -> R.id.loading_root
-                    PageState.STATE_EMPTY -> R.id.empty_root
-                    PageState.STATE_NET_ERROR -> R.id.net_error_root
-                    PageState.STATE_UNKNOWN_ERROR -> R.id.unknown_error_root
-                }
-            )
+            if (parent != null) {
+                //布局载入
+                View.inflate(context, layoutResId, parent)
+                //实例View
+                parent!!.findViewById<View>(
+                    when (state) {
+                        PageState.STATE_MAIN -> R.id.view_main
+                        PageState.STATE_LOADING -> R.id.loading_root
+                        PageState.STATE_EMPTY -> R.id.empty_root
+                        PageState.STATE_NET_ERROR -> R.id.net_error_root
+                        PageState.STATE_UNKNOWN_ERROR -> R.id.unknown_error_root
+                    }
+                )
+            } else null
         }
     }
 

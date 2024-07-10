@@ -7,7 +7,7 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
 
     @CallSuper
     override fun initBindView(view: View) {
-        pageStateManager.onInitStatePage()
+        pageStateManager.onInitStatePage(view)
         pageStateManager.onPageStateChangeListener = object : OnPageStateChangeListener {
             override fun onErrorOrEmptyRetry(isError: Boolean) {
                 this@BaseStateFragment.onErrorOrEmptyRetry(isError)
