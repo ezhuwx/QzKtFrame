@@ -10,14 +10,13 @@ import androidx.lifecycle.LifecycleOwner
 import com.qz.frame.R
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.ApiException
-import com.qz.frame.net.BaseRetrofitClient
 import com.qz.frame.net.ExceptionHandler
 import com.qz.frame.net.NetDialog
 import com.qz.frame.net.ResponseException
-import com.qz.frame.utils.NetWorkUtil
 import com.qz.frame.utils.ToastUtil
 import com.qz.frame.utils.isInvalidClick
 import com.qz.frame.utils.longShow
+import com.qz.frame.utils.resString
 import com.qz.frame.utils.shortShow
 import java.util.UUID
 
@@ -39,6 +38,11 @@ open class PageStateManager(
      * 是否是状态页
      */
     private var isStatePage = false
+
+    /**
+     * 所有ViewModel
+     */
+    private var vmList = mutableListOf<BaseViewModel>()
 
     /**
      * Loading
@@ -68,12 +72,12 @@ open class PageStateManager(
     /**
      * 主页面
      */
-    private lateinit var viewMain: ViewGroup
+    private var viewMain: ViewGroup? = null
 
     /**
      * 主页面父布局
      */
-    private lateinit var parent: ViewGroup
+    private var parent: ViewGroup? = null
 
     /**
      * 当前状态
@@ -166,7 +170,7 @@ open class PageStateManager(
 
     init {
         //监听ViewModel请求
-        onStartObserve()
+        onAddObserve(viewModel)
     }
 
     /**
@@ -174,17 +178,11 @@ open class PageStateManager(
      */
     open fun onInitStatePage() {
         //Activity主界面
-        viewMain = context.findViewById(R.id.view_main)
-        //初始化
-        onInitView()
-    }
-
-    /**
-     * 初始化状态布局
-     */
-    open fun onInitStatePage(view: View) {
-        //Fragment主界面
-        viewMain = view.findViewById(R.id.view_main)
+        try {
+            viewMain = context.findViewById(R.id.view_main)
+        } catch (_: Exception) {
+            isStatePage = false
+        }
         //初始化
         onInitView()
     }
@@ -193,12 +191,12 @@ open class PageStateManager(
      * 初始化
      */
     open fun onInitView() {
-        //view_main 父布局检查
-        check(viewMain.parent is ViewGroup) { context.getString(R.string.error_view_main_parent_not_view_group) }
-        //父布局
-        parent = viewMain.parent as ViewGroup
-        //状态页
-        isStatePage = true
+        if (isStatePage) {
+            //view_main 父布局检查
+            check(viewMain?.parent is ViewGroup) { context.getString(R.string.error_view_main_parent_not_view_group) }
+            //父布局
+            parent = viewMain?.parent as ViewGroup
+        }
         //默认显示加载页面
         stateLoading()
     }
@@ -207,7 +205,10 @@ open class PageStateManager(
      * 请求监听
      *
      */
-    private fun onStartObserve() {
+    open fun onAddObserve(viewModel: BaseViewModel) {
+        //保存所有VM
+        vmList.add(viewModel)
+        //需要监听请求
         if (isObserveViewModelRequest) viewModel.run {
             start.observe(owner) {
                 //开始
@@ -322,24 +323,13 @@ open class PageStateManager(
                 requestCode, error.code, error.message
             )
             //正常错误显示
-            is ResponseException -> when {
-                isStatePage -> if (error.code == ExceptionHandler.NETWORK_ERROR) {
-                    //无网络提示
-                    stateNetError(requestCode)
-                    //其它异常提示
-                } else stateUnknownError(requestCode, "(${error.code})${error.message}")
-
-                isSkipAllError[requestCode] != true -> {
-                    "(${error.code})${error.message}".longShow()
-                }
-            }
+            is ResponseException -> if (error.code == ExceptionHandler.NETWORK_ERROR) {
+                //无网络提示
+                stateNetError(requestCode)
+                //其它异常提示
+            } else stateUnknownError(requestCode, "(${error.code})${error.message}")
             //无提示信息错误显示
-            else -> when {
-                isStatePage -> stateUnknownError(requestCode)
-                isSkipAllError[requestCode] != true -> {
-                    context.getString(R.string.unknown_error).longShow()
-                }
-            }
+            else -> stateUnknownError(requestCode)
         }
     }
 
@@ -347,6 +337,8 @@ open class PageStateManager(
      * 网络错误
      */
     open fun stateNetError(requestCode: String? = null) {
+        //加载框消失
+        stateDialogDismiss()
         //分页加载跳过
         val isLoadSkip =
             onRefreshStateChangeListener?.stateError(context.getString(R.string.net_error)) == true
@@ -354,12 +346,10 @@ open class PageStateManager(
         if (isLoadSkip || currentState == PageState.STATE_NET_ERROR
             || isSkipAllError[requestCode] == true
         ) return
-        //加载框消失
-        stateDialogDismiss()
         //显示错误提示
-        if (isSkipPageError[requestCode] == true && !isErrorToastShowed) {
+        if ((!isStatePage || isSkipPageError[requestCode] == true) && !isErrorToastShowed) {
             isErrorToastShowed = true
-            ToastUtil().shortShow(R.string.net_error)
+            context.resources.getString(R.string.net_error).shortShow()
         }
         //显示错误页面
         else if (isSkipPageError[requestCode] != true) {
@@ -389,6 +379,8 @@ open class PageStateManager(
      * 未知错误状态
      */
     open fun stateUnknownError(requestCode: String? = null) {
+        //加载框消失
+        stateDialogDismiss()
         //分页加载跳过
         val isLoadSkip = onRefreshStateChangeListener?.stateError(
             unknownResourceMsg ?: context.getString(R.string.unknown_error)
@@ -397,10 +389,8 @@ open class PageStateManager(
         if (isLoadSkip || currentState == PageState.STATE_UNKNOWN_ERROR
             || isSkipAllError[requestCode] == true
         ) return
-        //加载框消失
-        stateDialogDismiss()
         //显示错误提示
-        if (isSkipPageError[requestCode] == true && !isErrorToastShowed) {
+        if ((!isStatePage || isSkipPageError[requestCode] == true) && !isErrorToastShowed) {
             isErrorToastShowed = true
             unknownResourceMsg.shortShow()
         }
@@ -431,25 +421,27 @@ open class PageStateManager(
             || currentState == PageState.STATE_LOADING
             || isSkipAllLoading[requestCode] == true
         ) return
-        //布局
-        viewLoading = onInflateView(PageState.STATE_LOADING)
-        viewLoading?.findViewById<TextView>(R.id.loading_tv)?.run {
-            text = loadingMsg
-        }
         //是否显示弹窗Loading
-        if (isSkipPageLoading[requestCode] == true) stateDialogLoading()
+        if (!isStatePage || isSkipPageLoading[requestCode] == true) stateDialogLoading()
         //状态切换
-        else onChangeState(PageState.STATE_LOADING)
+        else {
+            //布局
+            viewLoading = onInflateView(PageState.STATE_LOADING)
+            viewLoading?.findViewById<TextView>(R.id.loading_tv)?.run {
+                text = loadingMsg
+            }
+            onChangeState(PageState.STATE_LOADING)
+        }
     }
 
     /**
      * 无数据状态
      */
     open fun stateEmpty() {
-        //跳过
-        if (onRefreshStateChangeListener?.stateEmpty() == true || currentState == PageState.STATE_EMPTY) return
         //加载框消失
         stateDialogDismiss()
+        //跳过
+        if (isStatePage && onRefreshStateChangeListener?.stateEmpty() == true || currentState == PageState.STATE_EMPTY) return
         //布局
         viewEmpty = onInflateView(PageState.STATE_EMPTY)
         //无数据提示文字
@@ -515,7 +507,7 @@ open class PageStateManager(
             //布局载入
             View.inflate(context, layoutResId, parent)
             //实例View
-            parent.findViewById(
+            parent!!.findViewById(
                 when (state) {
                     PageState.STATE_MAIN -> R.id.view_main
                     PageState.STATE_LOADING -> R.id.loading_root
@@ -532,11 +524,11 @@ open class PageStateManager(
      * 清除监听
      */
     open fun onClearNetObservers() {
-        viewModel.run {
-            start.removeObservers(owner)
-            success.removeObservers(owner)
-            error.removeObservers(owner)
-            finally.removeObservers(owner)
+        vmList.forEach {
+            it.start.removeObservers(owner)
+            it.success.removeObservers(owner)
+            it.error.removeObservers(owner)
+            it.finally.removeObservers(owner)
         }
     }
 
