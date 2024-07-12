@@ -18,14 +18,14 @@
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/loading_sfl"
         android:layout_width="0dp"
-        app:layout_constraintWidth_default="wrap"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="30dp"
         android:layout_gravity="center"
+        android:layout_marginHorizontal="30dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/guideline">
+        app:layout_constraintTop_toBottomOf="@+id/guideline"
+        app:layout_constraintWidth_default="wrap">
 
         <TextView
             android:id="@+id/loading_tv"
@@ -35,6 +35,7 @@
             android:maxLines="1"
             android:text="@string/app_name"
             android:textColor="@color/tip_text_color"
-            android:textSize="28sp" />
+            android:textSize="28sp"
+            android:textStyle="italic" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

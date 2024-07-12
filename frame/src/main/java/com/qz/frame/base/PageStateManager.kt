@@ -1,12 +1,17 @@
 package com.qz.frame.base
 
+import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.resources.TypefaceUtils
 import com.qz.frame.R
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.ApiException
@@ -93,40 +98,40 @@ open class PageStateManager(
      * 加载页面ID
      * 根布局ID必须为：loading_root
      */
-    var loadingLayoutId: Int = StatePageLayout.LOADING_LAYOUT_ID
+    var loadingLayoutId: Int? = null
 
     /**
      * 空数据页面ID
      * 根布局ID必须为：empty_root
      */
-    var emptyLayoutId: Int = StatePageLayout.EMPTY_LAYOUT_ID
+    var emptyLayoutId: Int? = null
 
     /**
      * 网络错误页面ID
      * 根布局ID必须为：net_error_root
      */
-    var netErrorLayoutId: Int = StatePageLayout.NET_ERROR_LAYOUT_ID
+    var netErrorLayoutId: Int? = null
 
     /**
      * 未知错误页面ID
      * 根布局ID必须为：unknown_error_root
      */
-    var unknownErrorLayoutId: Int = StatePageLayout.UNKNOWN_ERROR_LAYOUT_ID
+    var unknownErrorLayoutId: Int? = null
 
     /**
      * 加载提示
      */
-    var loadingMsg: String? = context.getString(R.string.app_name)
+    var loadingMsg: String? = null
 
     /**
      * 空数据提示
      */
-    var emptyResourceMsg: String? = context.getString(R.string.none_data)
+    var emptyResourceMsg: String? = null
 
     /**
      * 未知错误提示
      */
-    var unknownResourceMsg: String? = context.getString(R.string.unknown_error)
+    var unknownResourceMsg: String? = null
 
     /**
      * 跳过加载状态页
@@ -167,6 +172,11 @@ open class PageStateManager(
      * 页面状态变化监听
      */
     var onPageStateChangeListener: OnPageStateChangeListener? = null
+
+    /**
+     * 所有请求编码
+     */
+    private var allRequestCode = mutableSetOf<String>()
 
     init {
         //监听ViewModel请求
@@ -276,12 +286,12 @@ open class PageStateManager(
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
     open fun onRequestStart(requestCode: String?) {
+        //保存可控制页面完成状态的请求的请求码
+        if (isSkipMainState[requestCode] != true) requestCode?.let { allRequestCode.add(it) }
+        //重置错误提示判定
+        isErrorToastShowed = false
         when {
-            isStatePage -> {
-                isErrorToastShowed = false
-                stateLoading(requestCode)
-            }
-
+            isStatePage -> stateLoading(requestCode)
             isSkipAllLoading[requestCode] != true -> stateDialogLoading()
         }
     }
@@ -290,9 +300,16 @@ open class PageStateManager(
      *  接口请求成功，子类可以重写此方法做一些操作
      *  */
     open fun onRequestSuccess(requestCode: String?) {
-        if (isStatePage && isSkipMainState[requestCode] != true) {
-            if (onPageStateChangeListener?.stateEmptyCondition() == true) stateEmpty()
-            else stateMain()
+        if (isSkipMainState[requestCode] != true) {
+            //清除已完成的请求
+            allRequestCode.remove(requestCode)
+            //所有可控制页面完成状态的请求，均已完成
+            if (allRequestCode.isEmpty()) {
+                if (isStatePage) {
+                    if (onPageStateChangeListener?.stateEmptyCondition() == true) stateEmpty()
+                    else stateMain()
+                } else stateDialogDismiss()
+            }
         }
     }
 
@@ -300,7 +317,8 @@ open class PageStateManager(
      * 接口请求完毕，子类可以重写此方法做一些操作
      * */
     open fun onRequestFinally(requestCode: String?, isSuccess: Boolean) {
-        stateDialogDismiss()
+        //清除已完成的请求(非成功状态)
+        allRequestCode.remove(requestCode)
     }
 
     /**
@@ -379,12 +397,13 @@ open class PageStateManager(
      * 未知错误状态
      */
     open fun stateUnknownError(requestCode: String? = null) {
+        unknownResourceMsg =
+            unknownResourceMsg ?: PageStateOptionManager.instance.unknownResourceMsg
+                    ?: context.getString(R.string.unknown_error)
         //加载框消失
         stateDialogDismiss()
         //分页加载跳过
-        val isLoadSkip = onRefreshStateChangeListener?.stateError(
-            unknownResourceMsg ?: context.getString(R.string.unknown_error)
-        ) == true
+        val isLoadSkip = onRefreshStateChangeListener?.stateError(unknownResourceMsg!!) == true
         //跳过
         if (isLoadSkip || currentState == PageState.STATE_UNKNOWN_ERROR
             || isSkipAllError[requestCode] == true
@@ -430,7 +449,24 @@ open class PageStateManager(
             //布局
             viewLoading = onInflateView(PageState.STATE_LOADING)
             viewLoading?.findViewById<TextView>(R.id.loading_tv)?.run {
-                text = loadingMsg
+                //优先级本页面配置 > 全局配置 > App名称
+                text = loadingMsg ?: PageStateOptionManager.instance.loadingText
+                        ?: context.getString(R.string.app_name)
+                //字体颜色
+                setTextColor(
+                    PageStateOptionManager.instance.loadingTextColor
+                        ?: context.resources.getColor(R.color.tip_text_color)
+                )
+                //字体大小
+                textSize = PageStateOptionManager.instance.loadingTextSize ?: 28f
+                //字体样式
+                PageStateOptionManager.instance.loadingTextFontAsset?.let { asset ->
+                    typeface = Typeface.createFromAsset(context.assets, asset)
+                }
+                //字体 > 字体样式
+                PageStateOptionManager.instance.loadingTextStyle?.let { style ->
+                    typeface = style
+                }
             }
             onChangeState(PageState.STATE_LOADING)
         }
@@ -449,7 +485,8 @@ open class PageStateManager(
         //无数据提示文字
         viewEmpty?.findViewById<TextView>(R.id.view_empty_content_tv)?.run {
             //自定义值
-            text = emptyResourceMsg
+            text = emptyResourceMsg ?: PageStateOptionManager.instance.emptyResourceMsg
+                    ?: context.getString(R.string.none_data)
         }
         //无数据重新获取事件
         viewEmpty?.findViewById<View>(R.id.view_empty_tv)?.setOnClickListener { v ->
@@ -499,16 +536,25 @@ open class PageStateManager(
     private fun onInflateView(state: PageState): View? {
         return onGetStateView(state) ?: run {
             //布局Id
+            //优先级本页面配置 > 全局配置
             val layoutResId = when (state) {
-                PageState.STATE_MAIN -> R.layout.view_main
                 PageState.STATE_LOADING -> loadingLayoutId
+                    ?: PageStateOptionManager.instance.loadingLayoutId
+
                 PageState.STATE_EMPTY -> emptyLayoutId
+                    ?: PageStateOptionManager.instance.emptyLayoutId
+
                 PageState.STATE_NET_ERROR -> netErrorLayoutId
+                    ?: PageStateOptionManager.instance.netErrorLayoutId
+
                 PageState.STATE_UNKNOWN_ERROR -> unknownErrorLayoutId
+                    ?: PageStateOptionManager.instance.unknownErrorLayoutId
+
+                else -> null
             }
             if (parent != null) {
                 //布局载入
-                View.inflate(context, layoutResId, parent)
+                layoutResId?.let { View.inflate(context, it, parent) }
                 //实例View
                 parent!!.findViewById<View>(
                     when (state) {
@@ -579,7 +625,6 @@ interface OnPageStateChangeListener {
      * 异常或空数据重试
      */
     fun onErrorOrEmptyRetry(isError: Boolean) {
-
     }
 
     /**
@@ -621,31 +666,76 @@ enum class PageState {
 }
 
 /**
- * 全局内置状态页ID
+ * @author : ezhuwx
+ * Describe : 页面状态全局配置
+ * Designed on 2024/5/8
+ * E-mail : ezhuwx@163.com
+ * Update on 18:23 by ezhuwx
  */
-object StatePageLayout {
+class PageStateOptionManager {
+    companion object {
+        val instance: PageStateOptionManager by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+            PageStateOptionManager()
+        }
+    }
+
+    /**
+     * 加载文字内容
+     */
+    var loadingText: String? = null
+
+    /**
+     * 加载文字颜色
+     */
+    @ColorInt
+    var loadingTextColor: Int? = null
+
+    /**
+     * 加载文字大小sp
+     */
+    var loadingTextSize: Float? = null
+
+    /**
+     * 加载文字Style
+     */
+    var loadingTextStyle: Typeface? = null
+
+    /**
+     * 默认加载loading字体
+     */
+    var loadingTextFontAsset: String? = null
+
+    /**
+     * 空数据提示
+     */
+    var emptyResourceMsg: String? = null
+
+    /**
+     * 未知错误提示
+     */
+    var unknownResourceMsg: String? = null
 
     /**
      * 加载页面ID
      * 根布局ID必须为：loading_root
      */
-    var LOADING_LAYOUT_ID: Int = R.layout.view_progress
+    var loadingLayoutId: Int = R.layout.view_progress
 
     /**
      * 空数据页面ID
      * 根布局ID必须为：empty_root
      */
-    var EMPTY_LAYOUT_ID: Int = R.layout.view_empty
+    var emptyLayoutId: Int = R.layout.view_empty
 
     /**
      * 网络错误页面ID
      * 根布局ID必须为：net_error_root
      */
-    var NET_ERROR_LAYOUT_ID: Int = R.layout.view_net_error
+    var netErrorLayoutId: Int = R.layout.view_net_error
 
     /**
      * 未知错误页面ID
      * 根布局ID必须为：unknown_error_root
      */
-    var UNKNOWN_ERROR_LAYOUT_ID: Int = R.layout.view_unknown_error
+    var unknownErrorLayoutId: Int = R.layout.view_unknown_error
 }

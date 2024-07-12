@@ -153,21 +153,6 @@ abstract class BaseApplication : Application() {
     }
 
     /**
-     * 全局内置状态页ID配置
-     */
-    open fun onSetPageStateLayout(
-        loadingLayoutId: Int = StatePageLayout.LOADING_LAYOUT_ID,
-        emptyLayoutId: Int = StatePageLayout.EMPTY_LAYOUT_ID,
-        netErrorLayoutId: Int = StatePageLayout.NET_ERROR_LAYOUT_ID,
-        unknownErrorLayoutId: Int = StatePageLayout.UNKNOWN_ERROR_LAYOUT_ID,
-    ) {
-        StatePageLayout.LOADING_LAYOUT_ID = loadingLayoutId
-        StatePageLayout.EMPTY_LAYOUT_ID = emptyLayoutId
-        StatePageLayout.NET_ERROR_LAYOUT_ID = netErrorLayoutId
-        StatePageLayout.UNKNOWN_ERROR_LAYOUT_ID = unknownErrorLayoutId
-    }
-
-    /**
      *  debug
      * */
     abstract fun debug(): Boolean
