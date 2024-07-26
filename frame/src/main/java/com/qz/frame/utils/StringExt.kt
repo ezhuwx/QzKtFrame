@@ -1,5 +1,7 @@
 package com.qz.frame.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.graphics.Color
 import android.text.Editable
@@ -11,7 +13,10 @@ import android.util.Base64
 import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
+import com.qz.frame.R
 import com.qz.frame.base.BaseApplication
 import java.net.URLEncoder
 import java.util.regex.Pattern
@@ -167,8 +172,15 @@ fun String?.longShow() {
 
 fun String?.subSafe10() = endSafe(10)
 
-fun String?.fileName() =
-    empty().subSafe(empty().lastIndexOf("/"), empty().length)
+/**
+ * 文件名
+ */
+fun String?.fileName(): String = empty().run {
+    subSafe(
+        lastIndexOf("/") + 1,
+        if (contains(".")) lastIndexOf(".") - 1 else length
+    )
+}
 
 fun String?.ext() =
     empty().subSafe(empty().lastIndexOf("."), empty().length)
@@ -179,7 +191,7 @@ fun String?.subSafe(start: Int? = null, end: Int? = null): String {
     if (end != null && start == null) return endSafe(end)
     if (start != null && end != null && start >= 0 && end >= 0) {
         val endNew = end.coerceAtMost(empty().length)
-        return if (end > start) empty().substring(start, endNew) else empty()
+        return if (endNew > start) empty().substring(start, endNew) else empty()
     }
     return empty()
 }
@@ -193,6 +205,7 @@ fun String?.startSafe(start: Int): String {
 fun String?.endSafe(end: Int): String {
     return if (empty().length > end && end > 0) empty().substring(0, end) else empty()
 }
+
 
 fun String?.colorSpan(@ColorInt color: Int, start: Int, end: Int): SpannableString {
     return SpannableString(this).apply {
@@ -225,8 +238,88 @@ fun String?.ifEmptyValue(emptyValue: String?): String? {
 fun String?.ifEmptyValue(value: String?, emptyValue: String?): String? {
     return if (isNullOrEmpty()) emptyValue else value
 }
-
+/**
+ * 文字资源转文字Int
+ */
 fun @receiver:StringRes Int.resString(context: Context = BaseApplication.instance.applicationContext)
         : String {
     return context.resources.getString(this)
+}
+
+
+/**
+ * 颜色资源转颜色Int
+ */
+fun @receiver:ColorRes Int.resColor(context: Context = BaseApplication.instance.applicationContext): Int {
+    return ContextCompat.getColor(context, this)
+}
+
+/**
+ * 去除换行空格等
+ */
+fun String?.trims(): String {
+    return empty().replace("\\s".toRegex(), "")
+}
+
+/**
+ * 枚举类查找
+ */
+fun <E : Enum<E>> List<E>.ofOrNull(name: String?): E? {
+    return this.find { it.name.lowercase() == name?.lowercase() }
+}
+
+/**
+ * 复制到剪切板
+ */
+fun String?.copy(context: Context) {
+    if (!isNullOrEmpty()) (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).run {
+        setPrimaryClip(ClipData.newPlainText("STATION CODE", this@copy))
+        ToastUtil().shortShow(R.string.copy_finished)
+    }
+}
+
+
+fun List<String?>?.emptyNull(): List<String?>? {
+    return if (isNullOrEmpty()) null
+    else if (filterNot { it.isNullOrEmpty() }.isEmpty()) null
+    else this
+}
+
+fun List<Int>?.emptyToNull(): List<Int>? {
+    return if (isNullOrEmpty()) null
+    else this
+}
+
+/**
+ * 字符串转LIST
+ * "1,2,3"->[1,2,3]
+ */
+fun String?.commaListNull(): List<String?>? {
+    return this?.split(",").emptyNull()
+}
+
+/**
+ * 字符串转LIST
+ * "1,2,3"->[1,2,3]
+ */
+fun List<String?>?.commaStr(): String? {
+    return this?.joinToString(",")
+}
+
+/**
+ * 首字母大写
+ */
+fun String?.firstUpperCase(): String {
+    return this?.replaceFirstChar {
+        if (it.isLowerCase()) it.uppercase() else it.toString()
+    }.empty()
+}
+
+/**
+ * 首字母小写
+ */
+fun String?.firstLowerCase(): String {
+    return this?.replaceFirstChar {
+        if (it.isUpperCase()) it.lowercase() else it.toString()
+    }.empty()
 }

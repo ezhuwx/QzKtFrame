@@ -29,5 +29,6 @@
     <string name="upgrade_channel">upgrade_channel</string>
     <string name="upgrade_channel_name">版本更新</string>
     <string name="upgrade_channel_des">下载最新版本的应用</string>
+    <string name="copy_finished">已复制</string>
 
 </resources>

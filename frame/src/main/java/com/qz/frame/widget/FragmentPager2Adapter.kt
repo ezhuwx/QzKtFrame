@@ -13,9 +13,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  * E-mail : ezhuwx@163.com
  * Update on 15:41 by ezhuwx
  */
-open class FragmentPager2Adapter(manager: FragmentManager, lifecycle: Lifecycle) : FragmentStateAdapter(
-    manager, lifecycle
-) {
+open class FragmentPager2Adapter(manager: FragmentManager, lifecycle: Lifecycle) :
+    FragmentStateAdapter(
+        manager, lifecycle
+    ) {
     private var fragments = mutableSetOf<Fragment>()
     var tabs = mutableSetOf<String>()
 
@@ -50,4 +51,7 @@ open class FragmentPager2Adapter(manager: FragmentManager, lifecycle: Lifecycle)
         if (index >= 0) notifyItemRemoved(index)
         if (index < tabs.size) tabs.remove(tabs.elementAt(index))
     }
+
+    fun getFragmentSet() = fragments
+    fun getFragment(position: Int) = fragments.elementAtOrNull(position)
 }
