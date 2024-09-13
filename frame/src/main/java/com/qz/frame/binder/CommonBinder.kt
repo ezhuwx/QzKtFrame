@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.view.children
 import androidx.databinding.*
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
@@ -475,12 +476,10 @@ object CommonBinder {
     @JvmStatic
     fun bindViewPager(
         view: TabLayout,
-        viewPagerId: String,
+        viewPagerId: Int,
     ) {
-        //id获取
-        val id: Int = view.resources.getIdentifier(viewPagerId, "id", view.context.packageName)
         //viewPager
-        val viewPager = (view.rootView as View).findViewById<ViewPager>(id)
+        val viewPager = (view.rootView as View).findViewById<ViewPager>(viewPagerId)
         view.setupWithViewPager(viewPager)
     }
 
@@ -496,18 +495,16 @@ object CommonBinder {
     @JvmStatic
     fun bindViewPager2(
         view: ViewPager2,
-        tabLayoutId: String,
+        tabLayoutId: Int,
         fragmentAdapter: FragmentPager2Adapter?,
         isUserInputEnabled: Boolean?
     ) {
         //禁止滑动
         view.isUserInputEnabled = isUserInputEnabled == true
-        //tabLayoutId获取
-        val id: Int = view.resources.getIdentifier(tabLayoutId, "id", view.context.packageName)
         //adapter
         view.adapter = fragmentAdapter
         //viewPager
-        view.setupWithViewPager2((view.rootView as View).findViewById(id))
+        view.setupWithViewPager2((view.rootView as View).findViewById(tabLayoutId))
     }
 
 
