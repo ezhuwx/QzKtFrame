@@ -35,8 +35,8 @@ import java.util.UUID
 open class PageStateManager(
     private val context: FragmentActivity,
     private val owner: LifecycleOwner,
-    private val viewModel: BaseViewModel,
-    private val isObserveViewModelRequest: Boolean = true
+    private val isObserveViewModelRequest: Boolean = true,
+    viewModel: BaseViewModel
 ) {
 
     /**
@@ -204,9 +204,9 @@ open class PageStateManager(
             check(viewMain?.parent is ViewGroup) { context.getString(R.string.error_view_main_parent_not_view_group) }
             //父布局
             parent = viewMain?.parent as ViewGroup
+            //默认显示加载页面
+            stateLoading()
         }
-        //默认显示加载页面
-        stateLoading()
     }
 
     /**

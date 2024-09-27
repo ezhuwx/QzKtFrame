@@ -1,5 +1,5 @@
 apply plugin: 'com.vanniktech.maven.publish'
-// 生成文档注释
+/*// 生成文档注释
 tasks.register('androidJavadocs', Javadoc) {
     // 设置源码所在的位置
     source = android.sourceSets.main.java.srcDirs
@@ -9,7 +9,7 @@ tasks.register('androidJavadocsJar', Jar) {
     // 指定文档名称
     archiveClassifier.set('javadoc')
     from androidJavadocs.destinationDir
-}
+}*/
 // 将源码打包 ，生成sources.jar
 tasks.register('androidSourcesJar', Jar) {
     archiveClassifier.set('sources')
@@ -21,7 +21,7 @@ tasks.register('androidSourcesJar', Jar) {
 //配置需要上传到maven仓库的文件
 artifacts {
     archives androidSourcesJar //将源码打包进aar,这样使用方可以看到方法注释.
-    archives androidJavadocsJar //将注释打包进aar
+    //archives androidJavadocsJar //将注释打包进aar
 }
 
 mavenPublishing {

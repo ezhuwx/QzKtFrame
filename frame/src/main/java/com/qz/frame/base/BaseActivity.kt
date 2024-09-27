@@ -55,6 +55,10 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
+        //binding前处理
+        onBindingBefore()
+        //重置Resume状态
+        isResumed.set(false)
         super.onCreate(savedInstanceState)
         //锁定竖屏
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -70,8 +74,8 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         pageStateManager = PageStateManager(
             this,
             this,
-            viewModel,
-            isObserveViewModelRequest
+            isObserveViewModelRequest,
+            viewModel
         )
         //activity管理
         BaseApplication.instance.addActivity(this)
@@ -147,6 +151,11 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      *
      */
     abstract fun getBindingVMClass(): Class<VM>
+
+    /**
+     * onCreateView 起始位置，binding之前
+     */
+    open fun onBindingBefore() {}
 
     /**
      *  绑定视图

@@ -8,7 +8,7 @@ plugins {
     id "com.vanniktech.maven.publish.base"
 }
 
-def version = "2.0.1.32"
+def version = "2.0.1.42"
 
 android {
     compileSdk 31

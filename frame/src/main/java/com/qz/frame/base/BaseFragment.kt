@@ -2,7 +2,9 @@ package com.qz.frame.base
 
 import android.content.res.Configuration
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
@@ -39,6 +41,17 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      */
     open lateinit var pageStateManager: PageStateManager
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        //binding前处理
+        onBindingBefore()
+        //重置Resume状态
+        isResumed.set(false)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,8 +66,8 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         pageStateManager = PageStateManager(
             requireActivity(),
             viewLifecycleOwner,
-            viewModel,
-            isObserveViewModelRequest
+            isObserveViewModelRequest,
+            viewModel
         )
         //view绑定方法
         initBindView(view)
@@ -123,6 +136,11 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
      *  viewModel实例
      *  */
     abstract fun getBindingVMClass(): Class<VM>
+
+    /**
+     * onCreateView 起始位置，binding之前
+     */
+    open fun onBindingBefore() {}
 
     /**
      * 初始化 View
