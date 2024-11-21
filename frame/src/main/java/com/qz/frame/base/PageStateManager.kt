@@ -5,23 +5,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
-import com.google.android.material.resources.TypefaceUtils
 import com.qz.frame.R
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.qz.frame.net.ApiException
 import com.qz.frame.net.ExceptionHandler
 import com.qz.frame.net.NetDialog
 import com.qz.frame.net.ResponseException
-import com.qz.frame.utils.ToastUtil
 import com.qz.frame.utils.isInvalidClick
-import com.qz.frame.utils.longShow
-import com.qz.frame.utils.resString
 import com.qz.frame.utils.shortShow
 import java.util.UUID
 
@@ -176,7 +170,7 @@ open class PageStateManager(
     /**
      * 所有请求编码
      */
-    private var allRequestCode = mutableSetOf<String>()
+    private var pageControlRequestCode = mutableSetOf<String>()
 
     init {
         //监听ViewModel请求
@@ -221,8 +215,8 @@ open class PageStateManager(
             start.observe(owner) {
                 //开始
                 if (isCustomOrPageRequest(it)) {
-                    onRequestStart(it.requestCode)
-                    onPageStateChangeListener?.onRequestStart(it.requestCode)
+                    onRequestStart(it.requestCode, it.isForceLoading)
+                    onPageStateChangeListener?.onRequestStart(it.requestCode, it.isForceLoading)
                 }
             }
             success.observe(owner) {
@@ -274,7 +268,7 @@ open class PageStateManager(
         }
     }
 
-    open fun stateDialogLoading(isCancel: Boolean, loading: String?) {
+    open fun stateDialogLoading(isCancel: Boolean, loading: String? = null) {
         if (!mNetDialog.isShowing) {
             mNetDialog.setCancelable(isCancel)
             mNetDialog.showLoadingText(loading)
@@ -285,14 +279,14 @@ open class PageStateManager(
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestStart(requestCode: String?) {
+    open fun onRequestStart(requestCode: String?, isForce: Boolean = true) {
         //保存可控制页面完成状态的请求的请求码
-        if (isSkipMainState[requestCode] != true) requestCode?.let { allRequestCode.add(it) }
+        if (isSkipMainState[requestCode] != true) requestCode?.let { pageControlRequestCode.add(it) }
         //重置错误提示判定
         isErrorToastShowed = false
         when {
             isStatePage -> stateLoading(requestCode)
-            isSkipAllLoading[requestCode] != true -> stateDialogLoading()
+            isSkipAllLoading[requestCode] != true -> stateDialogLoading(isForce)
         }
     }
 
@@ -302,9 +296,9 @@ open class PageStateManager(
     open fun onRequestSuccess(requestCode: String?) {
         if (isSkipMainState[requestCode] != true) {
             //清除已完成的请求
-            allRequestCode.remove(requestCode)
+            pageControlRequestCode.remove(requestCode)
             //所有可控制页面完成状态的请求，均已完成
-            if (allRequestCode.isEmpty()) {
+            if (pageControlRequestCode.isEmpty()) {
                 if (isStatePage) {
                     if (onPageStateChangeListener?.stateEmptyCondition() == true) stateEmpty()
                     else stateMain()
@@ -318,7 +312,7 @@ open class PageStateManager(
      * */
     open fun onRequestFinally(requestCode: String?, isSuccess: Boolean) {
         //清除已完成的请求(非成功状态)
-        allRequestCode.remove(requestCode)
+        pageControlRequestCode.remove(requestCode)
     }
 
     /**
@@ -436,14 +430,14 @@ open class PageStateManager(
     /**
      * 加载状态
      * */
-    open fun stateLoading(requestCode: String? = null) {
+    open fun stateLoading(requestCode: String? = null, isForce: Boolean = false) {
         //跳过
         if (onRefreshStateChangeListener?.stateLoading() == true
             || currentState == PageState.STATE_LOADING
             || isSkipAllLoading[requestCode] == true
         ) return
         //是否显示弹窗Loading
-        if (!isStatePage || isSkipPageLoading[requestCode] == true) stateDialogLoading()
+        if (!isStatePage || isSkipPageLoading[requestCode] == true) stateDialogLoading(isForce)
         //状态切换
         else {
             //布局
@@ -591,7 +585,7 @@ interface OnPageStateChangeListener {
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    fun onRequestStart(requestCode: String?) {
+    fun onRequestStart(requestCode: String?, isForceLoading: Boolean) {
     }
 
     /**

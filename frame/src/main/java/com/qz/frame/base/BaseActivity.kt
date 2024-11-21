@@ -10,9 +10,7 @@ import com.kunminx.architecture.ui.page.DataBindingActivity
 
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelStoreOwner
-import androidx.work.Data
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
-import com.qz.frame.net.NetDialog
 import com.qz.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
 import com.qz.frame.R
@@ -47,11 +45,6 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * 状态栏颜色
      */
     open var statusBarColor: Int? = BaseApplication.instance.statusBarColorId
-
-    /**
-     * Loading
-     * */
-    private val mNetDialog by lazy { NetDialog(this) }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -120,6 +113,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
+        pageStateManager.onClearNetObservers()
         BaseApplication.instance.removeActivity(this)
     }
 

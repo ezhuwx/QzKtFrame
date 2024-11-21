@@ -22,6 +22,11 @@ typealias onRequestError = (Exception, ResponseException) -> Unit
 
 open class BaseViewModel : ViewModel() {
     /**
+     * 请求集合
+     */
+    val requestJobs = mutableMapOf<String, Job>()
+
+    /**
      * 自定义异常码
      */
     open val apiErrorCode = arrayListOf<Int>()
@@ -76,53 +81,68 @@ open class BaseViewModel : ViewModel() {
         isSkipAllError: Boolean = false,
         isSkipMainState: Boolean = false,
         isSkipPageState: Boolean = false,
+        isForceLoading: Boolean = true,
         block: CoroutineBlock,
-    ) = viewModelScope.launch {
+    ) {
+        //请求码
         val requestCode = code ?: UUID.randomUUID().toString()
-        //页面状态管理设置
-        onSetPageState(
-            requestCode, manager, isSkipPageLoading, isSkipAllLoading,
-            isSkipPageError, isSkipAllError, isSkipMainState, isSkipPageState
-        )
-        try {
-            //执行请求开始前准备
-            onStart?.invoke()
-            //请求开始
-            start.value = StateCallbackData(requestCode, manager?.pageManageCode)
-            //请求方法
-            block()
-            //请求成功
-            onSuccess?.invoke()
-            success.value = StateCallbackData(
-                requestCode,
-                manager?.pageManageCode,
+        //取消重复请求
+        requestJobs[requestCode]?.cancel("Cancel Repeat Request")
+        //请求
+        val job = viewModelScope.launch {
+            //页面状态管理设置
+            onSetPageState(
+                requestCode, manager, isSkipPageLoading, isSkipAllLoading,
+                isSkipPageError, isSkipAllError, isSkipMainState, isSkipPageState
             )
-        } catch (e: Exception) {
-            if (BaseApplication.instance.isDebug) {
-                Log.e("ViewModel", "ERROR:  【$e\n】")
+            try {
+                //执行请求开始前准备
+                onStart?.invoke()
+                //请求开始
+                start.value = StateCallbackData(
+                    requestCode,
+                    manager?.pageManageCode,
+                    isForceLoading = isForceLoading
+                )
+                //请求方法
+                block()
+                //请求成功
+                onSuccess?.invoke()
+                success.value = StateCallbackData(
+                    requestCode,
+                    manager?.pageManageCode,
+                )
+            } catch (e: Exception) {
+                if (BaseApplication.instance.isDebug) {
+                    Log.e("ViewModel", "ERROR:  【$e\n】")
+                }
+                //异常格式化
+                val finalException = ExceptionHandler.parseException(e, apiErrorCode)
+                //执行异常回调
+                onError?.invoke(e, finalException)
+                //请求异常
+                error.value = StateCallbackData(
+                    requestCode,
+                    manager?.pageManageCode,
+                    originalError = e,
+                    error = finalException
+                )
+            } finally {
+                //请求结束
+                onFinally?.invoke()
+                finally.value = StateCallbackData(
+                    requestCode,
+                    manager?.pageManageCode,
+                    originalError = error.value?.originalError,
+                    error = error.value?.error,
+                    isSuccess = error.value == null
+                )
+                //移除请求Job
+                requestJobs.remove(requestCode)
             }
-            //异常格式化
-            val finalException = ExceptionHandler.parseException(e, apiErrorCode)
-            //执行异常回调
-            onError?.invoke(e, finalException)
-            //请求异常
-            error.value = StateCallbackData(
-                requestCode,
-                manager?.pageManageCode,
-                originalError = e,
-                error = finalException
-            )
-        } finally {
-            //请求结束
-            onFinally?.invoke()
-            finally.value = StateCallbackData(
-                requestCode,
-                manager?.pageManageCode,
-                originalError = error.value?.originalError,
-                error = error.value?.error,
-                isSuccess = error.value == null
-            )
         }
+        //保存请求
+        requestJobs[requestCode] = job
     }
 
 
@@ -183,8 +203,11 @@ open class BaseViewModel : ViewModel() {
          * 是否成功
          */
         var isSuccess: Boolean? = null,
-
-        )
+        /**
+         * 是否强制Loading
+         */
+        var isForceLoading: Boolean = true,
+    )
 }
 
 /**

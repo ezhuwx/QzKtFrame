@@ -33,8 +33,8 @@ abstract class BaseStateActivity<VM : BaseViewModel> : BaseActivity<VM>() {
     /**
      * 加载状态
      * */
-    fun stateLoading() {
-        pageStateManager.stateLoading()
+    fun stateLoading(isForce: Boolean = true) {
+        pageStateManager.stateLoading(isForce = isForce)
     }
 
     /**
