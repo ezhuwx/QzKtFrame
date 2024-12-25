@@ -30,7 +30,7 @@ import java.util.regex.Pattern
  */
 
 /**
- * TODO 数字判断
+ *  数字判断
  *
  * @param str
  * @return
@@ -41,8 +41,12 @@ fun isNumeric(str: String): Boolean {
     return isNum.matches()
 }
 
+fun String?.isNum(): Boolean {
+    return isNumeric(empty())
+}
+
 /**
- * TODO 判定输入汉字
+ *  判定输入汉字
  *
  * @return
  */
@@ -53,6 +57,10 @@ fun isChinese(str: String): Boolean {
         }
     }
     return false
+}
+
+fun String?.isCh(): Boolean {
+    return isChinese(empty())
 }
 
 /**
@@ -71,7 +79,7 @@ private fun isChineseChar(c: Char): Boolean {
 }
 
 /**
- * TODO 文字末尾添加红星
+ *  文字末尾添加红星
  */
 fun addRedStar(textView: TextView) {
     val ss = SpannableString(
@@ -82,8 +90,12 @@ fun addRedStar(textView: TextView) {
     textView.text = ss
 }
 
+fun TextView.redStar() {
+    addRedStar(this)
+}
+
 /**
- * TODO 金额输入格式
+ *  金额输入格式
  */
 fun decimalInputFormat(editText: EditText, edt: Editable, maxLength: Int) {
     val temp = edt.toString()
@@ -117,8 +129,12 @@ fun decimalInputFormat(editText: EditText, edt: Editable, maxLength: Int) {
     }
 }
 
+fun EditText.decimalInput(edt: Editable, maxLength: Int) {
+    decimalInputFormat(this, edt, maxLength)
+}
+
 /**
- * TODO 汉字过滤器
+ *  汉字过滤器
  */
 fun getChineseFilter(): InputFilter {
     return InputFilter { source, start, end, _, _, _ ->
@@ -238,6 +254,7 @@ fun String?.ifEmptyValue(emptyValue: String?): String? {
 fun String?.ifEmptyValue(value: String?, emptyValue: String?): String? {
     return if (isNullOrEmpty()) emptyValue else value
 }
+
 /**
  * 文字资源转文字Int
  */

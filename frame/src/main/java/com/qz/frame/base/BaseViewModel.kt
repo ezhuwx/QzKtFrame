@@ -51,6 +51,13 @@ open class BaseViewModel : ViewModel() {
      */
     val finally by lazy { MutableLiveData<StateCallbackData>() }
 
+    /**
+     * 取消请求
+     */
+    fun cancelRequest(requestCode: String? = null) {
+        if (requestCode.isNullOrEmpty()) requestJobs.values.forEach { it.cancel() }
+        else requestJobs[requestCode]?.cancel()
+    }
 
     /**
      *  标准UI线程协程
@@ -81,7 +88,7 @@ open class BaseViewModel : ViewModel() {
         isSkipAllError: Boolean = false,
         isSkipMainState: Boolean = false,
         isSkipPageState: Boolean = false,
-        isForceLoading: Boolean = true,
+        isForceLoading: Boolean = false,
         block: CoroutineBlock,
     ) {
         //请求码
@@ -177,6 +184,9 @@ open class BaseViewModel : ViewModel() {
         pageStateManager?.isSkipPageError?.put(requestCode, isSkipPageState || skipPageError)
         pageStateManager?.isSkipAllError?.put(requestCode, skipErrorAll)
         pageStateManager?.isSkipMainState?.put(requestCode, isSkipPageState || isSkipMainState)
+        pageStateManager?.onLoadingCancelListener = OnLoadingCancelListener {
+            cancelRequest(requestCode)
+        }
     }
 
     /**
@@ -206,7 +216,7 @@ open class BaseViewModel : ViewModel() {
         /**
          * 是否强制Loading
          */
-        var isForceLoading: Boolean = true,
+        var isForceLoading: Boolean = false,
     )
 }
 

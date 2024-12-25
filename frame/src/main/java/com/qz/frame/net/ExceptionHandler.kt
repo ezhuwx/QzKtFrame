@@ -4,6 +4,7 @@ import android.net.ParseException
 import com.qz.frame.base.BaseApplication
 import com.google.gson.JsonParseException
 import com.qz.frame.R
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.TimeoutCancellationException
 import org.json.JSONException
 import retrofit2.HttpException
@@ -33,6 +34,7 @@ class ExceptionHandler {
         const val NETWORK_ERROR = 1002
         const val HTTP_ERROR = 1003
         const val SSL_ERROR = 1005
+        const val CANCEL_ERROR = 1006
         fun parseException(e: Throwable, apiErrorCode: ArrayList<Int>? = null): ResponseException {
             var ex = ResponseException(e, HTTP_ERROR)
             when (e) {
@@ -67,6 +69,11 @@ class ExceptionHandler {
                             BaseApplication.mContext.getString(R.string.request_error)
 
                     }
+                }
+
+                is CancellationException -> {
+                    ex = ResponseException(e, CANCEL_ERROR)
+                    ex.message = BaseApplication.mContext.getString(R.string.cancel_error)
                 }
 
                 is JsonParseException, is JSONException, is ParseException -> {

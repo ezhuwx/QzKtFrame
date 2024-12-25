@@ -46,7 +46,11 @@ open class PageStateManager(
     /**
      * Loading
      * */
-    private val mNetDialog by lazy { NetDialog(context as AppCompatActivity) }
+    private val mNetDialog by lazy {
+        NetDialog(context as AppCompatActivity).apply {
+            setOnDismissListener { onLoadingCancelListener?.onCancel() }
+        }
+    }
 
     /**
      * 网络错误页
@@ -168,6 +172,11 @@ open class PageStateManager(
     var onPageStateChangeListener: OnPageStateChangeListener? = null
 
     /**
+     * Dialog Loading加载取消监听
+     */
+    var onLoadingCancelListener: OnLoadingCancelListener? = null
+
+    /**
      * 所有请求编码
      */
     private var pageControlRequestCode = mutableSetOf<String>()
@@ -268,9 +277,9 @@ open class PageStateManager(
         }
     }
 
-    open fun stateDialogLoading(isCancel: Boolean, loading: String? = null) {
+    open fun stateDialogLoading(isForce: Boolean, loading: String? = null) {
         if (!mNetDialog.isShowing) {
-            mNetDialog.setCancelable(isCancel)
+            mNetDialog.setCancelable(!isForce)
             mNetDialog.showLoadingText(loading)
             mNetDialog.show()
         }
@@ -279,7 +288,7 @@ open class PageStateManager(
     /**
      *  接口请求开始，子类可以重写此方法做一些操作
      *  */
-    open fun onRequestStart(requestCode: String?, isForce: Boolean = true) {
+    open fun onRequestStart(requestCode: String?, isForce: Boolean = false) {
         //保存可控制页面完成状态的请求的请求码
         if (isSkipMainState[requestCode] != true) requestCode?.let { pageControlRequestCode.add(it) }
         //重置错误提示判定
@@ -627,6 +636,13 @@ interface OnPageStateChangeListener {
     fun stateEmptyCondition(): Boolean {
         return false
     }
+}
+
+/**
+ * Dialog Loading加载取消监听
+ */
+fun interface OnLoadingCancelListener {
+    fun onCancel()
 }
 
 /**

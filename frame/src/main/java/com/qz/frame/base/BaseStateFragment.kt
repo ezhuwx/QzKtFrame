@@ -30,8 +30,8 @@ abstract class BaseStateFragment<VM : BaseViewModel> : BaseFragment<VM>() {
     /**
      * 加载状态
      * */
-    fun stateLoading() {
-        pageStateManager.stateLoading()
+    fun stateLoading(isForce: Boolean = false) {
+        pageStateManager.stateLoading(isForce = isForce)
     }
 
     /**
