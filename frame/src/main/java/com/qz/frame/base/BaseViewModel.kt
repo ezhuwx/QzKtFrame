@@ -19,6 +19,7 @@ import java.util.UUID
 typealias CoroutineBlock = suspend CoroutineScope.() -> Unit
 typealias onRequestStart = () -> Unit
 typealias onRequestError = (Exception, ResponseException) -> Unit
+typealias onServiceError = (ApiException) -> Unit
 
 open class BaseViewModel : ViewModel() {
     /**
@@ -65,6 +66,7 @@ open class BaseViewModel : ViewModel() {
      *  @param  manager 页面管理
      *  @param  onStart 请求前回调
      *  @param  onError 请异常回调
+     *  @param  onServiceError 服务端错误回调
      *  @param  onSuccess 请成功回调
      *  @param  onFinally 请完成回调,
      *  @param  isSkipPageLoading 跳过页面加载
@@ -80,6 +82,7 @@ open class BaseViewModel : ViewModel() {
         manager: PageStateManager? = null,
         onStart: onRequestStart? = null,
         onError: onRequestError? = null,
+        onServiceError: onServiceError? = null,
         onSuccess: (() -> Unit)? = null,
         onFinally: (() -> Unit)? = null,
         isSkipPageLoading: Boolean = false,
@@ -125,6 +128,8 @@ open class BaseViewModel : ViewModel() {
                 }
                 //异常格式化
                 val finalException = ExceptionHandler.parseException(e, apiErrorCode)
+                //自定义异常回调
+                if (finalException is ApiException) onServiceError?.invoke(finalException)
                 //执行异常回调
                 onError?.invoke(e, finalException)
                 //请求异常

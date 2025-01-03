@@ -136,7 +136,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
         }
     }
 
-    open fun addStateChangeListener(listener: OnRefreshStateChangeListener) {
+    open fun addOnRefreshStateChangeListener(listener: OnRefreshStateChangeListener) {
         pageStateManager.onRefreshStateChangeListener = listener
     }
 

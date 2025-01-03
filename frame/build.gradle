@@ -9,7 +9,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
-def version = "2.0.2.12"
+def version = "2.0.2.22"
 
 android {
     compileSdk 31

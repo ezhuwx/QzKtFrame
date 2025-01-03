@@ -128,7 +128,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         }
     }
 
-    open fun addStateChangeListener(listener: OnRefreshStateChangeListener) {
+    open fun addOnRefreshStateChangeListener(listener: OnRefreshStateChangeListener) {
         pageStateManager.onRefreshStateChangeListener = listener
     }
 

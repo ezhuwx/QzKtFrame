@@ -85,7 +85,7 @@ class RefreshModel : BaseViewModel() {
         call: () -> Unit,
     ) where E : BaseViewModel {
         this.call = call
-        view.addStateChangeListener(StateListener())
+        view.addOnRefreshStateChangeListener(StateListener())
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isRefresh = true
@@ -114,7 +114,7 @@ class RefreshModel : BaseViewModel() {
         call: () -> Unit,
     ) where E : BaseViewModel {
         this.call = call
-        view.addStateChangeListener(StateListener())
+        view.addOnRefreshStateChangeListener(StateListener())
         refreshListener = object : OnRefreshLoadMoreListener {
             override fun onRefresh(refreshLayout: RefreshLayout) {
                 isRefresh = true

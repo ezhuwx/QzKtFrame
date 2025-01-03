@@ -338,9 +338,12 @@ open class PageStateManager(
     open fun showErrorTip(requestCode: String?, error: Exception?) {
         when (error) {
             //服务器特殊错误处理
-            is ApiException -> onPageStateChangeListener?.onServiceError(
-                requestCode, error.code, error.message
-            )
+            is ApiException -> {
+                stateDialogDismiss()
+                onPageStateChangeListener?.onServiceError(
+                    requestCode, error.code, error.message
+                )
+            }
             //正常错误显示
             is ResponseException -> if (error.code == ExceptionHandler.NETWORK_ERROR) {
                 //无网络提示
