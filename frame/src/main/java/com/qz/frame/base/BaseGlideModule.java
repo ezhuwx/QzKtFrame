@@ -1,6 +1,7 @@
 package com.qz.frame.base;
 
 
+
 import static com.qz.frame.utils.LogExtKt.logE;
 
 import android.content.Context;
@@ -13,6 +14,7 @@ import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.AppGlideModule;
+import com.qz.frame.utils.LogExtKt;
 
 import java.io.InputStream;
 import java.security.cert.X509Certificate;
@@ -75,7 +77,7 @@ public final class BaseGlideModule extends AppGlideModule {
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
             return sslContext;
         } catch (Exception e) {
-            logE("ssl出现异常");
+            e.printStackTrace();
             return null;
         }
     }

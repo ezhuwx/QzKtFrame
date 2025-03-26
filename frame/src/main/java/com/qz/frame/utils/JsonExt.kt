@@ -24,7 +24,7 @@ fun Map<*, *>?.mapToJson(): String? {
     } catch (e: Exception) {
         MainScope().launch {
             BaseApplication.instance.getString(R.string.data_decode_failed).shortShow()
-            logE("Gson Error", e.message)
+            logE("Gson Error %s", e.message)
         }
     }
     return null

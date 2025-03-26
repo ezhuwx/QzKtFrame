@@ -1,55 +1,34 @@
 package com.qz.frame.base
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.graphics.Color
 import android.os.Build
 import android.os.Process
 import android.os.StrictMode
 import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDex
-import com.qz.frame.utils.DayNightMode
-import com.qz.frame.utils.MMKVUtil
-import com.qz.frame.utils.logD
 import com.jeremyliao.liveeventbus.LiveEventBus
-import com.orhanobut.logger.*
-import com.tencent.mmkv.MMKV
-import com.tencent.mmkv.MMKVLogLevel
-import me.jessyan.autosize.AutoSize
-import me.jessyan.autosize.AutoSizeConfig
-import me.jessyan.autosize.onAdaptListener
-import me.jessyan.autosize.utils.ScreenUtils
 
 abstract class BaseApplication : Application() {
-    //activity集合
+    /**
+     * Activity管理集合
+     */
     var allActivities = mutableSetOf<AppCompatActivity>()
 
-    //是否屏蔽系统字体大小
-    var isExcludeFontScale = false
-
-    //是否是debug模式
-    var isDebug = false
-
-    //默认状态栏颜色
-    var statusBarColorId = Color.BLACK
-
-    //默认跟随系统深色模式
-    var dayNightMode = DayNightMode.SYSTEM
-
-    //MMKV file名称
-    var mmkvName = "prefs"
-
+    @SuppressLint("StaticFieldLeak")
     companion object {
-        @SuppressLint("StaticFieldLeak")
         lateinit var instance: BaseApplication
-
-        @SuppressLint("StaticFieldLeak")
         lateinit var mContext: Context
     }
+
+    lateinit var config: OptionConfig
+
+    /**
+     * 初始化配置项
+     */
+    abstract fun onInitConfig(): OptionConfig
 
     /**
      * 初始化
@@ -71,102 +50,18 @@ abstract class BaseApplication : Application() {
      */
     open fun lateInitSDK() {
         Thread {
-            isDebug = debug()
-            statusBarColorId = statusBarColor()
             //设置进程的优先级，不与主线程抢资源
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             LiveEventBus.config().lifecycleObserverAlwaysActive(false).setContext(this)
-            initMMKVAndDayNight()
-            initSmartRefresh()
-            initAutoSize()
-            initLogger()
+            //初始化配置项
+            config = onInitConfig()
+            config.init(this)
+            //自定义初始化调用
             init()
         }.start()
     }
 
-    /**
-     * 初始化MMKV和深色模式
-     * */
-    open fun initMMKVAndDayNight() {
-        //初始化腾讯mmkv
-        MMKV.initialize(
-            this,
-            if (isDebug) MMKVLogLevel.LevelDebug
-            else MMKVLogLevel.LevelNone
-        )
-        //保存的深色模式设置
-        dayNightMode = DayNightMode.valueOf(
-            MMKVUtil.mmkv.decodeString(
-                DayNightMode::class.simpleName,
-                DayNightMode.SYSTEM.name
-            )!!
-        )
-        //恢复设置
-        when (dayNightMode) {
-            DayNightMode.NIGHT ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-
-            DayNightMode.LIGHT ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
-            else -> {
-                logD("DayNightMode：${DayNightMode.SYSTEM.name}")
-            }
-        }
-    }
-
     open fun init() {}
-
-    /**
-     * 初始化 SmartRefresh
-     */
-    abstract fun initSmartRefresh()
-
-    /**
-     * AutoSize屏幕适配初始化
-     */
-    open fun initAutoSize() {
-        AutoSize.initCompatMultiProcess(this)
-        AutoSizeConfig.getInstance() //屏蔽系统字体大小
-            .setExcludeFontScale(isExcludeFontScale).onAdaptListener = object : onAdaptListener {
-            override fun onAdaptBefore(target: Any, activity: Activity) {
-                AutoSizeConfig.getInstance().screenWidth =
-                    ScreenUtils.getScreenSize(activity)[0]
-            }
-
-            override fun onAdaptAfter(target: Any, activity: Activity) {}
-        }
-    }
-
-    /**
-     * Logger初始化
-     */
-    open fun initLogger() {
-        val formatStrategy: FormatStrategy = PrettyFormatStrategy.newBuilder()
-            .tag(getAppName())
-            .build()
-        Logger.addLogAdapter(object : AndroidLogAdapter(formatStrategy) {
-            override fun isLoggable(priority: Int, tag: String?): Boolean {
-                return isDebug
-            }
-        })
-    }
-
-    /**
-     *  debug
-     * */
-    abstract fun debug(): Boolean
-
-    /**
-     * Logger TAG
-     * */
-    abstract fun getAppName(): String
-
-    /**
-     * 状态栏颜色
-     * */
-    abstract fun statusBarColor(): Int
-
 
     /**
      * 分包
@@ -194,9 +89,7 @@ abstract class BaseApplication : Application() {
      * 退出程序
      */
     open fun exitApp() {
-        allActivities.forEach {
-            it.finish()
-        }
+        allActivities.forEach { it.finish() }
         allActivities.clear()
     }
 

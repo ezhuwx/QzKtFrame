@@ -9,7 +9,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
-def version = "2.0.2.22"
+def version = "2.1.0.25"
 
 android {
     compileSdk 31
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 30
-        versionCode 20150
+        versionCode 21025
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -80,7 +80,7 @@ dependencies {
     //dex分包, 解决方法数超限(65535)
     api 'com.android.support:multidex:1.0.3'
     //腾讯mmkv
-    api 'com.tencent:mmkv-static:1.3.1'
+    api 'com.tencent:mmkv-static:1.3.12'
     //导航栏
     api 'com.ashokvarma.android:bottom-navigation-bar:2.2.0'
     //基于LiveData的事件总线
@@ -93,9 +93,9 @@ dependencies {
     api 'com.github.bumptech.glide:okhttp3-integration:4.16.0'
     api 'jp.wasabeef:glide-transformations:4.0.0'
     //下拉刷新
-    api 'io.github.scwang90:refresh-layout-kernel:2.0.6'
-    api 'io.github.scwang90:refresh-header-material:2.0.6'
-    api 'io.github.scwang90:refresh-footer-classics:2.0.6'
+    api 'io.github.scwang90:refresh-layout-kernel:3.0.0-alpha'
+    api 'io.github.scwang90:refresh-header-material:3.0.0-alpha'
+    api 'io.github.scwang90:refresh-footer-classics:3.0.0-alpha'
     //屏幕适配
     api 'com.github.JessYanCoding:AndroidAutoSize:v1.2.1'
     //日志
@@ -103,7 +103,7 @@ dependencies {
     //权限处理
     api 'com.guolindev.permissionx:permissionx:1.7.1'
     //dataBinding严格模式
-    api 'com.kunminx.arch:strict-databinding:5.6.0'
+    api 'com.kunminx.arch:strict-databinding:6.2.0'
     //shimmer动画
     api 'com.facebook.shimmer:shimmer:0.5.0'
     //worker

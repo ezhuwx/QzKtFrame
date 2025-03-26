@@ -5,14 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
-import com.qz.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
 import com.kunminx.architecture.ui.page.DataBindingFragment
 import com.qz.frame.R
+import com.qz.frame.utils.post
 import java.util.concurrent.atomic.AtomicBoolean
 
 abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
@@ -34,7 +33,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     /**
      * 状态栏颜色
      */
-    open var statusBarColor: Int? = BaseApplication.instance.statusBarColorId
+    open var statusBarColor: Int? = BaseApplication.instance.config.statusBarColorId
 
     /**
      * 页面状态管理
@@ -111,21 +110,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (BaseApplication.instance.dayNightMode == DayNightMode.SYSTEM) {
-            when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                Configuration.UI_MODE_NIGHT_NO -> {
-                    //关闭夜间模式
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                }
-
-                Configuration.UI_MODE_NIGHT_YES -> {
-                    //打开夜间模式
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
-
-                else -> {}
-            }
-        }
+        SysConfigChangeEvent(newConfig).post()
     }
 
     open fun addOnRefreshStateChangeListener(listener: OnRefreshStateChangeListener) {

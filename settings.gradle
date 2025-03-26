@@ -1,22 +1,29 @@
 pluginManagement {
     repositories {
-        google()
-        mavenCentral()
+        mavenLocal()
         gradlePluginPortal()
-        maven { url 'https://jitpack.io' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/google/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/jcenter/' }
+        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url 'https://jitpack.io' }
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
         mavenLocal()
         mavenCentral()
-        maven { url 'https://esri.jfrog.io/artifactory/arcgis' }
+        maven { url 'https://repo.huaweicloud.com/repository/maven/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/google/' }
+        maven { url 'https://mirrors.cloud.tencent.com/nexus/repository/jcenter/' }
         maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/nexus/content/repositories/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://esri.jfrog.io/artifactory/arcgis' }
+        maven { url 'https://developer.huawei.com/repo/' }
         maven { url 'https://jitpack.io' }
     }
 }

@@ -1,7 +1,6 @@
 package com.qz.frame.utils
 
-import com.qz.frame.base.BaseApplication
-import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.Logger
 
 /**
  * @author : ezhuwx
@@ -12,47 +11,35 @@ import com.orhanobut.logger.Logger;
  * version 1.0.0
  */
 fun logD(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.d(message.empty(), *args)
-    }
+    Logger.d(message.empty(), *args)
 }
 
 fun logD(`object`: Any?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.d(`object`)
-    }
+    Logger.d(`object`)
 }
 
 fun logE(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.e(Throwable(), message.empty(), *args)
-    }
+    Logger.e(Throwable(), message.empty(), *args)
 }
 
 fun logE(throwable: Throwable?, message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.e(throwable, message.empty(), *args)
-    }
+    Logger.e(throwable, message.empty(), *args)
 }
 
 fun logI(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.i(message.empty(), *args)
-    }
+    Logger.i(message.empty(), *args)
 }
 
 fun logV(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) Logger.v(message.empty(), *args)
+    Logger.v(message.empty(), *args)
 }
 
 fun logW(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.w(message.empty(), *args)
-    }
+    Logger.w(message.empty(), *args)
 }
 
 fun logWtf(message: String?, vararg args: Any?) {
-    if (BaseApplication.instance.isDebug) Logger.wtf(message.empty(), *args)
+    Logger.wtf(message.empty(), *args)
 }
 
 /**
@@ -61,9 +48,7 @@ fun logWtf(message: String?, vararg args: Any?) {
  * @param json the json content
  */
 fun logJson(json: String?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.json(json)
-    }
+    Logger.json(json)
 }
 
 /**
@@ -72,7 +57,5 @@ fun logJson(json: String?) {
  * @param xml the xml content
  */
 fun logXml(xml: String?) {
-    if (BaseApplication.instance.isDebug) {
-        Logger.xml(xml)
-    }
+    Logger.xml(xml)
 }

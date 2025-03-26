@@ -8,12 +8,11 @@ import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelStoreOwner
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
-import com.qz.frame.utils.DayNightMode
 import com.gyf.immersionbar.ktx.immersionBar
 import com.qz.frame.R
+import com.qz.frame.utils.post
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -44,7 +43,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     /**
      * 状态栏颜色
      */
-    open var statusBarColor: Int? = BaseApplication.instance.statusBarColorId
+    open var statusBarColor: Int? = BaseApplication.instance.config.statusBarColorId
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,21 +118,7 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        if (BaseApplication.instance.dayNightMode == DayNightMode.SYSTEM) {
-            when (newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                Configuration.UI_MODE_NIGHT_NO -> {
-                    //关闭夜间模式
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                }
-
-                Configuration.UI_MODE_NIGHT_YES -> {
-                    //打开夜间模式
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                }
-
-                else -> {}
-            }
-        }
+        SysConfigChangeEvent(newConfig).post()
     }
 
     open fun addOnRefreshStateChangeListener(listener: OnRefreshStateChangeListener) {

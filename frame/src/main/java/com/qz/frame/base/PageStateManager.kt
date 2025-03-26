@@ -457,7 +457,7 @@ open class PageStateManager(
             viewLoading?.findViewById<TextView>(R.id.loading_tv)?.run {
                 //优先级本页面配置 > 全局配置 > App名称
                 text = loadingMsg ?: PageStateOptionManager.instance.loadingText
-                        ?: context.getString(R.string.app_name)
+                        ?: BaseApplication.instance.config.getAppName()
                 //字体颜色
                 setTextColor(
                     PageStateOptionManager.instance.loadingTextColor

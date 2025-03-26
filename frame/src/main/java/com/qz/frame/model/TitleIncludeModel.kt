@@ -8,6 +8,7 @@ import com.qz.frame.base.BaseViewModel
 import com.qz.frame.interfaces.OnEditorActionListener
 import com.qz.frame.interfaces.OnEditorSearchActionListener
 import com.qz.frame.utils.SingleLiveEvent
+import com.qz.frame.utils.resColor
 
 /**
  * @author : ezhuwx
@@ -40,14 +41,17 @@ class TitleIncludeModel : BaseViewModel() {
     val inputHint = SingleLiveEvent<String>().apply {
         value = BaseApplication.mContext.getString(R.string.default_hint)
     }
+
     /**
      * 键盘事件
      */
     val inputActionListener = SingleLiveEvent<OnEditorActionListener>()
+
     /**
      * 键盘搜索事件
      */
     val inputSearchActionListener = SingleLiveEvent<OnEditorSearchActionListener>()
+
     /**
      * 返回按钮显示
      */
@@ -97,11 +101,11 @@ class TitleIncludeModel : BaseViewModel() {
      * 背景颜色
      */
     val backgroundColor = SingleLiveEvent<Int>().apply {
-        value = ContextCompat.getColor(BaseApplication.mContext, R.color.colorPrimary)
+        value = BaseApplication.instance.config.statusBarColorId.resColor()
     }
 
     /**
-     * TODO 标题点击代理
+     *  标题点击代理
      *
      */
     fun interface OnTitleClick {
@@ -109,7 +113,7 @@ class TitleIncludeModel : BaseViewModel() {
     }
 
     /**
-     * TODO 返回点击代理
+     *  返回点击代理
      *
      */
     fun interface OnBackClick {
@@ -117,7 +121,7 @@ class TitleIncludeModel : BaseViewModel() {
     }
 
     /**
-     * TODO 右键点击代理
+     *  右键点击代理
      *
      */
     fun interface OnRightClick {

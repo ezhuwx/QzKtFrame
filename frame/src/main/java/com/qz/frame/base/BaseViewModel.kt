@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.qz.frame.net.*
+import com.qz.frame.utils.logD
 import kotlinx.coroutines.*
 import java.util.UUID
 
@@ -123,9 +124,7 @@ open class BaseViewModel : ViewModel() {
                     manager?.pageManageCode,
                 )
             } catch (e: Exception) {
-                if (BaseApplication.instance.isDebug) {
-                    Log.e("ViewModel", "ERROR:  【$e\n】")
-                }
+                logD("ViewModel:ERROR:  【$e\n】")
                 //异常格式化
                 val finalException = ExceptionHandler.parseException(e, apiErrorCode)
                 //自定义异常回调

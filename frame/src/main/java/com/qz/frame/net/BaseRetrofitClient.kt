@@ -142,7 +142,7 @@ abstract class BaseRetrofitClient<Api> {
             addNetworkInterceptor(cacheInterceptor)
             addInterceptor(cacheInterceptor)
             //日志
-            if (BaseApplication.instance.isDebug) addInterceptor(HttpLoggerInterceptor().apply {
+            if (BaseApplication.instance.config.isDebug) addInterceptor(HttpLoggerInterceptor().apply {
                 setLevel(HttpLoggerInterceptor.Level.BODY)
             })
             //超时时间设置
