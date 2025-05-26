@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import com.jeremyliao.liveeventbus.LiveEventBus
 import com.jeremyliao.liveeventbus.core.LiveEvent
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
@@ -69,9 +70,10 @@ abstract class OptionConfig() : LifecycleOwner {
     @CallSuper
     open fun init(context: Context) {
         mLifecycleRegistry = LifecycleRegistry(this)
-        initLogger(context)
-        initAutoSize(context)
         initMMKVAndDayNight(context)
+        initSmartRefresh()
+        initAutoSize(context)
+        initLogger(context)
     }
 
     /**
