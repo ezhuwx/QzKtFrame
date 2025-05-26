@@ -17,6 +17,8 @@ import com.qz.frame.utils.logD
 import com.qz.frame.utils.observe
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
@@ -37,12 +39,12 @@ abstract class OptionConfig() : LifecycleOwner {
     /**
      * 是否屏蔽系统字体大小
      */
-    var isExcludeFontScale = false
+    open var isExcludeFontScale = false
 
     /**
      * 默认跟随系统深色模式
      */
-    var dayNightMode = DayNightMode.SYSTEM
+    open var dayNightMode = DayNightMode.SYSTEM
 
     /**
      * 是否是debug模式
@@ -57,7 +59,7 @@ abstract class OptionConfig() : LifecycleOwner {
     /**
      * 初始化mmkv
      */
-    lateinit var mmkv: MMKV
+    open lateinit var mmkv: MMKV
 
     /**
      * mmkv实例获取
@@ -116,42 +118,44 @@ abstract class OptionConfig() : LifecycleOwner {
             else MMKVLogLevel.LevelNone
         )
         mmkv = getMMKV()
-        //保存的深色模式设置
-        dayNightMode = DayNightMode.valueOf(
-            mmkv.decodeString(DayNightMode::class.simpleName, DayNightMode.SYSTEM.name)!!
-        )
-        //恢复设置
-        when (dayNightMode) {
-            DayNightMode.NIGHT ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-
-            DayNightMode.LIGHT ->
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
-            else -> {
-                logD("DayNightMode：${DayNightMode.SYSTEM.name}")
-            }
-        }
-        //监听深色模式变化
-        SysConfigChangeEvent::class.java.observe(this) { event ->
+        MainScope().launch {
             //保存的深色模式设置
             dayNightMode = DayNightMode.valueOf(
-                mmkv.decodeString(DayNightMode::class.simpleName, DayNightMode.SYSTEM.name)!!
+                mmkv.decodeString(DayNightMode::class.simpleName, dayNightMode.name)!!
             )
-            //如跟随系统
-            if (event !== null && dayNightMode == DayNightMode.SYSTEM) {
-                when (event.newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-                    Configuration.UI_MODE_NIGHT_NO -> {
-                        //关闭夜间模式
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    }
+            //恢复设置
+            when (dayNightMode) {
+                DayNightMode.NIGHT ->
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
-                    Configuration.UI_MODE_NIGHT_YES -> {
-                        //打开夜间模式
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    }
+                DayNightMode.LIGHT ->
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-                    else -> {}
+                else -> {
+                    logD("DayNightMode：${DayNightMode.SYSTEM.name}")
+                }
+            }
+            //监听深色模式变化
+            SysConfigChangeEvent::class.java.observe(this@OptionConfig) { event ->
+                //保存的深色模式设置
+                dayNightMode = DayNightMode.valueOf(
+                    mmkv.decodeString(DayNightMode::class.simpleName, DayNightMode.SYSTEM.name)!!
+                )
+                //如跟随系统
+                if (event !== null && dayNightMode == DayNightMode.SYSTEM) {
+                    when (event.newConfig.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+                        Configuration.UI_MODE_NIGHT_NO -> {
+                            //关闭夜间模式
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        }
+
+                        Configuration.UI_MODE_NIGHT_YES -> {
+                            //打开夜间模式
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        }
+
+                        else -> {}
+                    }
                 }
             }
         }

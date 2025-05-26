@@ -1,5 +1,6 @@
 package com.qz.frame.widget
 
+import android.R.attr.fragment
 import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -42,14 +43,23 @@ open class FragmentPager2Adapter(manager: FragmentManager, lifecycle: Lifecycle)
     }
 
     fun removeFragment(fragment: Fragment) {
-        val index = fragments.indexOf(fragment)
-        if (index >= 0) notifyItemRemoved(index)
-        if (index < tabs.size) tabs.remove(tabs.elementAt(index))
+        remove(fragments.indexOf(fragment))
     }
 
     fun remove(index: Int) {
-        if (index >= 0) notifyItemRemoved(index)
-        if (index < tabs.size) tabs.remove(tabs.elementAt(index))
+        if (index >= 0) {
+            fragments.remove(fragments.elementAt(index))
+            if (index < tabs.size) tabs.remove(tabs.elementAt(index))
+            notifyItemRemoved(index)
+        }
+
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun clear() {
+        fragments.clear()
+        tabs.clear()
+        notifyDataSetChanged()
     }
 
     fun getFragmentSet() = fragments
