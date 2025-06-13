@@ -1,10 +1,17 @@
 package com.qz.frame.base
 
+import android.R.attr.fitsSystemWindows
+import android.R.attr.navigationBarColor
+import android.R.attr.statusBarColor
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.View
+import android.view.WindowManager
 import androidx.lifecycle.ViewModelProvider
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
@@ -12,6 +19,8 @@ import androidx.lifecycle.ViewModelStoreOwner
 import com.qz.frame.interfaces.OnRefreshStateChangeListener
 import com.gyf.immersionbar.ktx.immersionBar
 import com.qz.frame.R
+import com.qz.frame.utils.attachBaseContextExcludeFontScale
+import com.qz.frame.utils.getResourcesExcludeFontScale
 import com.qz.frame.utils.post
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -44,6 +53,22 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      * 状态栏颜色
      */
     open var statusBarColor: Int? = BaseApplication.instance.config.statusBarColorId
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(
+            if (BaseApplication.instance.config.isExcludeFontScale) {
+                //禁用字体缩放
+                newBase?.attachBaseContextExcludeFontScale()
+            } else newBase
+        )
+    }
+
+    override fun getResources(): Resources {
+        return if (BaseApplication.instance.config.isExcludeFontScale) {
+            //禁用字体缩放
+            getResourcesExcludeFontScale(super.getResources())
+        } else super.getResources()
+    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,7 +142,9 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
+        super.onConfigurationChanged(newConfig.apply {
+            if (BaseApplication.instance.config.isExcludeFontScale) fontScale = 1.0f
+        })
         SysConfigChangeEvent(newConfig).post()
     }
 

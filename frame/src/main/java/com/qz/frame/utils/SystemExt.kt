@@ -1,14 +1,19 @@
 package com.qz.frame.utils
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.net.*
 import android.os.Build
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
+import com.jeremyliao.liveeventbus.LiveEventBus.config
 import com.qz.frame.base.BaseApplication
 import me.jessyan.autosize.utils.AutoSizeUtils
 
@@ -114,5 +119,32 @@ fun goSoftMarket(packageName: String) {
 fun Int?.pxDp(context: Context): Int? {
     return this?.let {
         AutoSizeUtils.dp2px(context, this.toFloat())
+    }
+}
+
+/**
+ * 保持字体大小不随系统设置变化（用在界面加载之前）
+ * 要重写Activity的attachBaseContext()
+ */
+fun Context.attachBaseContextExcludeFontScale(): Context {
+    return createConfigurationContext(resources.configuration.apply {
+        //调整屏幕密度
+        densityDpi = (densityDpi / fontScale).toInt()
+        // 固定字体缩放
+        this.fontScale = 1.0f
+    })
+}
+
+/**
+ * 保持字体大小不随系统设置变化（用在界面加载之前）
+ * 要重写Activity的getResources()
+ */
+fun Context.getResourcesExcludeFontScale(resources: Resources): Resources {
+    return with(resources.configuration) {
+        //调整屏幕密度
+        densityDpi = (densityDpi / fontScale).toInt()
+        // 固定字体缩放
+        this.fontScale = 1.0f
+        createConfigurationContext(this).resources
     }
 }

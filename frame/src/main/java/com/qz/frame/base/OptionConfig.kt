@@ -98,7 +98,9 @@ abstract class OptionConfig() : LifecycleOwner {
         AutoSize.initCompatMultiProcess(context)
         AutoSizeConfig.getInstance()
             //屏蔽系统字体大小
-            .setExcludeFontScale(isExcludeFontScale).onAdaptListener = object : onAdaptListener {
+            .setExcludeFontScale(isExcludeFontScale)
+            //设置屏幕适配逻辑策略类
+            .onAdaptListener = object : onAdaptListener {
             override fun onAdaptBefore(target: Any, activity: Activity) {
                 AutoSizeConfig.getInstance().screenWidth =
                     ScreenUtils.getScreenSize(activity)[0]

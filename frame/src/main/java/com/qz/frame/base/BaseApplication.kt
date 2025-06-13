@@ -3,6 +3,7 @@ package com.qz.frame.base
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
+import android.content.res.Resources
 import android.os.Build
 import android.os.Process
 import android.os.StrictMode
@@ -10,6 +11,8 @@ import androidx.annotation.CallSuper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.multidex.MultiDex
 import com.jeremyliao.liveeventbus.LiveEventBus
+import com.qz.frame.utils.attachBaseContextExcludeFontScale
+import com.qz.frame.utils.getResourcesExcludeFontScale
 
 abstract class BaseApplication : Application() {
     /**
@@ -67,8 +70,12 @@ abstract class BaseApplication : Application() {
      * 分包
      */
     override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
+        super.attachBaseContext(base?.attachBaseContextExcludeFontScale())
         MultiDex.install(this)
+    }
+
+    override fun getResources(): Resources {
+        return getResourcesExcludeFontScale(super.getResources())
     }
 
     /**
