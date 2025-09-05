@@ -1,6 +1,7 @@
 package com.qz.frame.net
 
 import com.qz.frame.base.BaseApplication
+import com.qz.frame.net.SSLSocketClient.hostnameVerifier
 import com.qz.frame.utils.NetWorkUtil
 import kotlinx.serialization.json.Json
 import okhttp3.*
@@ -132,7 +133,9 @@ abstract class BaseRetrofitClient<Api> {
             responseBuilder.removeHeader("Pragma").build()
         }
         //builder
-        return OkHttpClient().newBuilder().proxy(Proxy.NO_PROXY).apply {
+        return OkHttpClient().newBuilder().apply {
+            //禁止代理
+            if (!isAllowProxy()) proxy(Proxy.NO_PROXY)
             //添加自定义拦截器
             val customInterceptors = getInterceptors()
             for (interceptor in customInterceptors) {
