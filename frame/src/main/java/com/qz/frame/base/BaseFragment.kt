@@ -18,7 +18,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
     /**
      * 是否已经初始化
      */
-    private val isResumed = AtomicBoolean(false)
+    protected val isInitResumed = AtomicBoolean(false)
 
     /**
      * ViewModel 实例
@@ -48,7 +48,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
         //binding前处理
         onBindingBefore()
         //重置Resume状态
-        isResumed.set(false)
+        isInitResumed.set(false)
         return super.onCreateView(inflater, container, savedInstanceState)
     }
 
@@ -74,7 +74,7 @@ abstract class BaseFragment<VM : BaseViewModel> : DataBindingFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (isResumed.compareAndSet(false, true)) {
+        if (isInitResumed.compareAndSet(false, true)) {
             //数据初始化方法
             initData()
         }

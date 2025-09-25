@@ -94,7 +94,7 @@ open class BaseViewModel : ViewModel() {
         isSkipPageState: Boolean = false,
         isForceLoading: Boolean = false,
         block: CoroutineBlock,
-    ) {
+    ): Job {
         //请求码
         val requestCode = code ?: UUID.randomUUID().toString()
         //取消重复请求
@@ -154,6 +154,7 @@ open class BaseViewModel : ViewModel() {
         }
         //保存请求
         requestJobs[requestCode] = job
+        return job
     }
 
 

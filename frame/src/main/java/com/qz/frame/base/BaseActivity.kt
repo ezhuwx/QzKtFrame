@@ -1,17 +1,12 @@
 package com.qz.frame.base
 
-import android.R.attr.fitsSystemWindows
-import android.R.attr.navigationBarColor
-import android.R.attr.statusBarColor
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.View
-import android.view.WindowManager
 import androidx.lifecycle.ViewModelProvider
 import com.kunminx.architecture.ui.page.DataBindingActivity
 
