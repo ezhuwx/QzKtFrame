@@ -37,7 +37,7 @@ class TitleIncludeModel : BaseViewModel() {
         /**
          * 输入框输入，及搜索按钮点击监听
          */
-        fun TitleIncludeModel.inInputWatcher(
+        fun TitleIncludeModel.inputWatcher(
             owner: LifecycleOwner,
             textWatcher: ((text: String) -> Unit)? = null,
             onKeyAndRightClick: ((text: String?) -> Unit)? = null
