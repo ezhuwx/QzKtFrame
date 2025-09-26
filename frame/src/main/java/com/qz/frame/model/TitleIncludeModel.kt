@@ -1,6 +1,5 @@
 package com.qz.frame.model
 
-import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat

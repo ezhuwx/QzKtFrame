@@ -261,9 +261,9 @@ data class SysConfigChangeEvent(val newConfig: Configuration) : LiveEvent
 class MMKVDelegate<T>(
     private val key: String,
     private val defaultValue: T? = null
-) : ReadWriteProperty<Any?, T?> {
+) : ReadWriteProperty<Any?, T> {
     private val mmkv by lazy { BaseApplication.instance.config.mmkv }
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         return with(mmkv) {
             when (defaultValue) {
                 is Int -> getInt(key, defaultValue)
@@ -279,14 +279,14 @@ class MMKVDelegate<T>(
         }
     }
 
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         encode(value)
     }
 
     /**
      * 保存数据
      */
-    fun encode(value: T?) = with(mmkv) {
+    fun encode(value: T) = with(mmkv) {
         when (value) {
             is Int -> encode(key, value)
             is Long -> encode(key, value)
@@ -301,7 +301,7 @@ class MMKVDelegate<T>(
         /**
          * MMKV委托存储拓展
          */
-        fun <T> String.mmkvEncode(value: T?) = MMKVDelegate<T>(this).encode(value)
+        fun <T> String.mmkvEncode(value: T) = MMKVDelegate<T>(this).encode(value)
 
         /**
          * MMKV委托
