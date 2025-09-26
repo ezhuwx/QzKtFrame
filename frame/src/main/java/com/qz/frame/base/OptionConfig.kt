@@ -1,5 +1,7 @@
 package com.qz.frame.base
 
+import android.R.attr.defaultValue
+import android.R.attr.value
 import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
@@ -8,12 +10,15 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.jeremyliao.liveeventbus.LiveEventBus
 import com.jeremyliao.liveeventbus.core.LiveEvent
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.PrettyFormatStrategy
+import com.qz.frame.utils.json
 import com.qz.frame.utils.logD
 import com.qz.frame.utils.observe
 import com.tencent.mmkv.MMKV
@@ -24,6 +29,8 @@ import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 /**
  * @author : ezhuwx
@@ -219,7 +226,6 @@ abstract class OptionConfig() : LifecycleOwner {
     }
 }
 
-
 /**
  *  深色模式
  */
@@ -248,3 +254,58 @@ enum class DayNightMode {
  * 深色模式变化事件
  */
 data class SysConfigChangeEvent(val newConfig: Configuration) : LiveEvent
+
+/**
+ * MMKV委托
+ */
+class MMKVDelegate<T>(
+    private val key: String,
+    private val defaultValue: T? = null
+) : ReadWriteProperty<Any?, T?> {
+    private val mmkv by lazy { BaseApplication.instance.config.mmkv }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+        return with(mmkv) {
+            when (defaultValue) {
+                is Int -> getInt(key, defaultValue)
+                is Long -> getLong(key, defaultValue)
+                is Float -> getFloat(key, defaultValue)
+                is Boolean -> getBoolean(key, defaultValue)
+                is String -> getString(key, defaultValue)
+                else -> {
+                    val data = getString(key, "{}")
+                    Gson().fromJson(data, object : TypeToken<T>() {}.type)
+                }
+            } as T
+        }
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        encode(value)
+    }
+
+    /**
+     * 保存数据
+     */
+    fun encode(value: T?) = with(mmkv) {
+        when (value) {
+            is Int -> encode(key, value)
+            is Long -> encode(key, value)
+            is Float -> encode(key, value)
+            is Boolean -> encode(key, value)
+            is String -> encode(key, value)
+            else -> encode(key, value.json())
+        }
+    }
+
+    companion object {
+        /**
+         * MMKV委托存储拓展
+         */
+        fun <T> String.mmkvEncode(value: T?) = MMKVDelegate<T>(this).encode(value)
+
+        /**
+         * MMKV委托
+         */
+        fun <T> String.mmkvDelegate(defaultValue: T? = null) = MMKVDelegate(this, defaultValue)
+    }
+}
