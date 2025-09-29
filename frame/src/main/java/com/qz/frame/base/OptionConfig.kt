@@ -1,7 +1,5 @@
 package com.qz.frame.base
 
-import android.R.attr.defaultValue
-import android.R.attr.value
 import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
@@ -12,15 +10,19 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.jeremyliao.liveeventbus.LiveEventBus
 import com.jeremyliao.liveeventbus.core.LiveEvent
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
+import com.orhanobut.logger.Logger.t
 import com.orhanobut.logger.PrettyFormatStrategy
+import com.qz.frame.R
 import com.qz.frame.utils.json
 import com.qz.frame.utils.logD
+import com.qz.frame.utils.logE
 import com.qz.frame.utils.observe
+import com.qz.frame.utils.parseJson
+import com.qz.frame.utils.shortShow
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import kotlinx.coroutines.MainScope
@@ -29,8 +31,13 @@ import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import kotlin.reflect.KType
+import kotlin.reflect.javaType
+import kotlin.reflect.typeOf
 
 /**
  * @author : ezhuwx
@@ -192,6 +199,13 @@ abstract class OptionConfig() : LifecycleOwner {
         else mmkv.removeValueForKey(key)
     }
 
+    /**
+     * 删除全部数据(传了参数就是按key删除)
+     */
+    fun delete(key: String? = null) {
+        deleteKeyOrAll(key)
+    }
+
     /** 查询某个key是否已经存在
      *
      * @param key
@@ -258,54 +272,175 @@ data class SysConfigChangeEvent(val newConfig: Configuration) : LiveEvent
 /**
  * MMKV委托
  */
-class MMKVDelegate<T>(
+interface MMKVReadWriteProperty<in Any, T> {
+    operator fun getValue(thisRef: Any?, property: KProperty<*>): T
+    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T)
+    fun encode(value: T)
+}
+
+/**
+ * MMKV委托(Int)
+ */
+class MMKVInt(
     private val key: String,
-    private val defaultValue: T? = null
-) : ReadWriteProperty<Any?, T> {
+    private val defaultValue: Int
+) : MMKVReadWriteProperty<Any?, Int> {
     private val mmkv by lazy { BaseApplication.instance.config.mmkv }
-    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return with(mmkv) {
-            when (defaultValue) {
-                is Int -> getInt(key, defaultValue)
-                is Long -> getLong(key, defaultValue)
-                is Float -> getFloat(key, defaultValue)
-                is Boolean -> getBoolean(key, defaultValue)
-                is String -> getString(key, defaultValue)
-                else -> {
-                    val data = getString(key, "{}")
-                    Gson().fromJson(data, object : TypeToken<T>() {}.type)
-                }
-            } as T
-        }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Int {
+        return mmkv.getInt(key, defaultValue)
     }
 
-    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        encode(value)
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
+        mmkv.encode(key, value)
     }
 
-    /**
-     * 保存数据
-     */
-    fun encode(value: T) = with(mmkv) {
-        when (value) {
-            is Int -> encode(key, value)
-            is Long -> encode(key, value)
-            is Float -> encode(key, value)
-            is Boolean -> encode(key, value)
-            is String -> encode(key, value)
-            else -> encode(key, value.json())
-        }
-    }
-
-    companion object {
-        /**
-         * MMKV委托存储拓展
-         */
-        fun <T> String.mmkvEncode(value: T) = MMKVDelegate<T>(this).encode(value)
-
-        /**
-         * MMKV委托
-         */
-        fun <T> String.mmkvDelegate(defaultValue: T? = null) = MMKVDelegate(this, defaultValue)
+    override fun encode(value: Int) {
+        mmkv.encode(key, value)
     }
 }
+
+/**
+ * MMKV委托(Long)
+ */
+class MMKVLong(
+    private val key: String,
+    private val defaultValue: Long
+) : MMKVReadWriteProperty<Any?, Long> {
+    private val mmkv by lazy { BaseApplication.instance.config.mmkv }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Long {
+        return mmkv.getLong(key, defaultValue)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Long) {
+        mmkv.encode(key, value)
+    }
+
+    override fun encode(value: Long) {
+        mmkv.encode(key, value)
+    }
+}
+
+/**
+ * MMKV委托(Float)
+ */
+class MMKVFloat(
+    private val key: String,
+    private val defaultValue: Float
+) : MMKVReadWriteProperty<Any?, Float> {
+    private val mmkv by lazy { BaseApplication.instance.config.mmkv }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Float {
+        return mmkv.getFloat(key, defaultValue)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Float) {
+        mmkv.encode(key, value)
+    }
+
+    override fun encode(value: Float) {
+        mmkv.encode(key, value)
+    }
+}
+
+/**
+ * MMKV委托(Boolean)
+ */
+class MMKVBoolean(
+    private val key: String,
+    private val defaultValue: Boolean
+) : MMKVReadWriteProperty<Any?, Boolean> {
+    private val mmkv by lazy { BaseApplication.instance.config.mmkv }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Boolean {
+        return mmkv.getBoolean(key, defaultValue)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: Boolean) {
+        mmkv.encode(key, value)
+    }
+
+    override fun encode(value: Boolean) {
+        mmkv.encode(key, value)
+    }
+}
+
+/**
+ * MMKV委托(String)
+ */
+class MMKVString(
+    private val key: String,
+    private val defaultValue: String? = null
+) : MMKVReadWriteProperty<Any?, String?> {
+    private val mmkv by lazy { BaseApplication.instance.config.mmkv }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): String? {
+        return mmkv.getString(key, defaultValue)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: String?) {
+        mmkv.encode(key, value)
+    }
+
+    override fun encode(value: String?) {
+        mmkv.encode(key, value)
+    }
+}
+
+/**
+ * MMKV委托
+ */
+class MMKVObject<T>(private val key: String, private val type: Type? = null) :
+    MMKVReadWriteProperty<Any?, T?> {
+    private val mmkv by lazy { BaseApplication.instance.config.mmkv }
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+        val data = mmkv.getString(key, null)
+        return Gson().fromJson(data, type)
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        mmkv.encode(key, value.json())
+    }
+
+    override fun encode(value: T?) {
+        mmkv.encode(key, value.json())
+    }
+}
+
+/**
+ * MMKV委托存储拓展
+ */
+fun <T> String.mmkvEncode(value: T) = when (value) {
+    is Int -> MMKVInt(this, value).encode(value)
+    is Long -> MMKVLong(this, value).encode(value)
+    is Float -> MMKVFloat(this, value).encode(value)
+    is String -> MMKVString(this, value).encode(value)
+    is Boolean -> MMKVBoolean(this, value).encode(value)
+    else -> MMKVObject<T>(this).encode(value)
+}
+
+/**
+ * MMKV委托(Int)
+ */
+fun String.mmkvInt(defaultValue: Int) = MMKVInt(this, defaultValue)
+
+/**
+ * MMKV委托(Long)
+ */
+fun String.mmkvLong(defaultValue: Long) = MMKVLong(this, defaultValue)
+
+/**
+ * MMKV委托(Float)
+ */
+fun String.mmkvFloat(defaultValue: Float) = MMKVFloat(this, defaultValue)
+
+/**
+ * MMKV委托(Boolean)
+ */
+fun String.mmkvBoolean(defaultValue: Boolean) = MMKVBoolean(this, defaultValue)
+
+/**
+ * MMKV委托(String)
+ */
+fun String.mmkvString(defaultValue: String? = null) = MMKVString(this, defaultValue)
+
+/**
+ * MMKV委托
+ */
+inline fun <reified T> String.mmkvObject() = MMKVObject<T>(this, object : TypeToken<T>() {}.type)

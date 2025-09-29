@@ -59,6 +59,8 @@ dependencies {
     api 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    //kotlin反射
+    api "org.jetbrains.kotlin:kotlin-reflect:1.9.20"
     // ViewModel
     api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     // LiveData
