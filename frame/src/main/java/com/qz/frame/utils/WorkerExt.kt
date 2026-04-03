@@ -68,7 +68,7 @@ inline fun <reified W : CommonWorker> Data.Builder.createOneTimeWork(
     crossinline onProcess: (WorkInfo) -> Unit = {},
     crossinline onFailed: (WorkInfo) -> Unit = {},
     crossinline onSuccess: (WorkInfo) -> Unit = {},
-    crossinline onStateChange: (WorkInfo) -> Unit = {},
+    crossinline onStateChange: (WorkInfo?) -> Unit = {},
 ): OneTimeWorkRequest {
     val request = OneTimeWorkRequestBuilder<W>()
         .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, Long.MAX_VALUE, TimeUnit.DAYS)
@@ -78,7 +78,7 @@ inline fun <reified W : CommonWorker> Data.Builder.createOneTimeWork(
         // 任务状态监听
         getWorkInfoByIdLiveData(request.id)
             .observe(owner) { info ->
-                when (info.state) {
+                when (info?.state) {
                     RUNNING -> onProcess(info)
                     SUCCEEDED -> onSuccess(info)
                     FAILED -> onFailed(info)

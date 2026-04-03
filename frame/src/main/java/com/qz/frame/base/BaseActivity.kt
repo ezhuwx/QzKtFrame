@@ -49,11 +49,11 @@ abstract class BaseActivity<VM : BaseViewModel> : DataBindingActivity() {
      */
     open var statusBarColor: Int? = BaseApplication.instance.config.statusBarColorId
 
-    override fun attachBaseContext(newBase: Context?) {
+    override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(
             if (BaseApplication.instance.config.isExcludeFontScale) {
                 //禁用字体缩放
-                newBase?.attachBaseContextExcludeFontScale()
+                newBase.attachBaseContextExcludeFontScale()
             } else newBase
         )
     }

@@ -1,14 +1,10 @@
 package com.qz.frame.net
 
 import com.qz.frame.base.BaseApplication
-import com.qz.frame.net.SSLSocketClient.hostnameVerifier
 import com.qz.frame.utils.NetWorkUtil
-import kotlinx.serialization.json.Json
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.net.Proxy
 import java.text.SimpleDateFormat
