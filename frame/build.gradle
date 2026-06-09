@@ -9,7 +9,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
-def version = "2.1.5.10"
+def version = "2.1.6.10"
 
 android {
     compileSdk 35
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         minSdk 23
         targetSdk 32
-        versionCode 21430
+        versionCode 21610
         versionName version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

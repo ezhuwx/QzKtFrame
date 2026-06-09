@@ -8,21 +8,14 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.jeremyliao.liveeventbus.core.LiveEvent
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.FormatStrategy
 import com.orhanobut.logger.Logger
 import com.orhanobut.logger.Logger.t
 import com.orhanobut.logger.PrettyFormatStrategy
-import com.qz.frame.R
-import com.qz.frame.utils.json
 import com.qz.frame.utils.logD
-import com.qz.frame.utils.logE
 import com.qz.frame.utils.observe
-import com.qz.frame.utils.parseJson
-import com.qz.frame.utils.shortShow
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import kotlinx.coroutines.MainScope
@@ -31,13 +24,6 @@ import me.jessyan.autosize.AutoSize
 import me.jessyan.autosize.AutoSizeConfig
 import me.jessyan.autosize.onAdaptListener
 import me.jessyan.autosize.utils.ScreenUtils
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
-import kotlin.properties.ReadWriteProperty
-import kotlin.reflect.KProperty
-import kotlin.reflect.KType
-import kotlin.reflect.javaType
-import kotlin.reflect.typeOf
 
 /**
  * @author : ezhuwx
@@ -54,7 +40,7 @@ abstract class OptionConfig() : LifecycleOwner {
     /**
      * 是否屏蔽系统字体大小
      */
-    open var isExcludeFontScale = false
+    open var isExcludeFontScale = true
 
     /**
      * 默认跟随系统深色模式
@@ -74,7 +60,15 @@ abstract class OptionConfig() : LifecycleOwner {
     /**
      * 初始化mmkv
      */
-    open lateinit var mmkv: MMKV
+    open val mmkv: MMKV by lazy {
+        //初始化腾讯mmkv
+        MMKV.initialize(
+            BaseApplication.mContext,
+            if (isDebug) MMKVLogLevel.LevelDebug
+            else MMKVLogLevel.LevelNone
+        )
+        getMMKV()
+    }
 
     /**
      * mmkv实例获取
@@ -84,7 +78,7 @@ abstract class OptionConfig() : LifecycleOwner {
     @CallSuper
     open fun init(context: Context) {
         mLifecycleRegistry = LifecycleRegistry(this)
-        initMMKVAndDayNight(context)
+        initDayNightMode(context)
         initSmartRefresh()
         initAutoSize(context)
         initLogger(context)
@@ -128,14 +122,7 @@ abstract class OptionConfig() : LifecycleOwner {
     /**
      * 初始化MMKV和深色模式
      * */
-    open fun initMMKVAndDayNight(context: Context) {
-        //初始化腾讯mmkv
-        MMKV.initialize(
-            context,
-            if (isDebug) MMKVLogLevel.LevelDebug
-            else MMKVLogLevel.LevelNone
-        )
-        mmkv = getMMKV()
+    open fun initDayNightMode(context: Context) {
         MainScope().launch {
             //保存的深色模式设置
             dayNightMode = DayNightMode.valueOf(
