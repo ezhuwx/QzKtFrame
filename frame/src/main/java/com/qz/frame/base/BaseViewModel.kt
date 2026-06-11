@@ -75,6 +75,7 @@ open class BaseViewModel : ViewModel() {
      *  @param  isSkipPageError 跳过页内错误提示
      *  @param  isSkipAllError 跳过所有错误提示
      *  @param  isSkipMainState 跳过主界面显示
+     *  @param  isSkipPageState 跳过页面状态管理
      *  @param  block 请求方法
      *
      */
@@ -157,6 +158,45 @@ open class BaseViewModel : ViewModel() {
         return job
     }
 
+    /**
+     * IO线程
+     */
+    fun launchWithIo(
+        code: String? = null,
+        manager: PageStateManager? = null,
+        onStart: onRequestStart? = null,
+        onError: onRequestError? = null,
+        onServiceError: onServiceError? = null,
+        onSuccess: (() -> Unit)? = null,
+        onFinally: (() -> Unit)? = null,
+        isSkipPageLoading: Boolean = false,
+        isSkipAllLoading: Boolean = false,
+        isSkipPageError: Boolean = false,
+        isSkipAllError: Boolean = false,
+        isSkipMainState: Boolean = false,
+        isSkipPageState: Boolean = false,
+        isForceLoading: Boolean = false,
+        block: CoroutineBlock,
+    ) = launchUI(
+        code,
+        manager,
+        onStart,
+        onError,
+        onServiceError,
+        onSuccess,
+        onFinally,
+        isSkipPageLoading,
+        isSkipAllLoading,
+        isSkipPageError,
+        isSkipAllError,
+        isSkipMainState,
+        isSkipPageState,
+        isForceLoading
+    ) {
+        withContext(Dispatchers.IO) {
+            block()
+        }
+    }
 
     /**
      * 下载协程

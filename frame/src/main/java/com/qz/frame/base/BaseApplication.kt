@@ -26,7 +26,10 @@ abstract class BaseApplication : Application() {
         lateinit var mContext: Context
     }
 
-    lateinit var config: OptionConfig
+    /**
+     * 配置项
+     */
+    val config: OptionConfig by lazy { onInitConfig() }
 
     /**
      * 初始化配置项
@@ -57,7 +60,6 @@ abstract class BaseApplication : Application() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
             LiveEventBus.config().lifecycleObserverAlwaysActive(false).setContext(this)
             //初始化配置项
-            config = onInitConfig()
             config.init(this)
             //自定义初始化调用
             init()
