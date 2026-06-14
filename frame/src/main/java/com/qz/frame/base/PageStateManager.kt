@@ -16,6 +16,7 @@ import com.qz.frame.net.ExceptionHandler
 import com.qz.frame.net.NetDialog
 import com.qz.frame.net.ResponseException
 import com.qz.frame.utils.isInvalidClick
+import com.qz.frame.utils.logD
 import com.qz.frame.utils.shortShow
 import java.util.UUID
 
@@ -562,7 +563,7 @@ open class PageStateManager(
                 //布局载入
                 layoutResId?.let { View.inflate(context, it, parent) }
                 //实例View
-                parent!!.findViewById<View>(
+                parent!!.findViewById(
                     when (state) {
                         PageState.STATE_MAIN -> R.id.view_main
                         PageState.STATE_LOADING -> R.id.loading_root
@@ -580,6 +581,7 @@ open class PageStateManager(
      * 清除监听
      */
     open fun onClearNetObservers() {
+        stateDialogDismiss()
         vmList.forEach {
             it.start.removeObservers(owner)
             it.success.removeObservers(owner)
