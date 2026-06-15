@@ -267,12 +267,14 @@ open class PageStateManager(
      *
      */
     open fun stateDialogLoading() {
+        if (context.isFinishing || context.isDestroyed) return
         if (!mNetDialog.isShowing) {
             mNetDialog.show()
         }
     }
 
     open fun stateDialogDismiss() {
+        if (context.isFinishing || context.isDestroyed) return
         if (mNetDialog.isShowing) {
             mNetDialog.dismiss()
         }
